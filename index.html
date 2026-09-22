@@ -32,7 +32,7 @@
       "browserRequirements": "Requires JavaScript",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": "en",
+      "inLanguage": ["en", "ms"],
       "learningResourceType": "Interactive simulation",
       "educationalUse": ["instruction", "self-study"],
       "teaches": ["Graph theory", "Vertices and edges", "Degree of a vertex", "Walks, trails, paths and cycles", "Trees and spanning trees", "Weighted graphs", "Shortest path (Dijkstra's algorithm)"],
@@ -146,10 +146,11 @@
             </svg>
             <div class="mr-auto">
                 <h1 class="serif" style="font-weight:700;font-size:32px;line-height:.95;letter-spacing:-.02em;margin:0;">GraphTheory <span style="color:var(--accent);">1.0</span></h1>
-                <p class="mt-1 text-sm" style="color:var(--ink-2);max-width:52ch;">See graph theory, don't just memorise it.</p>
+                <p id="tagline" class="mt-1 text-sm" style="color:var(--ink-2);max-width:52ch;"></p>
             </div>
             <div class="flex gap-2 items-center pb-1">
                 <a href="https://visuallymath.com" class="manual-link">← Visualab</a>
+                <button id="langToggle" class="theme-toggle">BM</button>
                 <button id="themeToggle" class="theme-toggle">Dark</button>
             </div>
         </header>
@@ -164,22 +165,22 @@
             <!-- Left column -->
             <div class="flex-1 flex flex-col gap-4" style="flex-basis:240px;min-width:230px;">
                 <section class="card p-4">
-                    <h2 class="eyebrow mb-3">Graph tools</h2>
+                    <h2 id="graphToolsTitle" class="eyebrow mb-3"></h2>
                     <label class="flex items-center gap-2 text-xs cursor-pointer select-none mb-3" style="color:var(--ink-2);">
                         <span class="toggle-track" id="editToggle"><span class="toggle-knob"></span></span>
-                        <span>Edit graph</span>
+                        <span id="editGraphLabel"></span>
                     </label>
                     <p id="editHint" class="text-xs m-0 mb-3" style="color:var(--ink-3);line-height:1.5;"></p>
-                    <label class="field-label" for="presetSelect">Load example</label>
+                    <label id="loadExampleLabel" class="field-label" for="presetSelect"></label>
                     <select id="presetSelect" class="field-input mb-2"></select>
-                    <button id="newGraphBtn" class="btn btn-ghost btn-sm" style="width:100%;">New blank graph</button>
+                    <button id="newGraphBtn" class="btn btn-ghost btn-sm" style="width:100%;"></button>
                 </section>
                 <section class="card p-4">
-                    <h2 class="eyebrow mb-3">Selection</h2>
+                    <h2 id="selectionTitle" class="eyebrow mb-3"></h2>
                     <div id="selectionCard"></div>
                 </section>
                 <section class="card p-4">
-                    <h2 class="eyebrow mb-3">This graph</h2>
+                    <h2 id="thisGraphTitle" class="eyebrow mb-3"></h2>
                     <div id="statsCard"></div>
                 </section>
             </div>
@@ -193,8 +194,8 @@
                         <p id="conceptDescription" class="text-sm mt-2" style="color:var(--ink-2);"></p>
                     </div>
                     <div class="flex gap-2 pt-1">
-                        <button id="prevBtn" class="btn btn-ghost px-4 py-2.5">← Back</button>
-                        <button id="nextBtn" class="btn btn-primary px-4 py-2.5">Next →</button>
+                        <button id="prevBtn" class="btn btn-ghost px-4 py-2.5"></button>
+                        <button id="nextBtn" class="btn btn-primary px-4 py-2.5"></button>
                     </div>
                 </div>
 
@@ -203,28 +204,28 @@
                 </section>
 
                 <section id="basicsPanel" class="card p-4">
-                    <h3 class="eyebrow mb-3">Degree &amp; adjacency</h3>
+                    <h3 id="basicsPanelTitle" class="eyebrow mb-3"></h3>
                     <div id="basicsContent"></div>
                 </section>
 
                 <section id="walkPanel" class="card p-4" style="display:none;">
-                    <h3 class="eyebrow mb-3">Trace a route</h3>
+                    <h3 id="walkPanelTitle" class="eyebrow mb-3"></h3>
                     <div id="walkContent"></div>
                 </section>
 
                 <section id="treePanel" class="card p-4" style="display:none;">
-                    <h3 class="eyebrow mb-3">Is this a tree?</h3>
+                    <h3 id="treePanelTitle" class="eyebrow mb-3"></h3>
                     <div id="treeContent"></div>
                 </section>
 
                 <section id="weightedPanel" class="card p-4" style="display:none;">
-                    <h3 class="eyebrow mb-3">Shortest path</h3>
+                    <h3 id="weightedPanelTitle" class="eyebrow mb-3"></h3>
                     <div id="weightedControls"></div>
                     <div id="weightedResult" class="mt-3"></div>
                 </section>
 
                 <section class="note-panel">
-                    <h2 class="eyebrow mb-2" style="color:var(--accent);">Teaching note</h2>
+                    <h2 id="teachingNoteTitle" class="eyebrow mb-2" style="color:var(--accent);"></h2>
                     <p id="teachingNote" class="text-sm leading-relaxed m-0" style="color:var(--ink-2);"></p>
                 </section>
             </div>
@@ -232,7 +233,7 @@
             <!-- Right column -->
             <div class="flex-1 flex flex-col gap-4" style="flex-basis:220px;min-width:210px;">
                 <section class="card p-4">
-                    <h2 class="eyebrow mb-3">Terms to remember</h2>
+                    <h2 id="termsTitle" class="eyebrow mb-3"></h2>
                     <div id="termsList"></div>
                 </section>
             </div>
@@ -240,7 +241,7 @@
     </div>
 
     <footer class="text-center text-xs py-6" style="color:var(--ink-3);">
-        <span>© 2025–2026 GraphTheory. All rights reserved. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="license noopener" style="color:var(--accent);">CC BY-NC-ND 4.0</a> — free for classroom use with attribution; no commercial use or derivatives.</span>
+        <span id="footerText"></span>
         <div class="mt-2">
             <span class="page-counter" data-page-counter hidden></span>
         </div>
@@ -253,58 +254,135 @@ const NS = "http://www.w3.org/2000/svg";
 const mk = (t, a = {}) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+// ===== LANGUAGE =====
+let LANG = "en";
+const tr = f => (f && typeof f === "object" && ("en" in f)) ? (f[LANG] ?? f.en) : f;
+
+const I18N = {
+  tagline: { en: "See graph theory, don't just memorise it.", bm: "Lihat teori graf, jangan hanya hafal." },
+  themeDark: { en: "Dark", bm: "Gelap" },
+  themeLight: { en: "Light", bm: "Cerah" },
+  graphToolsTitle: { en: "Graph tools", bm: "Alat graf" },
+  editGraphLabel: { en: "Edit graph", bm: "Edit graf" },
+  loadExampleLabel: { en: "Load example", bm: "Muatkan contoh" },
+  newGraphBtn: { en: "New blank graph", bm: "Graf kosong baharu" },
+  selectionTitle: { en: "Selection", bm: "Pilihan" },
+  selectionPlaceholder: { en: "Click a vertex or edge on the canvas to inspect it.", bm: "Klik satu bucu atau sisi pada kanvas untuk memeriksanya." },
+  degreeLabel: { en: "Degree", bm: "Darjah" },
+  neighboursLabel: { en: "Neighbours", bm: "Jiran" },
+  deleteBtn: { en: "Delete", bm: "Padam" },
+  weightLabel: { en: "Weight", bm: "Pemberat" },
+  thisGraphTitle: { en: "This graph", bm: "Graf ini" },
+  statVertices: { en: "Vertices", bm: "Bucu" },
+  statEdges: { en: "Edges", bm: "Sisi" },
+  statConnected: { en: "Connected", bm: "Tersambung" },
+  statIsTree: { en: "Is a tree", bm: "Pokok?" },
+  yes: { en: "Yes", bm: "Ya" },
+  no: { en: "No", bm: "Tidak" },
+  backBtn: { en: "← Back", bm: "← Kembali" },
+  nextBtn: { en: "Next →", bm: "Seterusnya →" },
+  teachingNoteTitle: { en: "Teaching note", bm: "Nota pengajaran" },
+  basicsPanelTitle: { en: "Degree & adjacency", bm: "Darjah & bersebelahan" },
+  walkPanelTitle: { en: "Trace a route", bm: "Jejaki satu laluan" },
+  treePanelTitle: { en: "Is this a tree?", bm: "Adakah ini sebuah pokok?" },
+  weightedPanelTitle: { en: "Shortest path", bm: "Laluan terpendek" },
+  termsTitle: { en: "Terms to remember", bm: "Istilah untuk diingati" },
+  basicsEmpty: { en: "Turn on Edit graph, then click the canvas to add a vertex.", bm: "Hidupkan Edit graf, kemudian klik kanvas untuk menambah bucu." },
+  colVertex: { en: "Vertex", bm: "Bucu" },
+  colDegree: { en: "Degree", bm: "Darjah" },
+  colNeighbours: { en: "Neighbours", bm: "Jiran" },
+  colDistance: { en: "Distance", bm: "Jarak" },
+  colVia: { en: "Via", bm: "Melalui" },
+  adjMatrixTitle: { en: "Adjacency matrix", bm: "Matriks bersebelahan" },
+  adjMatrixHidden: { en: "Adjacency matrix hidden above 10 vertices.", bm: "Matriks bersebelahan disembunyikan jika melebihi 10 bucu." },
+  walkNoRoute: { en: "No route yet.", bm: "Belum ada laluan." },
+  walkHint: { en: "Click a starting vertex, then click along edges to build a route.", bm: "Klik satu bucu permulaan, kemudian klik sepanjang sisi untuk membina satu laluan." },
+  walkUndo: { en: "Undo step", bm: "Buat asal langkah" },
+  walkClear: { en: "Clear", bm: "Kosongkan" },
+  walkLegendWalk: { en: "Walk", bm: "Jalan" },
+  walkLegendWalkDesc: { en: "repeats allowed.", bm: "pengulangan dibenarkan." },
+  walkLegendTrail: { en: "Trail", bm: "Surih" },
+  walkLegendTrailDesc: { en: "no repeated edge.", bm: "tiada sisi berulang." },
+  walkLegendPath: { en: "Path", bm: "Lorong" },
+  walkLegendPathDesc: { en: "no repeated vertex.", bm: "tiada bucu berulang." },
+  walkLegendCycle: { en: "Cycle", bm: "Kitaran" },
+  walkLegendCycleDesc: { en: "a path back to the start.", bm: "lorong kembali ke permulaan." },
+  treeAddVertices: { en: "Add some vertices first.", bm: "Tambah beberapa bucu dahulu." },
+  spanBtn: { en: "Highlight a spanning tree", bm: "Serlahkan pokok rentang" },
+  spanClearBtn: { en: "Clear highlight", bm: "Kosongkan penyerlahan" },
+  weightedAddTwo: { en: "Add at least two vertices to find a shortest path.", bm: "Tambah sekurang-kurangnya dua bucu untuk mencari laluan terpendek." },
+  startLabel: { en: "Start", bm: "Permulaan" },
+  endLabel: { en: "End", bm: "Akhir" },
+  findPathBtn: { en: "Find shortest path", bm: "Cari laluan terpendek" },
+  skipAnimBtn: { en: "Skip animation", bm: "Langkau animasi" },
+  footerText: { en: '© 2025–2026 GraphTheory. All rights reserved. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="license noopener" style="color:var(--accent);">CC BY-NC-ND 4.0</a> — free for classroom use with attribution; no commercial use or derivatives.',
+               bm: '© 2025–2026 GraphTheory. Hak cipta terpelihara. Dilesenkan di bawah <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="license noopener" style="color:var(--accent);">CC BY-NC-ND 4.0</a> — bebas untuk kegunaan bilik darjah dengan atribusi; tiada kegunaan komersial atau versi ubah suai.' }
+};
+
 // ===== STATIC CONTENT =====
 const STAGES = [
-  { eyebrow: "STAGE 01", title: "Vertices & edges", desc: "Build a graph and watch degree, adjacency list and adjacency matrix update as you edit it." },
-  { eyebrow: "STAGE 02", title: "Walks, trails, paths & cycles", desc: "Trace a route through the graph and see which of these four labels it earns." },
-  { eyebrow: "STAGE 03", title: "Trees", desc: "Check whether the graph is a tree, and pull a spanning tree out of any connected graph." },
-  { eyebrow: "STAGE 04", title: "Weighted graphs & shortest path", desc: "Give edges a weight, then watch Dijkstra's algorithm find the shortest route between two vertices." }
+  { eyebrow: { en: "STAGE 01", bm: "PERINGKAT 01" }, title: { en: "Vertices & edges", bm: "Bucu & sisi" },
+    desc: { en: "Build a graph and watch degree, adjacency list and adjacency matrix update as you edit it.",
+            bm: "Bina satu graf dan lihat darjah, senarai bersebelahan dan matriks bersebelahan berubah semasa anda mengedit." } },
+  { eyebrow: { en: "STAGE 02", bm: "PERINGKAT 02" }, title: { en: "Walks, trails, paths & cycles", bm: "Jalan, surih, lorong & kitaran" },
+    desc: { en: "Trace a route through the graph and see which of these four labels it earns.",
+            bm: "Jejaki satu laluan melalui graf dan lihat label mana yang sesuai untuknya." } },
+  { eyebrow: { en: "STAGE 03", bm: "PERINGKAT 03" }, title: { en: "Trees", bm: "Pokok" },
+    desc: { en: "Check whether the graph is a tree, and pull a spanning tree out of any connected graph.",
+            bm: "Semak sama ada graf ini sebuah pokok, dan keluarkan pokok rentang daripada mana-mana graf tersambung." } },
+  { eyebrow: { en: "STAGE 04", bm: "PERINGKAT 04" }, title: { en: "Weighted graphs & shortest path", bm: "Graf berpemberat & laluan terpendek" },
+    desc: { en: "Give edges a weight, then watch Dijkstra's algorithm find the shortest route between two vertices.",
+            bm: "Berikan pemberat pada sisi, kemudian lihat algoritma Dijkstra mencari laluan terpendek antara dua bucu." } }
 ];
 
 const TEACHING_NOTES = [
-  "A vertex's degree just counts how many edges touch it. Add up the degrees of every vertex and you always get twice the number of edges, since each edge is counted from both of its ends.",
-  "Walk → trail → path → cycle get stricter one at a time. A walk allows anything; a trail just can't reuse an edge; a path can't reuse a vertex either; a cycle is a path that comes back to where it began.",
-  "A tree is the leanest way to keep a graph connected — remove any edge and it falls apart into two pieces; add any edge and you create a cycle. That's why a tree on n vertices always has exactly n − 1 edges.",
-  "Dijkstra's algorithm builds up the shortest distance to every vertex one step at a time, always finalising whichever reachable vertex currently has the smallest tentative distance."
+  { en: "A vertex's degree just counts how many edges touch it. Add up the degrees of every vertex and you always get twice the number of edges, since each edge is counted from both of its ends.",
+    bm: "Darjah sesuatu bucu hanya mengira berapa banyak sisi yang menyentuhnya. Jumlahkan darjah setiap bucu dan anda akan sentiasa mendapat dua kali bilangan sisi, kerana setiap sisi dikira daripada kedua-dua hujungnya." },
+  { en: "Walk → trail → path → cycle get stricter one at a time. A walk allows anything; a trail just can't reuse an edge; a path can't reuse a vertex either; a cycle is a path that comes back to where it began.",
+    bm: "Jalan → surih → lorong → kitaran menjadi semakin ketat satu demi satu. Jalan membenarkan apa-apa sahaja; surih tidak boleh menggunakan semula sisi yang sama; lorong pula tidak boleh menggunakan semula bucu yang sama; kitaran ialah lorong yang kembali ke tempat ia bermula." },
+  { en: "A tree is the leanest way to keep a graph connected — remove any edge and it falls apart into two pieces; add any edge and you create a cycle. That's why a tree on n vertices always has exactly n − 1 edges.",
+    bm: "Pokok ialah cara paling ringkas untuk mengekalkan graf tersambung — buang mana-mana sisi dan ia akan terbahagi kepada dua bahagian; tambah mana-mana sisi dan anda akan mencipta satu kitaran. Itulah sebabnya pokok dengan n bucu sentiasa mempunyai tepat n − 1 sisi." },
+  { en: "Dijkstra's algorithm builds up the shortest distance to every vertex one step at a time, always finalising whichever reachable vertex currently has the smallest tentative distance.",
+    bm: "Algoritma Dijkstra membina jarak terpendek ke setiap bucu langkah demi langkah, sentiasa memuktamadkan bucu yang boleh dicapai dengan jarak sementara yang paling kecil pada ketika itu." }
 ];
 
 const TERMS = [
-  { t: "Vertex", d: "A point in the graph — also called a node." },
-  { t: "Edge", d: "A connection between two vertices." },
-  { t: "Degree", d: "The number of edges touching a vertex." },
-  { t: "Adjacent", d: "Two vertices joined directly by an edge." },
-  { t: "Walk", d: "Any route along edges — vertices and edges may repeat." },
-  { t: "Trail", d: "A walk that never repeats an edge." },
-  { t: "Path", d: "A walk that never repeats a vertex." },
-  { t: "Cycle", d: "A path that returns to its starting vertex." },
-  { t: "Tree", d: "A connected graph with no cycles — exactly n − 1 edges for n vertices." },
-  { t: "Spanning tree", d: "A tree that touches every vertex of the original graph." },
-  { t: "Weighted graph", d: "A graph whose edges carry a value — distance, cost, or time." },
-  { t: "Shortest path", d: "The route between two vertices with the smallest total weight." }
+  { t: { en: "Vertex", bm: "Bucu" }, d: { en: "A point in the graph — also called a node.", bm: "Satu titik dalam graf — juga dipanggil nod." } },
+  { t: { en: "Edge", bm: "Sisi" }, d: { en: "A connection between two vertices.", bm: "Satu sambungan antara dua bucu." } },
+  { t: { en: "Degree", bm: "Darjah" }, d: { en: "The number of edges touching a vertex.", bm: "Bilangan sisi yang menyentuh sesuatu bucu." } },
+  { t: { en: "Adjacent", bm: "Bersebelahan" }, d: { en: "Two vertices joined directly by an edge.", bm: "Dua bucu yang disambungkan terus oleh satu sisi." } },
+  { t: { en: "Walk", bm: "Jalan" }, d: { en: "Any route along edges — vertices and edges may repeat.", bm: "Sebarang laluan sepanjang sisi — bucu dan sisi boleh berulang." } },
+  { t: { en: "Trail", bm: "Surih" }, d: { en: "A walk that never repeats an edge.", bm: "Satu jalan yang tidak pernah mengulangi sisi." } },
+  { t: { en: "Path", bm: "Lorong" }, d: { en: "A walk that never repeats a vertex.", bm: "Satu jalan yang tidak pernah mengulangi bucu." } },
+  { t: { en: "Cycle", bm: "Kitaran" }, d: { en: "A path that returns to its starting vertex.", bm: "Satu lorong yang kembali ke bucu permulaannya." } },
+  { t: { en: "Tree", bm: "Pokok" }, d: { en: "A connected graph with no cycles — exactly n − 1 edges for n vertices.", bm: "Graf tersambung tanpa kitaran — tepat n − 1 sisi bagi n bucu." } },
+  { t: { en: "Spanning tree", bm: "Pokok rentang" }, d: { en: "A tree that touches every vertex of the original graph.", bm: "Pokok yang menyentuh setiap bucu dalam graf asal." } },
+  { t: { en: "Weighted graph", bm: "Graf berpemberat" }, d: { en: "A graph whose edges carry a value — distance, cost, or time.", bm: "Graf yang sisinya membawa satu nilai — jarak, kos, atau masa." } },
+  { t: { en: "Shortest path", bm: "Laluan terpendek" }, d: { en: "The route between two vertices with the smallest total weight.", bm: "Laluan antara dua bucu dengan jumlah pemberat paling kecil." } }
 ];
 
 const PRESETS = {
-  demo: { label: "Default (mixed)", vertices: [
+  demo: { label: { en: "Default (mixed)", bm: "Lalai (campuran)" }, vertices: [
       { id: "A", x: 150, y: 90 }, { id: "B", x: 430, y: 70 }, { id: "C", x: 560, y: 220 },
       { id: "D", x: 320, y: 360 }, { id: "E", x: 90, y: 240 }
     ], edges: [ ["A","B"], ["B","C"], ["C","D"], ["D","E"], ["E","A"], ["A","D"] ] },
-  path5: { label: "Simple path", vertices: [
+  path5: { label: { en: "Simple path", bm: "Lorong mudah" }, vertices: [
       { id: "A", x: 70, y: 210 }, { id: "B", x: 220, y: 210 }, { id: "C", x: 370, y: 210 },
       { id: "D", x: 500, y: 210 }, { id: "E", x: 590, y: 210 }
     ], edges: [ ["A","B"], ["B","C"], ["C","D"], ["D","E"] ] },
-  triangleTail: { label: "Triangle + tail", vertices: [
+  triangleTail: { label: { en: "Triangle + tail", bm: "Segi tiga + ekor" }, vertices: [
       { id: "A", x: 150, y: 120 }, { id: "B", x: 300, y: 80 }, { id: "C", x: 300, y: 260 },
       { id: "D", x: 450, y: 260 }, { id: "E", x: 590, y: 260 }
     ], edges: [ ["A","B"], ["B","C"], ["C","A"], ["C","D"], ["D","E"] ] },
-  treeExample: { label: "Tree", vertices: [
+  treeExample: { label: { en: "Tree", bm: "Pokok" }, vertices: [
       { id: "A", x: 320, y: 60 }, { id: "B", x: 180, y: 190 }, { id: "C", x: 460, y: 190 },
       { id: "D", x: 100, y: 330 }, { id: "E", x: 260, y: 330 }, { id: "F", x: 460, y: 330 }
     ], edges: [ ["A","B"], ["A","C"], ["B","D"], ["B","E"], ["C","F"] ] },
-  cycleExample: { label: "Graph with a cycle (not a tree)", vertices: [
+  cycleExample: { label: { en: "Graph with a cycle (not a tree)", bm: "Graf dengan kitaran (bukan pokok)" }, vertices: [
       { id: "A", x: 320, y: 60 }, { id: "B", x: 180, y: 190 }, { id: "C", x: 460, y: 190 },
       { id: "D", x: 100, y: 330 }, { id: "E", x: 260, y: 330 }, { id: "F", x: 460, y: 330 }
     ], edges: [ ["A","B"], ["A","C"], ["B","D"], ["B","E"], ["C","F"], ["D","E"] ] },
-  weightedNetwork: { label: "Weighted network", vertices: [
+  weightedNetwork: { label: { en: "Weighted network", bm: "Rangkaian berpemberat" }, vertices: [
       { id: "A", x: 90, y: 140 }, { id: "B", x: 270, y: 60 }, { id: "C", x: 460, y: 90 },
       { id: "D", x: 570, y: 230 }, { id: "E", x: 370, y: 330 }, { id: "F", x: 150, y: 330 }
     ], edges: [
@@ -350,14 +428,23 @@ function connectivityInfo() {
 
 function treeCheck() {
   const n = vertices.length, m = edges.length;
-  if (n === 0) return { isTree: false, msg: "Add some vertices first." };
+  if (n === 0) return { isTree: false, msg: tr(I18N.treeAddVertices) };
   const { connected, reached } = connectivityInfo();
   if (!connected) {
     const missing = vertices.filter(v => !reached.has(v.id)).map(v => v.id);
-    return { isTree: false, msg: `Not a tree — disconnected. ${missing.join(", ")} ${missing.length > 1 ? "are" : "is"} not reachable from ${vertices[0].id}.` };
+    return { isTree: false, msg: tr({
+      en: `Not a tree — disconnected. ${missing.join(", ")} ${missing.length > 1 ? "are" : "is"} not reachable from ${vertices[0].id}.`,
+      bm: `Bukan pokok — terputus. ${missing.join(", ")} tidak boleh dicapai daripada ${vertices[0].id}.`
+    }) };
   }
-  if (m > n - 1) return { isTree: false, msg: `Not a tree — contains a cycle. A tree on ${n} vertices needs exactly ${n - 1} edge${n - 1 === 1 ? "" : "s"}, but this graph has ${m}.` };
-  return { isTree: true, msg: `This is a tree — connected, with exactly ${n - 1} edge${n - 1 === 1 ? "" : "s"} and no cycles.` };
+  if (m > n - 1) return { isTree: false, msg: tr({
+    en: `Not a tree — contains a cycle. A tree on ${n} vertices needs exactly ${n - 1} edge${n - 1 === 1 ? "" : "s"}, but this graph has ${m}.`,
+    bm: `Bukan pokok — mengandungi kitaran. Pokok dengan ${n} bucu memerlukan tepat ${n - 1} sisi, tetapi graf ini mempunyai ${m}.`
+  }) };
+  return { isTree: true, msg: tr({
+    en: `This is a tree — connected, with exactly ${n - 1} edge${n - 1 === 1 ? "" : "s"} and no cycles.`,
+    bm: `Ini ialah sebuah pokok — tersambung, dengan tepat ${n - 1} sisi dan tiada kitaran.`
+  }) };
 }
 
 function computeSpanningTree() {
@@ -385,10 +472,25 @@ function classifyWalk(seq) {
   const vertCounts = {};
   seq.forEach((id, idx) => { if (closed && idx === seq.length - 1) return; vertCounts[id] = (vertCounts[id] || 0) + 1; });
   const repeatedVertex = Object.values(vertCounts).some(c => c > 1);
-  if (repeatedEdge) return { type: "walk", ok: false, msg: "This is a walk, but it repeats an edge — so it is not a trail." };
-  if (repeatedVertex) return { type: "trail", ok: false, msg: closed ? "This is a closed trail, but it repeats an interior vertex — so it is not a simple cycle." : "This is a trail (no repeated edge), but it repeats a vertex — so it is not a path." };
-  if (closed) return { type: "cycle", ok: true, msg: "This is a cycle — a path that returns to where it started." };
-  return { type: "path", ok: true, msg: "This is a path — no repeated vertex or edge." };
+  if (repeatedEdge) return { type: "walk", ok: false, msg: tr({
+    en: "This is a walk, but it repeats an edge — so it is not a trail.",
+    bm: "Ini ialah satu jalan, tetapi ia mengulangi satu sisi — jadi ia bukan surih."
+  }) };
+  if (repeatedVertex) return { type: "trail", ok: false, msg: closed ? tr({
+    en: "This is a closed trail, but it repeats an interior vertex — so it is not a simple cycle.",
+    bm: "Ini ialah surih tertutup, tetapi ia mengulangi bucu dalaman — jadi ia bukan kitaran ringkas."
+  }) : tr({
+    en: "This is a trail (no repeated edge), but it repeats a vertex — so it is not a path.",
+    bm: "Ini ialah satu surih (tiada sisi berulang), tetapi ia mengulangi satu bucu — jadi ia bukan lorong."
+  }) };
+  if (closed) return { type: "cycle", ok: true, msg: tr({
+    en: "This is a cycle — a path that returns to where it started.",
+    bm: "Ini ialah satu kitaran — lorong yang kembali ke tempat ia bermula."
+  }) };
+  return { type: "path", ok: true, msg: tr({
+    en: "This is a path — no repeated vertex or edge.",
+    bm: "Ini ialah satu lorong — tiada bucu atau sisi berulang."
+  }) };
 }
 
 function dijkstra(startId) {
@@ -561,7 +663,7 @@ function renderRail() {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.className = "rail-tab" + (i === stageIdx ? " active" : "");
-    btn.innerHTML = `<span class="rail-num">${String(i + 1).padStart(2, "0")}</span><span class="rail-label">${s.title}</span>`;
+    btn.innerHTML = `<span class="rail-num">${String(i + 1).padStart(2, "0")}</span><span class="rail-label">${tr(s.title)}</span>`;
     btn.onclick = () => setStage(i);
     li.appendChild(btn); ol.appendChild(li);
   });
@@ -569,30 +671,56 @@ function renderRail() {
 
 function renderHeader() {
   const s = STAGES[stageIdx];
-  document.getElementById("stageEyebrow").textContent = s.eyebrow;
-  document.getElementById("conceptTitle").textContent = s.title;
-  document.getElementById("conceptDescription").textContent = s.desc;
-  document.getElementById("teachingNote").textContent = TEACHING_NOTES[stageIdx];
+  document.getElementById("stageEyebrow").textContent = tr(s.eyebrow);
+  document.getElementById("conceptTitle").textContent = tr(s.title);
+  document.getElementById("conceptDescription").textContent = tr(s.desc);
+  document.getElementById("teachingNote").textContent = tr(TEACHING_NOTES[stageIdx]);
   document.getElementById("prevBtn").disabled = stageIdx === 0;
   document.getElementById("nextBtn").disabled = stageIdx === 3;
+}
+
+function renderStaticLabels() {
+  document.getElementById("tagline").textContent = tr(I18N.tagline);
+  document.getElementById("graphToolsTitle").textContent = tr(I18N.graphToolsTitle);
+  document.getElementById("editGraphLabel").textContent = tr(I18N.editGraphLabel);
+  document.getElementById("loadExampleLabel").textContent = tr(I18N.loadExampleLabel);
+  document.getElementById("newGraphBtn").textContent = tr(I18N.newGraphBtn);
+  document.getElementById("selectionTitle").textContent = tr(I18N.selectionTitle);
+  document.getElementById("thisGraphTitle").textContent = tr(I18N.thisGraphTitle);
+  document.getElementById("prevBtn").textContent = tr(I18N.backBtn);
+  document.getElementById("nextBtn").textContent = tr(I18N.nextBtn);
+  document.getElementById("basicsPanelTitle").textContent = tr(I18N.basicsPanelTitle);
+  document.getElementById("walkPanelTitle").textContent = tr(I18N.walkPanelTitle);
+  document.getElementById("treePanelTitle").textContent = tr(I18N.treePanelTitle);
+  document.getElementById("weightedPanelTitle").textContent = tr(I18N.weightedPanelTitle);
+  document.getElementById("teachingNoteTitle").textContent = tr(I18N.teachingNoteTitle);
+  document.getElementById("termsTitle").textContent = tr(I18N.termsTitle);
+  document.getElementById("footerText").innerHTML = tr(I18N.footerText);
+  const preset = document.getElementById("presetSelect");
+  const cur = preset.value;
+  preset.innerHTML = "";
+  Object.keys(PRESETS).forEach(key => {
+    const opt = document.createElement("option");
+    opt.value = key; opt.textContent = tr(PRESETS[key].label);
+    preset.appendChild(opt);
+  });
+  if (cur) preset.value = cur;
 }
 
 function renderEditToggleUI() {
   const track = document.getElementById("editToggle");
   track.classList.toggle("on", editMode);
-  const hints = [
-    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
-    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
-    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
-    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it."
-  ];
+  const editHint = tr({
+    en: "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
+    bm: "Klik ruang kosong untuk menambah bucu. Klik dua bucu untuk menyambung atau memutuskan sambungan. Seret bucu untuk menggerakkannya."
+  });
   const exploreHints = [
-    "Click a vertex to inspect its degree and neighbours. Drag vertices to tidy the layout.",
-    "Click a starting vertex, then click along edges to trace a route.",
-    "Use the button below to check the graph and highlight a spanning tree.",
-    "Pick a start and end vertex below, then find the shortest path."
+    tr({ en: "Click a vertex to inspect its degree and neighbours. Drag vertices to tidy the layout.", bm: "Klik satu bucu untuk memeriksa darjah dan jirannya. Seret bucu untuk mengemaskan susunan." }),
+    tr({ en: "Click a starting vertex, then click along edges to trace a route.", bm: "Klik satu bucu permulaan, kemudian klik sepanjang sisi untuk menjejaki satu laluan." }),
+    tr({ en: "Use the button below to check the graph and highlight a spanning tree.", bm: "Guna butang di bawah untuk menyemak graf dan menyerlahkan pokok rentang." }),
+    tr({ en: "Pick a start and end vertex below, then find the shortest path.", bm: "Pilih bucu permulaan dan akhir di bawah, kemudian cari laluan terpendek." })
   ];
-  document.getElementById("editHint").textContent = editMode ? hints[stageIdx] : exploreHints[stageIdx];
+  document.getElementById("editHint").textContent = editMode ? editHint : exploreHints[stageIdx];
 }
 
 function renderGraphSVG() {
@@ -665,7 +793,7 @@ function renderGraphSVG() {
 
 function renderSelectionCard() {
   const el = document.getElementById("selectionCard");
-  if (!selection) { el.innerHTML = '<p class="text-xs m-0" style="color:var(--ink-3)">Click a vertex or edge on the canvas to inspect it.</p>'; return; }
+  if (!selection) { el.innerHTML = `<p class="text-xs m-0" style="color:var(--ink-3)">${tr(I18N.selectionPlaceholder)}</p>`; return; }
   if (selection.type === "vertex") {
     const v = vertices.find(x => x.id === selection.id);
     if (!v) { selection = null; return renderSelectionCard(); }
@@ -673,10 +801,10 @@ function renderSelectionCard() {
     el.innerHTML = `
       <div class="flex items-center justify-between mb-2">
         <span class="math" style="font-size:22px;color:var(--accent);">${v.id}</span>
-        ${editMode ? '<button id="delVertexBtn" class="btn btn-ghost btn-sm">Delete</button>' : ""}
+        ${editMode ? `<button id="delVertexBtn" class="btn btn-ghost btn-sm">${tr(I18N.deleteBtn)}</button>` : ""}
       </div>
-      <p class="text-sm m-0" style="color:var(--ink-2)">Degree: <b style="color:var(--ink)">${degreeOf(v.id)}</b></p>
-      <p class="text-sm mt-1 m-0" style="color:var(--ink-2)">Neighbours: ${nbrs.length ? nbrs.join(", ") : "—"}</p>`;
+      <p class="text-sm m-0" style="color:var(--ink-2)">${tr(I18N.degreeLabel)}: <b style="color:var(--ink)">${degreeOf(v.id)}</b></p>
+      <p class="text-sm mt-1 m-0" style="color:var(--ink-2)">${tr(I18N.neighboursLabel)}: ${nbrs.length ? nbrs.join(", ") : "—"}</p>`;
     const delBtn = document.getElementById("delVertexBtn");
     if (delBtn) delBtn.onclick = () => { deleteVertex(v.id); selection = null; renderAll(); };
   } else {
@@ -685,9 +813,9 @@ function renderSelectionCard() {
     el.innerHTML = `
       <div class="flex items-center justify-between mb-2">
         <span class="math" style="font-size:18px;color:var(--accent);">${e.a}–${e.b}</span>
-        ${editMode ? '<button id="delEdgeBtn" class="btn btn-ghost btn-sm">Delete</button>' : ""}
+        ${editMode ? `<button id="delEdgeBtn" class="btn btn-ghost btn-sm">${tr(I18N.deleteBtn)}</button>` : ""}
       </div>
-      ${stageIdx === 3 ? `<label class="field-label">Weight</label><input id="edgeWeightInput" class="field-input" type="number" min="1" step="1" value="${e.weight}">` : ""}`;
+      ${stageIdx === 3 ? `<label class="field-label">${tr(I18N.weightLabel)}</label><input id="edgeWeightInput" class="field-input" type="number" min="1" step="1" value="${e.weight}">` : ""}`;
     const delBtn = document.getElementById("delEdgeBtn");
     if (delBtn) delBtn.onclick = () => { deleteEdge(e.id); selection = null; renderAll(); };
     const wIn = document.getElementById("edgeWeightInput");
@@ -700,16 +828,17 @@ function renderStatsCard() {
   const n = vertices.length, m = edges.length;
   const { connected } = connectivityInfo();
   const tree = n > 0 && connected && m === n - 1;
+  const yn = (b) => b ? tr(I18N.yes) : tr(I18N.no);
   el.innerHTML = `
-    <div class="stat-row"><span>Vertices</span><b>${n}</b></div>
-    <div class="stat-row"><span>Edges</span><b>${m}</b></div>
-    <div class="stat-row"><span>Connected</span><b style="color:${n === 0 ? "var(--ink-3)" : connected ? "var(--ok)" : "var(--bad)"}">${n === 0 ? "—" : connected ? "Yes" : "No"}</b></div>
-    <div class="stat-row"><span>Is a tree</span><b style="color:${tree ? "var(--ok)" : "var(--ink-3)"}">${tree ? "Yes" : "No"}</b></div>`;
+    <div class="stat-row"><span>${tr(I18N.statVertices)}</span><b>${n}</b></div>
+    <div class="stat-row"><span>${tr(I18N.statEdges)}</span><b>${m}</b></div>
+    <div class="stat-row"><span>${tr(I18N.statConnected)}</span><b style="color:${n === 0 ? "var(--ink-3)" : connected ? "var(--ok)" : "var(--bad)"}">${n === 0 ? "—" : yn(connected)}</b></div>
+    <div class="stat-row"><span>${tr(I18N.statIsTree)}</span><b style="color:${tree ? "var(--ok)" : "var(--ink-3)"}">${yn(tree)}</b></div>`;
 }
 
 function renderBasicsPanel() {
   const el = document.getElementById("basicsContent");
-  if (vertices.length === 0) { el.innerHTML = '<p class="text-sm m-0" style="color:var(--ink-3)">Turn on Edit graph, then click the canvas to add a vertex.</p>'; return; }
+  if (vertices.length === 0) { el.innerHTML = `<p class="text-sm m-0" style="color:var(--ink-3)">${tr(I18N.basicsEmpty)}</p>`; return; }
   const rows = vertices.map(v => `<tr><td class="math" style="color:var(--accent);">${v.id}</td><td>${degreeOf(v.id)}</td><td style="font-size:12px;">${neighborsOf(v.id).sort().join(", ") || "—"}</td></tr>`).join("");
   const sumDeg = vertices.reduce((s, v) => s + degreeOf(v.id), 0);
   let matrixHtml;
@@ -719,12 +848,16 @@ function renderBasicsPanel() {
     const body = ids.map(r => "<tr><th>" + r + "</th>" + ids.map(c => r === c ? "<td>·</td>" : `<td>${edgesBetween(r, c) ? 1 : 0}</td>`).join("") + "</tr>").join("");
     matrixHtml = `<table class="adj-matrix mt-2">${head}${body}</table>`;
   } else {
-    matrixHtml = '<p class="text-xs mt-2 m-0" style="color:var(--ink-3)">Adjacency matrix hidden above 10 vertices.</p>';
+    matrixHtml = `<p class="text-xs mt-2 m-0" style="color:var(--ink-3)">${tr(I18N.adjMatrixHidden)}</p>`;
   }
+  const sumLine = tr({
+    en: `Sum of degrees = <b>${sumDeg}</b> = 2 × ${edges.length} edges ${sumDeg === 2 * edges.length ? "✓" : ""}`,
+    bm: `Jumlah darjah = <b>${sumDeg}</b> = 2 × ${edges.length} sisi ${sumDeg === 2 * edges.length ? "✓" : ""}`
+  });
   el.innerHTML = `
-    <table class="data-table"><thead><tr><th>Vertex</th><th>Degree</th><th>Neighbours</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="text-xs mt-3 m-0" style="color:var(--ink-2)">Sum of degrees = <b>${sumDeg}</b> = 2 × ${edges.length} edges ${sumDeg === 2 * edges.length ? "✓" : ""}</p>
-    <h4 class="eyebrow mt-4 mb-1">Adjacency matrix</h4>
+    <table class="data-table"><thead><tr><th>${tr(I18N.colVertex)}</th><th>${tr(I18N.colDegree)}</th><th>${tr(I18N.colNeighbours)}</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="text-xs mt-3 m-0" style="color:var(--ink-2)">${sumLine}</p>
+    <h4 class="eyebrow mt-4 mb-1">${tr(I18N.adjMatrixTitle)}</h4>
     ${matrixHtml}`;
 }
 
@@ -733,20 +866,20 @@ function renderWalkPanel() {
   const chips = walkSeq.map((id, i) => `<span class="chip">${id}</span>` + (i < walkSeq.length - 1 ? '<span style="color:var(--ink-3);padding:0 4px;">→</span>' : "")).join("");
   const cls = classifyWalk(walkSeq);
   const feedback = walkSeq.length < 2
-    ? '<p class="text-xs m-0" style="color:var(--ink-3)">Click a starting vertex, then click along edges to build a route.</p>'
+    ? `<p class="text-xs m-0" style="color:var(--ink-3)">${tr(I18N.walkHint)}</p>`
     : `<div class="feedback ${cls.ok ? "ok" : "err"}">${cls.msg}</div>`;
   el.innerHTML = `
-    <div class="mb-3" style="min-height:28px;">${chips || '<span class="text-xs" style="color:var(--ink-3)">No route yet.</span>'}</div>
+    <div class="mb-3" style="min-height:28px;">${chips || `<span class="text-xs" style="color:var(--ink-3)">${tr(I18N.walkNoRoute)}</span>`}</div>
     <div class="flex gap-2 mb-1">
-      <button id="walkUndo" class="btn btn-ghost btn-sm">Undo step</button>
-      <button id="walkClear" class="btn btn-ghost btn-sm">Clear</button>
+      <button id="walkUndo" class="btn btn-ghost btn-sm">${tr(I18N.walkUndo)}</button>
+      <button id="walkClear" class="btn btn-ghost btn-sm">${tr(I18N.walkClear)}</button>
     </div>
     ${feedback}
     <div class="mt-4 pt-3" style="border-top:1px solid var(--rule);font-size:12px;color:var(--ink-2);line-height:1.7;">
-      <b style="color:var(--ink)">Walk</b> — repeats allowed.<br>
-      <b style="color:var(--ink)">Trail</b> — no repeated edge.<br>
-      <b style="color:var(--ink)">Path</b> — no repeated vertex.<br>
-      <b style="color:var(--ink)">Cycle</b> — a path back to the start.
+      <b style="color:var(--ink)">${tr(I18N.walkLegendWalk)}</b> — ${tr(I18N.walkLegendWalkDesc)}<br>
+      <b style="color:var(--ink)">${tr(I18N.walkLegendTrail)}</b> — ${tr(I18N.walkLegendTrailDesc)}<br>
+      <b style="color:var(--ink)">${tr(I18N.walkLegendPath)}</b> — ${tr(I18N.walkLegendPathDesc)}<br>
+      <b style="color:var(--ink)">${tr(I18N.walkLegendCycle)}</b> — ${tr(I18N.walkLegendCycleDesc)}
     </div>`;
   document.getElementById("walkUndo").onclick = () => { walkSeq.pop(); renderAll(); };
   document.getElementById("walkClear").onclick = () => { walkSeq = []; renderAll(); };
@@ -758,10 +891,13 @@ function renderTreePanel() {
   el.innerHTML = `
     <div class="feedback ${check.isTree ? "ok" : "err"}">${check.msg}</div>
     <div class="flex gap-2 mt-3">
-      <button id="spanBtn" class="btn btn-primary btn-sm" ${vertices.length === 0 ? "disabled" : ""}>Highlight a spanning tree</button>
-      ${spanningTreeHighlight ? '<button id="spanClearBtn" class="btn btn-ghost btn-sm">Clear highlight</button>' : ""}
+      <button id="spanBtn" class="btn btn-primary btn-sm" ${vertices.length === 0 ? "disabled" : ""}>${tr(I18N.spanBtn)}</button>
+      ${spanningTreeHighlight ? `<button id="spanClearBtn" class="btn btn-ghost btn-sm">${tr(I18N.spanClearBtn)}</button>` : ""}
     </div>
-    ${spanningTreeHighlight ? `<p class="text-xs mt-2 m-0" style="color:var(--ink-2)">Highlighted ${spanningTreeHighlight.length} of ${edges.length} edges — a spanning tree touches all ${vertices.length} vertices using exactly ${vertices.length - 1} edges.</p>` : ""}`;
+    ${spanningTreeHighlight ? `<p class="text-xs mt-2 m-0" style="color:var(--ink-2)">${tr({
+      en: `Highlighted ${spanningTreeHighlight.length} of ${edges.length} edges — a spanning tree touches all ${vertices.length} vertices using exactly ${vertices.length - 1} edges.`,
+      bm: `Menyerlahkan ${spanningTreeHighlight.length} daripada ${edges.length} sisi — pokok rentang menyentuh kesemua ${vertices.length} bucu menggunakan tepat ${vertices.length - 1} sisi.`
+    })}</p>` : ""}`;
   document.getElementById("spanBtn").onclick = () => { spanningTreeHighlight = computeSpanningTree(); renderAll(); };
   const clearBtn = document.getElementById("spanClearBtn");
   if (clearBtn) clearBtn.onclick = () => { spanningTreeHighlight = null; renderAll(); };
@@ -770,19 +906,19 @@ function renderTreePanel() {
 function renderWeightedPanel() {
   const controls = document.getElementById("weightedControls");
   if (vertices.length < 2) {
-    controls.innerHTML = '<p class="text-sm m-0" style="color:var(--ink-3)">Add at least two vertices to find a shortest path.</p>';
+    controls.innerHTML = `<p class="text-sm m-0" style="color:var(--ink-3)">${tr(I18N.weightedAddTwo)}</p>`;
     document.getElementById("weightedResult").innerHTML = "";
     return;
   }
   const opts = vertices.map(v => `<option value="${v.id}">${v.id}</option>`).join("");
   controls.innerHTML = `
     <div class="flex gap-2">
-      <div class="flex-1"><label class="field-label">Start</label><select id="startSelect" class="field-input">${opts}</select></div>
-      <div class="flex-1"><label class="field-label">End</label><select id="endSelect" class="field-input">${opts}</select></div>
+      <div class="flex-1"><label class="field-label">${tr(I18N.startLabel)}</label><select id="startSelect" class="field-input">${opts}</select></div>
+      <div class="flex-1"><label class="field-label">${tr(I18N.endLabel)}</label><select id="endSelect" class="field-input">${opts}</select></div>
     </div>
     <div class="flex gap-2 mt-3">
-      <button id="findPathBtn" class="btn btn-primary btn-sm">Find shortest path</button>
-      ${dijkstraAnim ? '<button id="skipAnimBtn" class="btn btn-ghost btn-sm">Skip animation</button>' : ""}
+      <button id="findPathBtn" class="btn btn-primary btn-sm">${tr(I18N.findPathBtn)}</button>
+      ${dijkstraAnim ? `<button id="skipAnimBtn" class="btn btn-ghost btn-sm">${tr(I18N.skipAnimBtn)}</button>` : ""}
     </div>`;
   const startSel = document.getElementById("startSelect"), endSel = document.getElementById("endSelect");
   if (selectedStart) startSel.value = selectedStart; else selectedStart = startSel.value;
@@ -805,15 +941,22 @@ function renderWeightedPanel() {
 
   const resultEl = document.getElementById("weightedResult");
   if (dijkstraAnim) {
-    resultEl.innerHTML = `<p class="text-xs m-0" style="color:var(--ink-3)">Finalising vertex <b class="math" style="color:var(--accent)">${dijkstraAnim.current || ""}</b>…</p>`;
+    resultEl.innerHTML = `<p class="text-xs m-0" style="color:var(--ink-3)">${tr({ en: "Finalising vertex", bm: "Memuktamadkan bucu" })} <b class="math" style="color:var(--accent)">${dijkstraAnim.current || ""}</b>…</p>`;
   } else if (dijkstraResult) {
     if (dijkstraResult.unreachable) {
-      resultEl.innerHTML = `<div class="feedback err">No path exists between ${dijkstraResult.startId} and ${dijkstraResult.endId} — they are in different components.</div>`;
+      resultEl.innerHTML = `<div class="feedback err">${tr({
+        en: `No path exists between ${dijkstraResult.startId} and ${dijkstraResult.endId} — they are in different components.`,
+        bm: `Tiada laluan wujud antara ${dijkstraResult.startId} dan ${dijkstraResult.endId} — kedua-duanya berada dalam komponen berlainan.`
+      })}</div>`;
     } else {
       const rows = dijkstraResult.distTable.map(r => `<tr><td class="math" style="color:var(--accent);">${r.id}</td><td>${r.dist === Infinity ? "∞" : r.dist}</td><td>${r.via}</td></tr>`).join("");
+      const summary = tr({
+        en: `Shortest path: <b>${dijkstraResult.path.join(" → ")}</b> · total weight <b>${dijkstraResult.distance}</b>`,
+        bm: `Laluan terpendek: <b>${dijkstraResult.path.join(" → ")}</b> · jumlah pemberat <b>${dijkstraResult.distance}</b>`
+      });
       resultEl.innerHTML = `
-        <div class="feedback ok">Shortest path: <b>${dijkstraResult.path.join(" → ")}</b> · total weight <b>${dijkstraResult.distance}</b></div>
-        <table class="data-table mt-3"><thead><tr><th>Vertex</th><th>Distance</th><th>Via</th></tr></thead><tbody>${rows}</tbody></table>`;
+        <div class="feedback ok">${summary}</div>
+        <table class="data-table mt-3"><thead><tr><th>${tr(I18N.colVertex)}</th><th>${tr(I18N.colDistance)}</th><th>${tr(I18N.colVia)}</th></tr></thead><tbody>${rows}</tbody></table>`;
     }
   } else {
     resultEl.innerHTML = "";
@@ -832,10 +975,11 @@ function renderPanels() {
 }
 
 function renderTerms() {
-  document.getElementById("termsList").innerHTML = TERMS.map(t => `<div class="term-row"><div class="term-name">${t.t}</div><div class="term-desc">${t.d}</div></div>`).join("");
+  document.getElementById("termsList").innerHTML = TERMS.map(t => `<div class="term-row"><div class="term-name">${tr(t.t)}</div><div class="term-desc">${tr(t.d)}</div></div>`).join("");
 }
 
 function renderAll() {
+  renderStaticLabels();
   renderRail();
   renderHeader();
   renderGraphSVG();
@@ -843,6 +987,7 @@ function renderAll() {
   renderSelectionCard();
   renderStatsCard();
   renderEditToggleUI();
+  renderTerms();
 }
 
 // ===== STAGE / CONTROLS =====
@@ -868,31 +1013,41 @@ document.getElementById("newGraphBtn").addEventListener("click", () => {
 });
 
 const presetSelect = document.getElementById("presetSelect");
-Object.keys(PRESETS).forEach(key => {
-  const opt = document.createElement("option");
-  opt.value = key; opt.textContent = PRESETS[key].label;
-  presetSelect.appendChild(opt);
-});
 presetSelect.addEventListener("change", (e) => loadPreset(e.target.value));
 
 // ===== THEME =====
 function applyTheme() {
   if (isDark) document.documentElement.setAttribute("data-theme", "dark"); else document.documentElement.removeAttribute("data-theme");
-  document.getElementById("themeToggle").textContent = isDark ? "Light" : "Dark";
+  document.getElementById("themeToggle").textContent = isDark ? tr(I18N.themeLight) : tr(I18N.themeDark);
   try { localStorage.setItem("graphtheory-theme", isDark ? "dark" : "light"); } catch (e) {}
 }
 document.getElementById("themeToggle").addEventListener("click", () => { isDark = !isDark; applyTheme(); });
 
+// ===== LANGUAGE TOGGLE =====
+function applyLang() {
+  document.documentElement.lang = LANG === "bm" ? "ms" : "en";
+  document.getElementById("langToggle").textContent = LANG === "bm" ? "EN" : "BM";
+  try { localStorage.setItem("graphtheory-lang", LANG); } catch (e) {}
+  applyTheme();
+  renderAll();
+}
+document.getElementById("langToggle").addEventListener("click", () => { LANG = LANG === "bm" ? "en" : "bm"; applyLang(); });
+
+// ===== INIT =====
+(function initLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("graphtheory-lang"); } catch (e) {}
+  LANG = saved === "bm" ? "bm" : "en";
+  document.documentElement.lang = LANG === "bm" ? "ms" : "en";
+  document.getElementById("langToggle").textContent = LANG === "bm" ? "EN" : "BM";
+})();
 (function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem("graphtheory-theme"); } catch (e) {}
-  if (saved) isDark = saved === "dark";
-  else isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const sys = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  isDark = (saved || sys) === "dark";
   applyTheme();
 })();
-
-// ===== INIT =====
-renderTerms();
 presetSelect.value = "demo";
 loadPreset("demo");
 setStage(0);

@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta name="copyright" content="© 2025–2026 GraphTheory. Licensed CC BY-NC-ND 4.0.">
+    <link rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphTheory — See graph theory, don't just memorise it</title>
+    <meta name="description" content="Interactive graph theory for SPM Additional Mathematics: vertices, edges and degree, walks/trails/paths/cycles, trees and spanning trees, and weighted shortest paths with Dijkstra's algorithm.">
+    <link rel="canonical" href="https://graphtheory.visuallymath.com/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://graphtheory.visuallymath.com/">
+    <meta property="og:site_name" content="Visualab">
+    <meta property="og:title" content="GraphTheory — See graph theory, don't just memorise it">
+    <meta property="og:description" content="Build a graph and explore vertices, edges, degree, walks/trails/paths/cycles, trees, spanning trees, and Dijkstra's shortest path — free, no sign-up.">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="GraphTheory — See graph theory, don't just memorise it">
+    <meta name="twitter:description" content="Build a graph and explore vertices, edges, degree, walks/trails/paths/cycles, trees, spanning trees, and Dijkstra's shortest path — free, no sign-up.">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["WebApplication", "LearningResource"],
+      "name": "GraphTheory",
+      "url": "https://graphtheory.visuallymath.com/",
+      "description": "Interactive graph theory tool covering vertices, edges, degree, walks, trails, paths, cycles, trees, spanning trees, weighted graphs and Dijkstra's shortest path algorithm.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any (web browser)",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "inLanguage": "en",
+      "learningResourceType": "Interactive simulation",
+      "educationalUse": ["instruction", "self-study"],
+      "teaches": ["Graph theory", "Vertices and edges", "Degree of a vertex", "Walks, trails, paths and cycles", "Trees and spanning trees", "Weighted graphs", "Shortest path (Dijkstra's algorithm)"],
+      "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
+      "creator": { "@type": "Organization", "name": "Visualab", "url": "https://visuallymath.com" },
+      "publisher": { "@type": "Organization", "name": "Visualab", "url": "https://visuallymath.com" },
+      "license": "https://creativecommons.org/licenses/by-nc-nd/4.0/"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin: 0; padding: 0; }
+        :root {
+            --paper:#F8F4F2; --panel:#FFFFFF; --panel-2:#EDE7E4;
+            --ink:#211E1D; --ink-2:#66605D; --ink-3:#847E7C;
+            --rule:#E3DCD8;
+            --accent:#A8481A; --accent-soft:#FBEADF;
+            --setA:#41569B; --setB:#DF876E; --setC:#96529E;
+            --shade:#D9AE47; --ok:#3E7A46; --ok-soft:#E6F0E3; --bad:#B23A2E; --bad-soft:#F9E7E3;
+            --cta:#FF7E3E; --cta-press:#F06A28; --on-cta:#211E1D;
+        }
+        :root[data-theme="dark"] {
+            --paper:#1E1C1B; --panel:#262322; --panel-2:#322E2C;
+            --ink:#F8F4F2; --ink-2:#A8A19E; --ink-3:#847E7C;
+            --rule:#3A3533;
+            --accent:#FF8556; --accent-soft:#2E1E16;
+            --setA:#5A81E6; --setB:#CE7A5E; --setC:#A868B6;
+            --shade:#D9AE47; --ok:#7FB86C; --ok-soft:#1B2A1A; --bad:#E2705A; --bad-soft:#2C1A16;
+            --cta:#FF7E3E; --cta-press:#F06A28; --on-cta:#211E1D;
+        }
+        body {
+            background: var(--paper); color: var(--ink);
+            font-family: 'Figtree', -apple-system, sans-serif;
+            transition: background 300ms ease, color 300ms ease;
+        }
+        * { box-sizing: border-box; }
+        .serif { font-family: 'Fraunces', Georgia, serif; }
+        .math { font-family: 'Fraunces', Georgia, serif; font-style: italic; }
+        .card { background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; }
+        .btn { border: 2px solid var(--ink); border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: transform 80ms ease, box-shadow 80ms ease, background 150ms ease; }
+        .btn-primary { background: var(--cta); color: var(--on-cta); box-shadow: 0 3px 0 var(--ink); }
+        .btn-primary:hover:not(:disabled) { background: var(--cta-press); }
+        .btn-primary:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+        .btn-primary:disabled { opacity: .35; cursor: default; }
+        .btn-ghost { background: var(--panel); color: var(--ink); box-shadow: 0 3px 0 var(--ink); }
+        .btn-ghost:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .btn-ghost:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+        .btn-ghost:disabled { opacity: .35; cursor: default; }
+        .btn-sm { padding: 8px 14px; font-size: 12px; }
+
+        .rail { display: flex; gap: 0; flex-wrap: wrap; border-bottom: 1px solid var(--rule); }
+        .rail-tab { display: flex; align-items: baseline; gap: 8px; padding: 12px 14px 10px; background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; white-space: nowrap; }
+        .rail-tab:hover { opacity: .75; }
+        .rail-tab.active { border-bottom-color: var(--accent); }
+        .rail-num { font-size: 10px; letter-spacing: .05em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+        .rail-tab.active .rail-num { color: var(--accent); }
+        .rail-label { font-size: 13.5px; font-weight: 400; color: var(--ink-2); }
+        .rail-tab.active .rail-label { color: var(--ink); font-weight: 600; }
+
+        .note-panel { background: var(--accent-soft); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; }
+        .eyebrow { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+        .theme-toggle, .manual-link { padding: 9px 14px; border: 1px solid var(--rule); border-radius: 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); background: var(--panel); cursor: pointer; text-decoration: none; }
+        .theme-toggle:hover, .manual-link:hover { border-color: var(--accent); color: var(--accent); }
+
+        .field-label { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; font-weight: 600; }
+        .field-input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 2px solid var(--rule); background: var(--paper); color: var(--ink); font-variant-numeric: tabular-nums; font-size: 12px; }
+        .field-input:focus { outline: none; border-color: var(--accent); }
+        .toggle-track { width: 36px; height: 20px; border-radius: 999px; position: relative; flex: none; border: 1px solid var(--rule); display: block; transition: background .18s; cursor: pointer; background: var(--panel-2); }
+        .toggle-track.on { background: var(--accent); }
+        .toggle-knob { position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; border-radius: 50%; background: var(--panel); transition: transform .18s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+        .toggle-track.on .toggle-knob { transform: translateX(16px); }
+
+        .feedback { margin-top: 12px; padding: 12px 14px; border-radius: 10px; font-size: 13.5px; line-height: 1.5; border: 1.5px solid; }
+        .feedback.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+        .feedback.err { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+
+        .chip { display: inline-block; padding: 4px 11px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--rule); font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); }
+
+        .term-row { padding: 8px 0; border-bottom: 1px solid var(--rule); }
+        .term-row:last-child { border-bottom: none; }
+        .term-name { font-weight: 700; font-size: 12.5px; color: var(--ink); }
+        .term-desc { font-size: 12px; color: var(--ink-2); line-height: 1.5; margin-top: 2px; }
+
+        table.adj-matrix, table.data-table { border-collapse: collapse; font-size: 12px; }
+        table.adj-matrix th, table.adj-matrix td { border: 1px solid var(--rule); padding: 3px 8px; text-align: center; color: var(--ink-2); }
+        table.adj-matrix th { background: var(--panel-2); color: var(--ink); font-weight: 700; }
+        table.data-table { width: 100%; }
+        table.data-table th { text-align: left; padding: 4px 8px; color: var(--ink-3); font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; }
+        table.data-table td { padding: 4px 8px; color: var(--ink-2); border-top: 1px solid var(--rule); }
+
+        .stat-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); padding: 3px 0; }
+        .stat-row b { color: var(--ink); }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto px-4 md:px-6 py-6">
+
+        <!-- Header -->
+        <header class="flex items-end gap-5 flex-wrap pb-4 mb-5" style="border-bottom:2px solid var(--ink)">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" class="flex-none">
+                <line x1="10" y1="30" x2="30" y2="30" stroke="var(--ink-2)" stroke-width="1.8"/>
+                <line x1="10" y1="30" x2="20" y2="10" stroke="var(--ink-2)" stroke-width="1.8"/>
+                <line x1="30" y1="30" x2="20" y2="10" stroke="var(--accent)" stroke-width="1.8"/>
+                <circle cx="10" cy="30" r="4.5" fill="var(--panel)" stroke="var(--setA)" stroke-width="1.8"/>
+                <circle cx="30" cy="30" r="4.5" fill="var(--panel)" stroke="var(--setB)" stroke-width="1.8"/>
+                <circle cx="20" cy="10" r="4.5" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.8"/>
+            </svg>
+            <div class="mr-auto">
+                <h1 class="serif" style="font-weight:700;font-size:32px;line-height:.95;letter-spacing:-.02em;margin:0;">GraphTheory <span style="color:var(--accent);">1.0</span></h1>
+                <p class="mt-1 text-sm" style="color:var(--ink-2);max-width:52ch;">See graph theory, don't just memorise it.</p>
+            </div>
+            <div class="flex gap-2 items-center pb-1">
+                <a href="https://visuallymath.com" class="manual-link">← Visualab</a>
+                <button id="themeToggle" class="theme-toggle">Dark</button>
+            </div>
+        </header>
+
+        <!-- Stage rail -->
+        <nav class="rail mb-6" aria-label="Lesson stages">
+            <ol id="stageRail" class="flex flex-wrap m-0 p-0" style="list-style:none;"></ol>
+        </nav>
+
+        <div class="flex flex-wrap gap-6 items-start">
+
+            <!-- Left column -->
+            <div class="flex-1 flex flex-col gap-4" style="flex-basis:240px;min-width:230px;">
+                <section class="card p-4">
+                    <h2 class="eyebrow mb-3">Graph tools</h2>
+                    <label class="flex items-center gap-2 text-xs cursor-pointer select-none mb-3" style="color:var(--ink-2);">
+                        <span class="toggle-track" id="editToggle"><span class="toggle-knob"></span></span>
+                        <span>Edit graph</span>
+                    </label>
+                    <p id="editHint" class="text-xs m-0 mb-3" style="color:var(--ink-3);line-height:1.5;"></p>
+                    <label class="field-label" for="presetSelect">Load example</label>
+                    <select id="presetSelect" class="field-input mb-2"></select>
+                    <button id="newGraphBtn" class="btn btn-ghost btn-sm" style="width:100%;">New blank graph</button>
+                </section>
+                <section class="card p-4">
+                    <h2 class="eyebrow mb-3">Selection</h2>
+                    <div id="selectionCard"></div>
+                </section>
+                <section class="card p-4">
+                    <h2 class="eyebrow mb-3">This graph</h2>
+                    <div id="statsCard"></div>
+                </section>
+            </div>
+
+            <!-- Center column -->
+            <div class="flex-none flex flex-col gap-4" style="flex:4 1 520px;min-width:320px;">
+                <div class="flex items-start gap-4 flex-wrap">
+                    <div class="mr-auto" style="max-width:58ch;">
+                        <p id="stageEyebrow" class="eyebrow mb-1"></p>
+                        <h2 id="conceptTitle" class="serif" style="font-weight:700;font-size:28px;letter-spacing:-.02em;line-height:1.05;margin:0;"></h2>
+                        <p id="conceptDescription" class="text-sm mt-2" style="color:var(--ink-2);"></p>
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <button id="prevBtn" class="btn btn-ghost px-4 py-2.5">← Back</button>
+                        <button id="nextBtn" class="btn btn-primary px-4 py-2.5">Next →</button>
+                    </div>
+                </div>
+
+                <section class="card p-3 md:p-4">
+                    <svg id="graphSvg" viewBox="0 0 640 420" width="100%" style="display:block;height:auto;touch-action:none;"></svg>
+                </section>
+
+                <section id="basicsPanel" class="card p-4">
+                    <h3 class="eyebrow mb-3">Degree &amp; adjacency</h3>
+                    <div id="basicsContent"></div>
+                </section>
+
+                <section id="walkPanel" class="card p-4" style="display:none;">
+                    <h3 class="eyebrow mb-3">Trace a route</h3>
+                    <div id="walkContent"></div>
+                </section>
+
+                <section id="treePanel" class="card p-4" style="display:none;">
+                    <h3 class="eyebrow mb-3">Is this a tree?</h3>
+                    <div id="treeContent"></div>
+                </section>
+
+                <section id="weightedPanel" class="card p-4" style="display:none;">
+                    <h3 class="eyebrow mb-3">Shortest path</h3>
+                    <div id="weightedControls"></div>
+                    <div id="weightedResult" class="mt-3"></div>
+                </section>
+
+                <section class="note-panel">
+                    <h2 class="eyebrow mb-2" style="color:var(--accent);">Teaching note</h2>
+                    <p id="teachingNote" class="text-sm leading-relaxed m-0" style="color:var(--ink-2);"></p>
+                </section>
+            </div>
+
+            <!-- Right column -->
+            <div class="flex-1 flex flex-col gap-4" style="flex-basis:220px;min-width:210px;">
+                <section class="card p-4">
+                    <h2 class="eyebrow mb-3">Terms to remember</h2>
+                    <div id="termsList"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-xs py-6" style="color:var(--ink-3);">
+        <span>© 2025–2026 GraphTheory. All rights reserved. Licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="license noopener" style="color:var(--accent);">CC BY-NC-ND 4.0</a> — free for classroom use with attribution; no commercial use or derivatives.</span>
+        <div class="mt-2">
+            <span class="page-counter" data-page-counter hidden></span>
+        </div>
+    </footer>
+    <script src="counter.js" defer></script>
+    <script src="teach-overlay.js" defer></script>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const mk = (t, a = {}) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+// ===== STATIC CONTENT =====
+const STAGES = [
+  { eyebrow: "STAGE 01", title: "Vertices & edges", desc: "Build a graph and watch degree, adjacency list and adjacency matrix update as you edit it." },
+  { eyebrow: "STAGE 02", title: "Walks, trails, paths & cycles", desc: "Trace a route through the graph and see which of these four labels it earns." },
+  { eyebrow: "STAGE 03", title: "Trees", desc: "Check whether the graph is a tree, and pull a spanning tree out of any connected graph." },
+  { eyebrow: "STAGE 04", title: "Weighted graphs & shortest path", desc: "Give edges a weight, then watch Dijkstra's algorithm find the shortest route between two vertices." }
+];
+
+const TEACHING_NOTES = [
+  "A vertex's degree just counts how many edges touch it. Add up the degrees of every vertex and you always get twice the number of edges, since each edge is counted from both of its ends.",
+  "Walk → trail → path → cycle get stricter one at a time. A walk allows anything; a trail just can't reuse an edge; a path can't reuse a vertex either; a cycle is a path that comes back to where it began.",
+  "A tree is the leanest way to keep a graph connected — remove any edge and it falls apart into two pieces; add any edge and you create a cycle. That's why a tree on n vertices always has exactly n − 1 edges.",
+  "Dijkstra's algorithm builds up the shortest distance to every vertex one step at a time, always finalising whichever reachable vertex currently has the smallest tentative distance."
+];
+
+const TERMS = [
+  { t: "Vertex", d: "A point in the graph — also called a node." },
+  { t: "Edge", d: "A connection between two vertices." },
+  { t: "Degree", d: "The number of edges touching a vertex." },
+  { t: "Adjacent", d: "Two vertices joined directly by an edge." },
+  { t: "Walk", d: "Any route along edges — vertices and edges may repeat." },
+  { t: "Trail", d: "A walk that never repeats an edge." },
+  { t: "Path", d: "A walk that never repeats a vertex." },
+  { t: "Cycle", d: "A path that returns to its starting vertex." },
+  { t: "Tree", d: "A connected graph with no cycles — exactly n − 1 edges for n vertices." },
+  { t: "Spanning tree", d: "A tree that touches every vertex of the original graph." },
+  { t: "Weighted graph", d: "A graph whose edges carry a value — distance, cost, or time." },
+  { t: "Shortest path", d: "The route between two vertices with the smallest total weight." }
+];
+
+const PRESETS = {
+  demo: { label: "Default (mixed)", vertices: [
+      { id: "A", x: 150, y: 90 }, { id: "B", x: 430, y: 70 }, { id: "C", x: 560, y: 220 },
+      { id: "D", x: 320, y: 360 }, { id: "E", x: 90, y: 240 }
+    ], edges: [ ["A","B"], ["B","C"], ["C","D"], ["D","E"], ["E","A"], ["A","D"] ] },
+  path5: { label: "Simple path", vertices: [
+      { id: "A", x: 70, y: 210 }, { id: "B", x: 220, y: 210 }, { id: "C", x: 370, y: 210 },
+      { id: "D", x: 500, y: 210 }, { id: "E", x: 590, y: 210 }
+    ], edges: [ ["A","B"], ["B","C"], ["C","D"], ["D","E"] ] },
+  triangleTail: { label: "Triangle + tail", vertices: [
+      { id: "A", x: 150, y: 120 }, { id: "B", x: 300, y: 80 }, { id: "C", x: 300, y: 260 },
+      { id: "D", x: 450, y: 260 }, { id: "E", x: 590, y: 260 }
+    ], edges: [ ["A","B"], ["B","C"], ["C","A"], ["C","D"], ["D","E"] ] },
+  treeExample: { label: "Tree", vertices: [
+      { id: "A", x: 320, y: 60 }, { id: "B", x: 180, y: 190 }, { id: "C", x: 460, y: 190 },
+      { id: "D", x: 100, y: 330 }, { id: "E", x: 260, y: 330 }, { id: "F", x: 460, y: 330 }
+    ], edges: [ ["A","B"], ["A","C"], ["B","D"], ["B","E"], ["C","F"] ] },
+  cycleExample: { label: "Graph with a cycle (not a tree)", vertices: [
+      { id: "A", x: 320, y: 60 }, { id: "B", x: 180, y: 190 }, { id: "C", x: 460, y: 190 },
+      { id: "D", x: 100, y: 330 }, { id: "E", x: 260, y: 330 }, { id: "F", x: 460, y: 330 }
+    ], edges: [ ["A","B"], ["A","C"], ["B","D"], ["B","E"], ["C","F"], ["D","E"] ] },
+  weightedNetwork: { label: "Weighted network", vertices: [
+      { id: "A", x: 90, y: 140 }, { id: "B", x: 270, y: 60 }, { id: "C", x: 460, y: 90 },
+      { id: "D", x: 570, y: 230 }, { id: "E", x: 370, y: 330 }, { id: "F", x: 150, y: 330 }
+    ], edges: [
+      ["A","B",6], ["A","F",2], ["F","E",4], ["E","B",3], ["B","C",4], ["C","D",2], ["E","D",7]
+    ] }
+};
+
+// ===== STATE =====
+let vertices = [], edges = [];
+let stageIdx = 0;
+let editMode = false;
+let selection = null;
+let pendingConnectFrom = null;
+let walkSeq = [];
+let spanningTreeHighlight = null;
+let selectedStart = null, selectedEnd = null;
+let dijkstraAnim = null, dijkstraTimer = null, dijkstraResult = null;
+let isDark = false;
+
+// ===== GRAPH HELPERS =====
+function edgeKey(a, b) { return [a, b].slice().sort().join("-"); }
+function edgesBetween(a, b) { return edges.find(e => (e.a === a && e.b === b) || (e.a === b && e.b === a)); }
+function edgesIncident(id) { return edges.filter(e => e.a === id || e.b === id); }
+function otherEnd(e, id) { return e.a === id ? e.b : e.a; }
+function degreeOf(id) { return edgesIncident(id).length; }
+function neighborsOf(id) { return edgesIncident(id).map(e => otherEnd(e, id)); }
+function nextLetter() {
+  const used = new Set(vertices.map(v => v.id));
+  for (let i = 0; i < 26; i++) { const c = String.fromCharCode(65 + i); if (!used.has(c)) return c; }
+  return null;
+}
+
+function connectivityInfo() {
+  if (vertices.length === 0) return { connected: true, reached: new Set() };
+  const seen = new Set([vertices[0].id]);
+  const stack = [vertices[0].id];
+  while (stack.length) {
+    const u = stack.pop();
+    edgesIncident(u).forEach(e => { const w = otherEnd(e, u); if (!seen.has(w)) { seen.add(w); stack.push(w); } });
+  }
+  return { connected: seen.size === vertices.length, reached: seen };
+}
+
+function treeCheck() {
+  const n = vertices.length, m = edges.length;
+  if (n === 0) return { isTree: false, msg: "Add some vertices first." };
+  const { connected, reached } = connectivityInfo();
+  if (!connected) {
+    const missing = vertices.filter(v => !reached.has(v.id)).map(v => v.id);
+    return { isTree: false, msg: `Not a tree — disconnected. ${missing.join(", ")} ${missing.length > 1 ? "are" : "is"} not reachable from ${vertices[0].id}.` };
+  }
+  if (m > n - 1) return { isTree: false, msg: `Not a tree — contains a cycle. A tree on ${n} vertices needs exactly ${n - 1} edge${n - 1 === 1 ? "" : "s"}, but this graph has ${m}.` };
+  return { isTree: true, msg: `This is a tree — connected, with exactly ${n - 1} edge${n - 1 === 1 ? "" : "s"} and no cycles.` };
+}
+
+function computeSpanningTree() {
+  if (vertices.length === 0) return [];
+  const seen = new Set([vertices[0].id]);
+  const treeEdges = [];
+  const stack = [vertices[0].id];
+  while (stack.length) {
+    const u = stack.pop();
+    for (const e of edgesIncident(u)) {
+      const w = otherEnd(e, u);
+      if (!seen.has(w)) { seen.add(w); treeEdges.push(e.id); stack.push(w); }
+    }
+  }
+  return treeEdges;
+}
+
+function classifyWalk(seq) {
+  if (seq.length < 2) return { type: null };
+  const edgeIds = [];
+  for (let i = 0; i < seq.length - 1; i++) { const e = edgesBetween(seq[i], seq[i + 1]); if (e) edgeIds.push(e.id); }
+  const closed = seq[0] === seq[seq.length - 1];
+  const edgeSet = new Set(); let repeatedEdge = false;
+  edgeIds.forEach(id => { if (edgeSet.has(id)) repeatedEdge = true; edgeSet.add(id); });
+  const vertCounts = {};
+  seq.forEach((id, idx) => { if (closed && idx === seq.length - 1) return; vertCounts[id] = (vertCounts[id] || 0) + 1; });
+  const repeatedVertex = Object.values(vertCounts).some(c => c > 1);
+  if (repeatedEdge) return { type: "walk", ok: false, msg: "This is a walk, but it repeats an edge — so it is not a trail." };
+  if (repeatedVertex) return { type: "trail", ok: false, msg: closed ? "This is a closed trail, but it repeats an interior vertex — so it is not a simple cycle." : "This is a trail (no repeated edge), but it repeats a vertex — so it is not a path." };
+  if (closed) return { type: "cycle", ok: true, msg: "This is a cycle — a path that returns to where it started." };
+  return { type: "path", ok: true, msg: "This is a path — no repeated vertex or edge." };
+}
+
+function dijkstra(startId) {
+  const dist = {}, prev = {}, visited = new Set(), steps = [];
+  vertices.forEach(v => dist[v.id] = Infinity);
+  dist[startId] = 0;
+  while (visited.size < vertices.length) {
+    let u = null, best = Infinity;
+    for (const v of vertices) { if (!visited.has(v.id) && dist[v.id] < best) { best = dist[v.id]; u = v.id; } }
+    if (u === null) break;
+    visited.add(u);
+    steps.push({ finalized: u, dist: dist[u] });
+    for (const e of edgesIncident(u)) {
+      const w = otherEnd(e, u);
+      if (visited.has(w)) continue;
+      const nd = dist[u] + e.weight;
+      if (nd < dist[w]) { dist[w] = nd; prev[w] = u; }
+    }
+  }
+  return { dist, prev, steps };
+}
+
+function finalizeShortestPathResult(startId, endId, dist, prev, order) {
+  if (dist[endId] === Infinity) { dijkstraResult = { unreachable: true, startId, endId }; return; }
+  const path = [endId]; let cur = endId;
+  while (cur !== startId) { cur = prev[cur]; path.unshift(cur); }
+  const pathEdges = new Set();
+  for (let i = 0; i < path.length - 1; i++) { const e = edgesBetween(path[i], path[i + 1]); if (e) pathEdges.add(e.id); }
+  dijkstraResult = {
+    startId, endId, distance: dist[endId], path, pathEdges, order,
+    distTable: vertices.map(v => ({ id: v.id, dist: dist[v.id], via: prev[v.id] || "—" }))
+  };
+}
+
+function runShortestPath(startId, endId) {
+  clearTimeout(dijkstraTimer);
+  const { dist, prev, steps } = dijkstra(startId);
+  dijkstraAnim = { finalized: new Set(), current: null };
+  let i = 0;
+  function tick() {
+    if (i >= steps.length) {
+      dijkstraAnim = null;
+      finalizeShortestPathResult(startId, endId, dist, prev, steps.map(s => s.finalized));
+      renderAll();
+      return;
+    }
+    dijkstraAnim.current = steps[i].finalized;
+    renderAll();
+    dijkstraTimer = setTimeout(() => {
+      dijkstraAnim.finalized.add(steps[i].finalized);
+      dijkstraAnim.current = null;
+      i++;
+      dijkstraTimer = setTimeout(tick, 150);
+    }, 450);
+  }
+  tick();
+}
+
+// ===== GRAPH MUTATION =====
+function clearDerivedHighlights() { spanningTreeHighlight = null; dijkstraResult = null; dijkstraAnim = null; clearTimeout(dijkstraTimer); }
+
+function addVertexAt(x, y) {
+  if (vertices.length >= 20) return;
+  const id = nextLetter();
+  if (!id) return;
+  vertices.push({ id, x: clamp(x, 26, 614), y: clamp(y, 26, 394) });
+  clearDerivedHighlights();
+  renderAll();
+}
+
+function deleteVertex(id) {
+  edges = edges.filter(e => e.a !== id && e.b !== id);
+  vertices = vertices.filter(v => v.id !== id);
+  walkSeq = walkSeq.filter(v => v !== id);
+  clearDerivedHighlights();
+}
+
+function deleteEdge(id) {
+  edges = edges.filter(e => e.id !== id);
+  clearDerivedHighlights();
+}
+
+function toggleEdge(a, b) {
+  const key = edgeKey(a, b);
+  const idx = edges.findIndex(e => e.id === key);
+  if (idx >= 0) edges.splice(idx, 1);
+  else edges.push({ id: key, a, b, weight: 1 });
+  clearDerivedHighlights();
+}
+
+function resetTransientState() {
+  selection = null; pendingConnectFrom = null; walkSeq = [];
+  clearDerivedHighlights();
+  selectedStart = null; selectedEnd = null;
+}
+
+function loadPreset(key) {
+  const p = PRESETS[key];
+  vertices = p.vertices.map(v => ({ id: v.id, x: v.x, y: v.y }));
+  edges = p.edges.map(e => ({ id: edgeKey(e[0], e[1]), a: e[0], b: e[1], weight: e[2] || 1 }));
+  resetTransientState();
+  renderAll();
+}
+
+// ===== INTERACTION =====
+function toSvgPoint(svg, clientX, clientY) {
+  const pt = svg.createSVGPoint(); pt.x = clientX; pt.y = clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function extendWalk(vid) {
+  if (walkSeq.length === 0) { walkSeq = [vid]; return; }
+  const last = walkSeq[walkSeq.length - 1];
+  if (last === vid) return;
+  if (!edgesBetween(last, vid)) return;
+  walkSeq.push(vid);
+}
+
+function handleVertexClick(v) {
+  if (editMode) {
+    if (pendingConnectFrom && pendingConnectFrom !== v.id) {
+      toggleEdge(pendingConnectFrom, v.id);
+      pendingConnectFrom = null; selection = null;
+    } else if (pendingConnectFrom === v.id) {
+      pendingConnectFrom = null; selection = null;
+    } else {
+      pendingConnectFrom = v.id; selection = { type: "vertex", id: v.id };
+    }
+  } else if (stageIdx === 1) {
+    extendWalk(v.id);
+  } else {
+    selection = (selection && selection.type === "vertex" && selection.id === v.id) ? null : { type: "vertex", id: v.id };
+  }
+  renderAll();
+}
+
+function handleEdgeClick(e) {
+  selection = { type: "edge", id: e.id };
+  renderAll();
+}
+
+function startVertexDrag(e, v) {
+  e.stopPropagation();
+  const svg = document.getElementById("graphSvg");
+  let dragging = false;
+  const startX = e.clientX, startY = e.clientY;
+  function onMove(ev) {
+    const dx = ev.clientX - startX, dy = ev.clientY - startY;
+    if (!dragging && Math.hypot(dx, dy) > 4) dragging = true;
+    if (dragging) {
+      const p = toSvgPoint(svg, ev.clientX, ev.clientY);
+      v.x = clamp(p.x, 26, 614); v.y = clamp(p.y, 26, 394);
+      renderGraphSVG();
+    }
+  }
+  function onUp() {
+    document.removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerup", onUp);
+    if (!dragging) handleVertexClick(v);
+  }
+  document.addEventListener("pointermove", onMove);
+  document.addEventListener("pointerup", onUp);
+}
+
+// ===== RENDERING =====
+function renderRail() {
+  const ol = document.getElementById("stageRail");
+  ol.innerHTML = "";
+  STAGES.forEach((s, i) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.className = "rail-tab" + (i === stageIdx ? " active" : "");
+    btn.innerHTML = `<span class="rail-num">${String(i + 1).padStart(2, "0")}</span><span class="rail-label">${s.title}</span>`;
+    btn.onclick = () => setStage(i);
+    li.appendChild(btn); ol.appendChild(li);
+  });
+}
+
+function renderHeader() {
+  const s = STAGES[stageIdx];
+  document.getElementById("stageEyebrow").textContent = s.eyebrow;
+  document.getElementById("conceptTitle").textContent = s.title;
+  document.getElementById("conceptDescription").textContent = s.desc;
+  document.getElementById("teachingNote").textContent = TEACHING_NOTES[stageIdx];
+  document.getElementById("prevBtn").disabled = stageIdx === 0;
+  document.getElementById("nextBtn").disabled = stageIdx === 3;
+}
+
+function renderEditToggleUI() {
+  const track = document.getElementById("editToggle");
+  track.classList.toggle("on", editMode);
+  const hints = [
+    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
+    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
+    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it.",
+    "Click empty space to add a vertex. Click two vertices to connect or disconnect them. Drag a vertex to move it."
+  ];
+  const exploreHints = [
+    "Click a vertex to inspect its degree and neighbours. Drag vertices to tidy the layout.",
+    "Click a starting vertex, then click along edges to trace a route.",
+    "Use the button below to check the graph and highlight a spanning tree.",
+    "Pick a start and end vertex below, then find the shortest path."
+  ];
+  document.getElementById("editHint").textContent = editMode ? hints[stageIdx] : exploreHints[stageIdx];
+}
+
+function renderGraphSVG() {
+  const svg = document.getElementById("graphSvg");
+  svg.innerHTML = "";
+  const bg = mk("rect", { x: 0, y: 0, width: 640, height: 420, rx: 10, fill: "var(--panel-2)", stroke: "var(--rule)", "stroke-width": 1 });
+  bg.addEventListener("pointerdown", (e) => {
+    if (!editMode) { if (pendingConnectFrom) { pendingConnectFrom = null; selection = null; renderAll(); } return; }
+    const pt = toSvgPoint(svg, e.clientX, e.clientY);
+    addVertexAt(pt.x, pt.y);
+  });
+  svg.appendChild(bg);
+
+  const spanSet = spanningTreeHighlight ? new Set(spanningTreeHighlight) : null;
+  const pathSet = dijkstraResult && dijkstraResult.pathEdges ? dijkstraResult.pathEdges : null;
+  const walkEdgeSet = new Set();
+  for (let i = 0; i < walkSeq.length - 1; i++) { const e = edgesBetween(walkSeq[i], walkSeq[i + 1]); if (e) walkEdgeSet.add(e.id); }
+
+  edges.forEach(e => {
+    const a = vertices.find(v => v.id === e.a), b = vertices.find(v => v.id === e.b);
+    if (!a || !b) return;
+    let stroke = "var(--ink-2)", width = 2, opacity = 1;
+    if (spanSet) { if (spanSet.has(e.id)) { stroke = "var(--shade)"; width = 4; } else { opacity = .3; } }
+    if (pathSet) { if (pathSet.has(e.id)) { stroke = "var(--shade)"; width = 4; } else { opacity = .35; } }
+    if (walkEdgeSet.has(e.id)) { stroke = "var(--accent)"; width = 3; }
+    const g = mk("g", {});
+    const line = mk("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke, "stroke-width": width, "stroke-linecap": "round", opacity });
+    const hit = mk("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: "transparent", "stroke-width": 16, style: "cursor:pointer" });
+    hit.addEventListener("pointerdown", (ev) => { ev.stopPropagation(); handleEdgeClick(e); });
+    g.appendChild(line); g.appendChild(hit);
+    if (stageIdx === 3) {
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      const wbg = mk("rect", { x: mx - 13, y: my - 10, width: 26, height: 16, rx: 4, fill: "var(--panel)", stroke: "var(--rule)" });
+      const wt = mk("text", { x: mx, y: my + 2, "text-anchor": "middle", "font-size": 11, fill: "var(--ink)", "font-weight": 700 });
+      wt.textContent = e.weight;
+      g.appendChild(wbg); g.appendChild(wt);
+    }
+    svg.appendChild(g);
+  });
+
+  vertices.forEach(v => {
+    const g = mk("g", { style: "cursor:pointer" });
+    let fill = "var(--panel)", stroke = "var(--ink)", sw = 2;
+    let opacity = 1;
+    if (stageIdx === 3) {
+      if (v.id === selectedStart) fill = "var(--accent-soft)";
+      if (v.id === selectedEnd) fill = "var(--accent-soft)";
+    }
+    if (dijkstraAnim) {
+      if (dijkstraAnim.finalized.has(v.id)) { fill = "var(--ok-soft)"; stroke = "var(--ok)"; }
+      if (dijkstraAnim.current === v.id) { stroke = "var(--accent)"; sw = 3; }
+    }
+    if (pendingConnectFrom === v.id) { stroke = "var(--accent)"; sw = 3; }
+    if (selection && selection.type === "vertex" && selection.id === v.id) { stroke = "var(--accent)"; sw = 3; }
+    if (stageIdx === 1 && !editMode && walkSeq.length) {
+      const last = walkSeq[walkSeq.length - 1];
+      const isNext = v.id !== last && edgesBetween(last, v.id);
+      const inSeq = walkSeq.includes(v.id);
+      if (!isNext && !inSeq) opacity = .4;
+      if (inSeq) { stroke = "var(--accent)"; sw = 3; }
+    }
+    const circle = mk("circle", { cx: v.x, cy: v.y, r: 20, fill, stroke, "stroke-width": sw, opacity });
+    const label = mk("text", { x: v.x, y: v.y + 6, "text-anchor": "middle", "font-size": 16, "font-style": "italic", "font-family": "'Fraunces',Georgia,serif", fill: "var(--ink)", "font-weight": 600, opacity });
+    label.textContent = v.id;
+    g.appendChild(circle); g.appendChild(label);
+    g.addEventListener("pointerdown", (e) => startVertexDrag(e, v));
+    svg.appendChild(g);
+  });
+}
+
+function renderSelectionCard() {
+  const el = document.getElementById("selectionCard");
+  if (!selection) { el.innerHTML = '<p class="text-xs m-0" style="color:var(--ink-3)">Click a vertex or edge on the canvas to inspect it.</p>'; return; }
+  if (selection.type === "vertex") {
+    const v = vertices.find(x => x.id === selection.id);
+    if (!v) { selection = null; return renderSelectionCard(); }
+    const nbrs = neighborsOf(v.id).sort();
+    el.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="math" style="font-size:22px;color:var(--accent);">${v.id}</span>
+        ${editMode ? '<button id="delVertexBtn" class="btn btn-ghost btn-sm">Delete</button>' : ""}
+      </div>
+      <p class="text-sm m-0" style="color:var(--ink-2)">Degree: <b style="color:var(--ink)">${degreeOf(v.id)}</b></p>
+      <p class="text-sm mt-1 m-0" style="color:var(--ink-2)">Neighbours: ${nbrs.length ? nbrs.join(", ") : "—"}</p>`;
+    const delBtn = document.getElementById("delVertexBtn");
+    if (delBtn) delBtn.onclick = () => { deleteVertex(v.id); selection = null; renderAll(); };
+  } else {
+    const e = edges.find(x => x.id === selection.id);
+    if (!e) { selection = null; return renderSelectionCard(); }
+    el.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="math" style="font-size:18px;color:var(--accent);">${e.a}–${e.b}</span>
+        ${editMode ? '<button id="delEdgeBtn" class="btn btn-ghost btn-sm">Delete</button>' : ""}
+      </div>
+      ${stageIdx === 3 ? `<label class="field-label">Weight</label><input id="edgeWeightInput" class="field-input" type="number" min="1" step="1" value="${e.weight}">` : ""}`;
+    const delBtn = document.getElementById("delEdgeBtn");
+    if (delBtn) delBtn.onclick = () => { deleteEdge(e.id); selection = null; renderAll(); };
+    const wIn = document.getElementById("edgeWeightInput");
+    if (wIn) wIn.onchange = (ev) => { e.weight = Math.max(1, parseInt(ev.target.value) || 1); clearDerivedHighlights(); renderAll(); };
+  }
+}
+
+function renderStatsCard() {
+  const el = document.getElementById("statsCard");
+  const n = vertices.length, m = edges.length;
+  const { connected } = connectivityInfo();
+  const tree = n > 0 && connected && m === n - 1;
+  el.innerHTML = `
+    <div class="stat-row"><span>Vertices</span><b>${n}</b></div>
+    <div class="stat-row"><span>Edges</span><b>${m}</b></div>
+    <div class="stat-row"><span>Connected</span><b style="color:${n === 0 ? "var(--ink-3)" : connected ? "var(--ok)" : "var(--bad)"}">${n === 0 ? "—" : connected ? "Yes" : "No"}</b></div>
+    <div class="stat-row"><span>Is a tree</span><b style="color:${tree ? "var(--ok)" : "var(--ink-3)"}">${tree ? "Yes" : "No"}</b></div>`;
+}
+
+function renderBasicsPanel() {
+  const el = document.getElementById("basicsContent");
+  if (vertices.length === 0) { el.innerHTML = '<p class="text-sm m-0" style="color:var(--ink-3)">Turn on Edit graph, then click the canvas to add a vertex.</p>'; return; }
+  const rows = vertices.map(v => `<tr><td class="math" style="color:var(--accent);">${v.id}</td><td>${degreeOf(v.id)}</td><td style="font-size:12px;">${neighborsOf(v.id).sort().join(", ") || "—"}</td></tr>`).join("");
+  const sumDeg = vertices.reduce((s, v) => s + degreeOf(v.id), 0);
+  let matrixHtml;
+  if (vertices.length <= 10) {
+    const ids = vertices.map(v => v.id).sort();
+    const head = "<tr><th></th>" + ids.map(id => `<th>${id}</th>`).join("") + "</tr>";
+    const body = ids.map(r => "<tr><th>" + r + "</th>" + ids.map(c => r === c ? "<td>·</td>" : `<td>${edgesBetween(r, c) ? 1 : 0}</td>`).join("") + "</tr>").join("");
+    matrixHtml = `<table class="adj-matrix mt-2">${head}${body}</table>`;
+  } else {
+    matrixHtml = '<p class="text-xs mt-2 m-0" style="color:var(--ink-3)">Adjacency matrix hidden above 10 vertices.</p>';
+  }
+  el.innerHTML = `
+    <table class="data-table"><thead><tr><th>Vertex</th><th>Degree</th><th>Neighbours</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="text-xs mt-3 m-0" style="color:var(--ink-2)">Sum of degrees = <b>${sumDeg}</b> = 2 × ${edges.length} edges ${sumDeg === 2 * edges.length ? "✓" : ""}</p>
+    <h4 class="eyebrow mt-4 mb-1">Adjacency matrix</h4>
+    ${matrixHtml}`;
+}
+
+function renderWalkPanel() {
+  const el = document.getElementById("walkContent");
+  const chips = walkSeq.map((id, i) => `<span class="chip">${id}</span>` + (i < walkSeq.length - 1 ? '<span style="color:var(--ink-3);padding:0 4px;">→</span>' : "")).join("");
+  const cls = classifyWalk(walkSeq);
+  const feedback = walkSeq.length < 2
+    ? '<p class="text-xs m-0" style="color:var(--ink-3)">Click a starting vertex, then click along edges to build a route.</p>'
+    : `<div class="feedback ${cls.ok ? "ok" : "err"}">${cls.msg}</div>`;
+  el.innerHTML = `
+    <div class="mb-3" style="min-height:28px;">${chips || '<span class="text-xs" style="color:var(--ink-3)">No route yet.</span>'}</div>
+    <div class="flex gap-2 mb-1">
+      <button id="walkUndo" class="btn btn-ghost btn-sm">Undo step</button>
+      <button id="walkClear" class="btn btn-ghost btn-sm">Clear</button>
+    </div>
+    ${feedback}
+    <div class="mt-4 pt-3" style="border-top:1px solid var(--rule);font-size:12px;color:var(--ink-2);line-height:1.7;">
+      <b style="color:var(--ink)">Walk</b> — repeats allowed.<br>
+      <b style="color:var(--ink)">Trail</b> — no repeated edge.<br>
+      <b style="color:var(--ink)">Path</b> — no repeated vertex.<br>
+      <b style="color:var(--ink)">Cycle</b> — a path back to the start.
+    </div>`;
+  document.getElementById("walkUndo").onclick = () => { walkSeq.pop(); renderAll(); };
+  document.getElementById("walkClear").onclick = () => { walkSeq = []; renderAll(); };
+}
+
+function renderTreePanel() {
+  const el = document.getElementById("treeContent");
+  const check = treeCheck();
+  el.innerHTML = `
+    <div class="feedback ${check.isTree ? "ok" : "err"}">${check.msg}</div>
+    <div class="flex gap-2 mt-3">
+      <button id="spanBtn" class="btn btn-primary btn-sm" ${vertices.length === 0 ? "disabled" : ""}>Highlight a spanning tree</button>
+      ${spanningTreeHighlight ? '<button id="spanClearBtn" class="btn btn-ghost btn-sm">Clear highlight</button>' : ""}
+    </div>
+    ${spanningTreeHighlight ? `<p class="text-xs mt-2 m-0" style="color:var(--ink-2)">Highlighted ${spanningTreeHighlight.length} of ${edges.length} edges — a spanning tree touches all ${vertices.length} vertices using exactly ${vertices.length - 1} edges.</p>` : ""}`;
+  document.getElementById("spanBtn").onclick = () => { spanningTreeHighlight = computeSpanningTree(); renderAll(); };
+  const clearBtn = document.getElementById("spanClearBtn");
+  if (clearBtn) clearBtn.onclick = () => { spanningTreeHighlight = null; renderAll(); };
+}
+
+function renderWeightedPanel() {
+  const controls = document.getElementById("weightedControls");
+  if (vertices.length < 2) {
+    controls.innerHTML = '<p class="text-sm m-0" style="color:var(--ink-3)">Add at least two vertices to find a shortest path.</p>';
+    document.getElementById("weightedResult").innerHTML = "";
+    return;
+  }
+  const opts = vertices.map(v => `<option value="${v.id}">${v.id}</option>`).join("");
+  controls.innerHTML = `
+    <div class="flex gap-2">
+      <div class="flex-1"><label class="field-label">Start</label><select id="startSelect" class="field-input">${opts}</select></div>
+      <div class="flex-1"><label class="field-label">End</label><select id="endSelect" class="field-input">${opts}</select></div>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button id="findPathBtn" class="btn btn-primary btn-sm">Find shortest path</button>
+      ${dijkstraAnim ? '<button id="skipAnimBtn" class="btn btn-ghost btn-sm">Skip animation</button>' : ""}
+    </div>`;
+  const startSel = document.getElementById("startSelect"), endSel = document.getElementById("endSelect");
+  if (selectedStart) startSel.value = selectedStart; else selectedStart = startSel.value;
+  if (selectedEnd) endSel.value = selectedEnd; else { endSel.selectedIndex = Math.min(1, vertices.length - 1); selectedEnd = endSel.value; }
+  startSel.onchange = (e) => { selectedStart = e.target.value; };
+  endSel.onchange = (e) => { selectedEnd = e.target.value; };
+  document.getElementById("findPathBtn").onclick = () => {
+    selectedStart = startSel.value; selectedEnd = endSel.value;
+    if (selectedStart === selectedEnd) return;
+    runShortestPath(selectedStart, selectedEnd);
+  };
+  const skipBtn = document.getElementById("skipAnimBtn");
+  if (skipBtn) skipBtn.onclick = () => {
+    clearTimeout(dijkstraTimer);
+    dijkstraAnim = null;
+    const { dist, prev, steps } = dijkstra(selectedStart);
+    finalizeShortestPathResult(selectedStart, selectedEnd, dist, prev, steps.map(s => s.finalized));
+    renderAll();
+  };
+
+  const resultEl = document.getElementById("weightedResult");
+  if (dijkstraAnim) {
+    resultEl.innerHTML = `<p class="text-xs m-0" style="color:var(--ink-3)">Finalising vertex <b class="math" style="color:var(--accent)">${dijkstraAnim.current || ""}</b>…</p>`;
+  } else if (dijkstraResult) {
+    if (dijkstraResult.unreachable) {
+      resultEl.innerHTML = `<div class="feedback err">No path exists between ${dijkstraResult.startId} and ${dijkstraResult.endId} — they are in different components.</div>`;
+    } else {
+      const rows = dijkstraResult.distTable.map(r => `<tr><td class="math" style="color:var(--accent);">${r.id}</td><td>${r.dist === Infinity ? "∞" : r.dist}</td><td>${r.via}</td></tr>`).join("");
+      resultEl.innerHTML = `
+        <div class="feedback ok">Shortest path: <b>${dijkstraResult.path.join(" → ")}</b> · total weight <b>${dijkstraResult.distance}</b></div>
+        <table class="data-table mt-3"><thead><tr><th>Vertex</th><th>Distance</th><th>Via</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+  } else {
+    resultEl.innerHTML = "";
+  }
+}
+
+function renderPanels() {
+  document.getElementById("basicsPanel").style.display = stageIdx === 0 ? "" : "none";
+  document.getElementById("walkPanel").style.display = stageIdx === 1 ? "" : "none";
+  document.getElementById("treePanel").style.display = stageIdx === 2 ? "" : "none";
+  document.getElementById("weightedPanel").style.display = stageIdx === 3 ? "" : "none";
+  if (stageIdx === 0) renderBasicsPanel();
+  if (stageIdx === 1) renderWalkPanel();
+  if (stageIdx === 2) renderTreePanel();
+  if (stageIdx === 3) renderWeightedPanel();
+}
+
+function renderTerms() {
+  document.getElementById("termsList").innerHTML = TERMS.map(t => `<div class="term-row"><div class="term-name">${t.t}</div><div class="term-desc">${t.d}</div></div>`).join("");
+}
+
+function renderAll() {
+  renderRail();
+  renderHeader();
+  renderGraphSVG();
+  renderPanels();
+  renderSelectionCard();
+  renderStatsCard();
+  renderEditToggleUI();
+}
+
+// ===== STAGE / CONTROLS =====
+function setStage(i) {
+  stageIdx = clamp(i, 0, 3);
+  walkSeq = []; pendingConnectFrom = null; selection = null;
+  clearDerivedHighlights();
+  renderAll();
+}
+document.getElementById("prevBtn").addEventListener("click", () => setStage(stageIdx - 1));
+document.getElementById("nextBtn").addEventListener("click", () => setStage(stageIdx + 1));
+
+document.getElementById("editToggle").addEventListener("click", () => {
+  editMode = !editMode;
+  pendingConnectFrom = null; selection = null;
+  renderAll();
+});
+
+document.getElementById("newGraphBtn").addEventListener("click", () => {
+  vertices = []; edges = [];
+  resetTransientState();
+  renderAll();
+});
+
+const presetSelect = document.getElementById("presetSelect");
+Object.keys(PRESETS).forEach(key => {
+  const opt = document.createElement("option");
+  opt.value = key; opt.textContent = PRESETS[key].label;
+  presetSelect.appendChild(opt);
+});
+presetSelect.addEventListener("change", (e) => loadPreset(e.target.value));
+
+// ===== THEME =====
+function applyTheme() {
+  if (isDark) document.documentElement.setAttribute("data-theme", "dark"); else document.documentElement.removeAttribute("data-theme");
+  document.getElementById("themeToggle").textContent = isDark ? "Light" : "Dark";
+  try { localStorage.setItem("graphtheory-theme", isDark ? "dark" : "light"); } catch (e) {}
+}
+document.getElementById("themeToggle").addEventListener("click", () => { isDark = !isDark; applyTheme(); });
+
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem("graphtheory-theme"); } catch (e) {}
+  if (saved) isDark = saved === "dark";
+  else isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme();
+})();
+
+// ===== INIT =====
+renderTerms();
+presetSelect.value = "demo";
+loadPreset("demo");
+setStage(0);
+</script>
+</body>
+</html>

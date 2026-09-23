@@ -177,3 +177,29 @@ section[id^="screen-"]:not(.hidden) { animation:screen-enter .22s ease-out; }
 @media(max-width:360px) {
  #nav-map, #nav-progress, #lnk-tool { font-size:9px; letter-spacing:0; padding:6px 2px; }
 }
+
+/* ---- Tests at the top of the map, and the player guide ---- */
+.test-banner { display:grid; grid-template-columns:1fr auto; gap:14px 24px; align-items:center; margin:0 0 16px;
+  background:var(--green-soft); border:2px solid var(--ink); border-radius:20px; box-shadow:0 4px 0 var(--ink); padding:22px 26px; }
+.test-banner.post { background:var(--blue-soft); }
+.test-banner .kicker { color:#3f7a1f; font-size:10px; margin-bottom:4px; }
+.test-banner.post .kicker { color:#316cc1; }
+.test-banner h2 { margin:0 0 6px; font-size:24px; }
+.test-banner p { margin:0; }
+.guide-lede { font-size:16.5px; max-width:70ch; }
+.guide-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:18px; }
+.guide-card { display:grid; grid-template-columns:auto 1fr; gap:12px; background:var(--card); border:2px solid var(--ink); border-radius:18px; padding:18px 20px; box-shadow:0 3px 0 var(--ink); }
+.guide-card h3 { margin:3px 0 8px; font-size:18px; }
+.guide-card ul { margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px; }
+.guide-card li { margin-bottom:6px; }
+.guide-card li b { color:var(--ink); }
+.guide-card:nth-child(6n+1) .qn { background:var(--yellow); } .guide-card:nth-child(6n+2) .qn { background:var(--blue); transform:rotate(2deg); }
+.guide-card:nth-child(6n+3) .qn { background:var(--green); } .guide-card:nth-child(6n+4) .qn { background:var(--terra); transform:rotate(3deg); }
+.guide-card:nth-child(6n+5) .qn { background:var(--orange); } .guide-card:nth-child(6n) .qn { background:var(--blue); }
+@media(max-width:700px) { .guide-grid { grid-template-columns:1fr; } }
+@media(max-width:600px) {
+ .test-banner { grid-template-columns:1fr; padding:18px; } .test-banner .btn { width:100%; }
+ #nav-help { grid-column:3; grid-row:1; justify-self:start; font-size:0; width:38px; padding:0; justify-content:center; display:inline-flex; align-items:center; }
+ #nav-help::before { content:"?"; font-size:15px; font-weight:800; }
+ #entry-help-wrap, #btn-entry-help { margin:10px 0 0 !important; width:100%; }
+}

@@ -313,6 +313,21 @@
       '<div class="trow"><span>' + T('Post-test', 'Ujian pasca') + '</span>' + postRow + '</div></div>';
   }
 
+  /** A banner for the top of the map — only when a test is waiting. */
+  function banner() {
+    if (preOpen()) {
+      return '<div class="test-banner"><div><div class="kicker">' + T('BEFORE YOU START', 'SEBELUM ANDA MULA') + '</div><h2>' + T('Take the pre-test', 'Jawab ujian pra') + '</h2><p>' +
+        T('10 quick questions, about 5 minutes. It shows what you know now — it isn’t marked for your grade.', '10 soalan ringkas, kira-kira 5 minit. Ia menunjukkan apa yang anda tahu sekarang — tidak dikira untuk gred anda.') +
+        '</p></div><button class="btn" data-test="pre">' + T('Start the pre-test →', 'Mula ujian pra →') + '</button></div>';
+    }
+    if (postOpen()) {
+      return '<div class="test-banner post"><div><div class="kicker">' + T('YOUR POST-TEST IS READY', 'UJIAN PASCA ANDA SEDIA') + '</div><h2>' + T('See how much you learned', 'Lihat berapa banyak yang anda pelajari') + '</h2><p>' +
+        T('10 questions like the ones you answered before you started. Answer on your own — no hints.', '10 soalan seperti yang anda jawab sebelum mula. Jawab sendiri — tiada petunjuk.') +
+        '</p></div><button class="btn" data-test="post">' + T('Start the post-test →', 'Mula ujian pasca →') + '</button></div>';
+    }
+    return '';
+  }
+
   /** Called when a level is tapped: the pre-test comes first, once. */
   function gate(startLevel) {
     if (!needPre()) return false;
@@ -328,7 +343,7 @@
     return false;
   }
 
-  const api = { start, render, card, gate, fromUrl, FORMS, SLOTS, SURVEY, POST_AFTER_LEVELS };
+  const api = { start, render, card, banner, gate, fromUrl, needPre, postOpen, FORMS, SLOTS, SURVEY, POST_AFTER_LEVELS };
   root.GQT = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

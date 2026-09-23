@@ -1686,6 +1686,7 @@
         <button class="tlink hidden" id="nav-map"></button>
         <button class="tlink hidden" id="nav-progress"></button>
         <a class="tlink" href="../" id="lnk-tool">← GraphTheory</a>
+        <button class="tlink" id="nav-help"></button>
         <button class="tlink" id="btn-lang">BM</button>
       </div>
     </div>
@@ -1731,6 +1732,7 @@
       <p class="muted" id="entry-privacy" style="margin-bottom:22px;"></p>
       <p id="entry-error" class="entry-error" role="alert"></p>
       <button class="btn" id="btn-enter"></button>
+      <button class="btn ghost sm" id="btn-entry-help" style="margin-left:10px;"></button>
       </div>
     </section>
 
@@ -1739,6 +1741,7 @@
       <div class="kicker" id="map-kicker"></div>
       <h1 id="map-title"></h1>
       <div class="player" id="player"></div>
+      <div id="test-banner"></div>
       <div id="next-mission" class="next-mission"></div>
       <div class="map-section"><h2 id="worlds-title"></h2><span id="worlds-caption"></span></div>
       <p id="map-guide" class="map-guide"></p>
@@ -1749,6 +1752,9 @@
         <button class="btn ghost sm" id="btn-switch"></button>
       </div>
     </section>
+
+    <!-- ============ HOW TO PLAY ============ -->
+    <section id="screen-guide" class="hidden"></section>
 
     <!-- ============ LEVEL ============ -->
     <section id="screen-level" class="hidden">
@@ -1989,7 +1995,7 @@
        5. SCREENS
        ============================================================ */
     const $ = id => document.getElementById(id);
-    const SCREENS = ['entry', 'map', 'level', 'case', 'play', 'discover', 'progress', 'test'];
+    const SCREENS = ['entry', 'map', 'guide', 'level', 'case', 'play', 'discover', 'progress', 'test'];
     let current = 'entry';
     function show(name) {
       current = name;
@@ -2008,11 +2014,16 @@
       $('nav-progress').classList.toggle('hidden', !visible);
       $('nav-map').textContent = T('Map', 'Peta');
       $('nav-progress').textContent = T('My progress', 'Kemajuan saya');
+      $('nav-help').classList.toggle('hidden', current === 'test');
+      $('nav-help').textContent = T('How to play', 'Cara bermain');
+      $('nav-help').setAttribute('aria-label', T('How to play', 'Cara bermain'));
+      $('nav-help').setAttribute('aria-current', current === 'guide' ? 'page' : 'false');
       $('nav-map').setAttribute('aria-current', current === 'map' ? 'page' : 'false');
       $('nav-progress').setAttribute('aria-current', current === 'progress' ? 'page' : 'false');
     }
     $('nav-map').addEventListener('click', () => { renderMap(); show('map'); });
     $('nav-progress').addEventListener('click', () => { renderProgress(); show('progress'); });
+    $('nav-help').addEventListener('click', () => openGuide(false));
 
     function toast(msg) {
       const t = document.createElement('div');
@@ -2028,7 +2039,7 @@
       $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
       $('lnk-tool').textContent = '← GraphTheory';
       updateNavigation();
-      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), play: () => PLAY.rerender(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render() })[current]();
+      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), play: () => PLAY.rerender(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render(), guide: renderGuide })[current]();
     }
     $('btn-lang').addEventListener('click', () => {
       const entryValues = current === 'entry' ? [$('in-class').value, $('in-reg').value] : null;
@@ -2055,6 +2066,7 @@
       $('entry-privacy').textContent = T('Your teacher gives you the class code. No names or passwords — your progress is saved on this device.',
         'Guru anda akan memberi kod kelas. Tiada nama atau kata laluan — kemajuan anda disimpan pada peranti ini.');
       $('btn-enter').textContent = T('Enter the quest →', 'Mulakan pengembaraan →');
+      $('btn-entry-help').textContent = T('How to play', 'Cara bermain');
       $('entry-guide').innerHTML = [
         T('Choose a world', 'Pilih dunia'), T('Solve five challenges', 'Selesaikan lima cabaran'), T('Earn XP & discover the rule', 'Kumpul XP & temui peraturan')
       ].map((text, i) => '<li><b>' + (i + 1) + '</b><span>' + text + '</span></li>').join('');
@@ -2082,14 +2094,86 @@
         st = blank(); mapMilestones = null;
       }
       st.classCode = cc; st.reg = String(+rg); save();
-      renderMap(); show('map');
-      GQT.fromUrl();
+      enterQuest();
     });
+    $('btn-entry-help').addEventListener('click', () => openGuide(false));
+
+    /* A new player goes: join → pre-test (skippable) → How to play → map.
+       The pre-test comes first so the guide can't give anything away.
+       ?test=pre / ?test=post links still open the test straight away. */
+    function enterQuest() {
+      if (GQT.fromUrl()) return;
+      const toMap = () => { renderMap(); show('map'); };
+      const afterPre = () => (st.guideSeen ? toMap() : openGuide(true));
+      if (GQT.needPre()) return GQT.start('pre', afterPre);
+      afterPre();
+    }
     ['in-class', 'in-reg'].forEach(id => {
       $(id).setAttribute('aria-describedby', 'entry-error');
       $(id).addEventListener('input', e => { e.target.classList.remove('bad'); e.target.removeAttribute('aria-invalid'); $('entry-error').textContent = ''; });
       $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-enter').click(); });
     });
+
+    /* ============================================================
+       6b. HOW TO PLAY — shown once after the pre-test, then from the top bar
+       ============================================================ */
+    let guideFirst = false, guideBack = 'map';
+    function openGuide(first) {
+      guideFirst = !!first;
+      guideBack = current === 'guide' ? guideBack : current;
+      st.guideSeen = true; save();
+      renderGuide(); show('guide');
+    }
+    function renderGuide() {
+      const card = (n, h, body) => '<div class="guide-card"><div class="qn">' + n + '</div><div><h3>' + h + '</h3>' + body + '</div></div>';
+      const li = items => '<ul>' + items.map(x => '<li>' + x + '</li>').join('') + '</ul>';
+      $('screen-guide').innerHTML =
+        '<div class="kicker">' + T('Player guide', 'Panduan pemain') + '</div>' +
+        '<h1>' + T('How to <span class="script">play</span>', 'Cara <span class="script">bermain</span>') + '</h1>' +
+        '<p class="guide-lede">' + T('Graph Quest turns the SPM Form 4 chapter <i>Network in Graph Theory</i> into six worlds of puzzles. Here is everything you need.',
+          'Graph Quest menjadikan bab SPM Tingkatan 4 <i>Rangkaian dalam Teori Graf</i> kepada enam dunia teka-teki. Ini semua yang anda perlu tahu.') + '</p>' +
+        '<div class="guide-grid">' +
+        card(1, T('The map', 'Peta'), li([
+          T('Four <b>core worlds</b>, 5 levels each. Play them in any order.', 'Empat <b>dunia teras</b>, 5 tahap setiap satu. Main mengikut apa-apa susunan.'),
+          T('<b>Your next mission</b> at the top always points to a good next level.', '<b>Misi seterusnya</b> di bahagian atas sentiasa menunjukkan tahap yang sesuai.'),
+          T('Two <b>bonus worlds</b> open after 10 core levels; the <b>Boss Level</b> after all 20.', 'Dua <b>dunia bonus</b> dibuka selepas 10 tahap teras; <b>Tahap Bos</b> selepas kesemua 20.')
+        ])) +
+        card(2, T('Playing a level', 'Bermain satu tahap'), li([
+          T('Read the mission, then <b>tap the places and lines</b> on the map.', 'Baca misi, kemudian <b>ketik tempat dan garisan</b> pada peta.'),
+          T('Every wrong move is explained. <b>Mistakes cost nothing</b> — try again, your best score counts.', 'Setiap langkah salah diterangkan. <b>Kesilapan tidak merugikan</b> — cuba lagi, markah terbaik anda yang dikira.'),
+          T('Stuck? <b>Hint</b> gives a nudge (you lose the no-hint bonus). <b>Learn</b> shows the working (−10 XP).', 'Tersekat? <b>Petunjuk</b> memberi bantuan (bonus tanpa petunjuk hilang). <b>Belajar</b> menunjukkan jalan kerja (−10 XP).'),
+          T('After solving, a short <b>quick check</b> asks about the idea behind it.', 'Selepas selesai, <b>semakan pantas</b> bertanya tentang idea di sebaliknya.')
+        ])) +
+        card(3, T('XP, ranks and badges', 'XP, pangkat dan lencana'), li([
+          T('Up to <b>100 XP</b> a level: 60 for solving, 20 for the quick check, 10 for no hints, 10 for speed.', 'Sehingga <b>100 XP</b> setiap tahap: 60 kerana selesai, 20 untuk semakan pantas, 10 tanpa petunjuk, 10 untuk kelajuan.'),
+          T('A new <b>rank</b> every 500 XP, from Novice to Graph Legend.', '<b>Pangkat</b> baharu setiap 500 XP, dari Pemula hingga Lagenda Graf.'),
+          T('Earn <b>8 badges</b> — see them on My progress.', 'Kumpul <b>8 lencana</b> — lihat di Kemajuan saya.')
+        ])) +
+        card(4, T('Discover the rule', 'Temui peraturan'), li([
+          T('Finish a world’s 5 levels and <b>Discover</b> opens.', 'Tamatkan 5 tahap sesuatu dunia dan <b>Temui</b> dibuka.'),
+          T('Pick the rule you noticed while playing — only then do you see its textbook name (+20 XP).', 'Pilih peraturan yang anda perasan semasa bermain — barulah anda lihat nama dalam buku teks (+20 XP).')
+        ])) +
+        card(5, T('The two tests', 'Dua ujian'), li([
+          T('<b>Pre-test</b>: 10 questions before your first level. It isn’t marked for your grade.', '<b>Ujian pra</b>: 10 soalan sebelum tahap pertama. Tidak dikira untuk gred anda.'),
+          T('<b>Post-test</b>: opens after you clear 5 levels and press Submit results. It appears at the top of the map.', '<b>Ujian pasca</b>: dibuka selepas anda selesaikan 5 tahap dan tekan Hantar keputusan. Ia dipaparkan di bahagian atas peta.'),
+          T('Answer on your own — one try, no hints. At the end you see <i>before → after</i>.', 'Jawab sendiri — satu cubaan, tiada petunjuk. Di akhir anda lihat <i>sebelum → selepas</i>.')
+        ])) +
+        card(6, T('Send results, climb the board', 'Hantar keputusan, naik papan'), li([
+          T('Progress is saved <b>on this device</b> — use the same phone or laptop each time.', 'Kemajuan disimpan <b>pada peranti ini</b> — guna telefon atau komputer riba yang sama setiap kali.'),
+          T('On <b>My progress</b>, press <b>Submit results</b> to send your work to your teacher.', 'Di <b>Kemajuan saya</b>, tekan <b>Hantar keputusan</b> untuk menghantar kerja anda kepada guru.'),
+          T('The <b>class board</b> shows this week’s teams and players. Your team wins together — help each other.', '<b>Papan kelas</b> menunjukkan pasukan dan pemain minggu ini. Pasukan anda menang bersama — saling membantu.')
+        ])) +
+        '</div>' +
+        '<p class="muted" style="margin-top:18px;">' + T('Tip: the BM / EN button at the top switches language at any time.', 'Tip: butang BM / EN di atas menukar bahasa pada bila-bila masa.') + '</p>' +
+        '<div class="row" style="margin-top:14px;"><button class="btn" id="guide-go">' +
+        (!st.classCode ? T('← Back', '← Kembali') : guideFirst ? T('Start playing →', 'Mula bermain →') : T('Back', 'Kembali')) + '</button></div>';
+      $('guide-go').addEventListener('click', () => {
+        if (!st.classCode) { renderEntry(); return show('entry'); }
+        if (guideFirst || !['map', 'progress'].includes(guideBack)) { renderMap(); return show('map'); }
+        if (guideBack === 'progress') { renderProgress(); return show('progress'); }
+        renderMap(); show('map');
+      });
+    }
 
     /* ============================================================
        7. WORLD MAP
@@ -2105,6 +2189,7 @@
         (r < RANKS.length - 1 ? T((500 - xp % 500) + ' XP to next rank', (500 - xp % 500) + ' XP ke pangkat seterusnya') : T('top rank', 'pangkat tertinggi')) + '</span></div>' +
         '<div class="kpi"><b>' + st.badges.length + ' / ' + BADGES.length + '</b><span>' + T('badges', 'lencana') + '</span></div>';
 
+      $('test-banner').innerHTML = GQT.banner();
       $('worlds-title').textContent = T('Your adventure map', 'Peta pengembaraan anda');
       $('map-guide').textContent = T('Follow the trail, or choose any core world. Each location holds five challenges.', 'Ikuti jejak, atau pilih mana-mana dunia teras. Setiap lokasi mempunyai lima cabaran.');
       $('worlds-caption').textContent = T('Explore · Solve · Discover', 'Teroka · Selesaikan · Temui');
@@ -2162,6 +2247,10 @@
       $('btn-progress').textContent = T('My progress', 'Kemajuan saya');
       $('btn-switch').textContent = T('Not ' + studentCode() + '? Change', 'Bukan ' + studentCode() + '? Tukar');
     }
+    $('test-banner').addEventListener('click', e => {
+      const b = e.target.closest('[data-test]');
+      if (b) GQT.start(b.dataset.test);
+    });
     $('worlds').addEventListener('click', e => {
       const b = e.target.closest('[data-level]');
       if (b && !b.disabled) {

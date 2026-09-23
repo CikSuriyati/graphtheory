@@ -1122,7 +1122,38 @@
       animation: drop .35s cubic-bezier(.2, .7, .3, 1.4);
     }
 
+    /* ---- World 2: Graph Detective ---- */
+    .ask { background: var(--yellow-soft); margin: 16px 0 6px; }
+    .pad { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .pad button {
+      width: 50px; height: 50px; border: 2px solid var(--line); background: #fff; border-radius: 12px;
+      font: inherit; font-size: 18px; font-weight: 700; color: var(--ink-soft); cursor: pointer; transition: all .12s;
+    }
+    .pad button:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
+    .pad button:active { background: var(--orange); border-color: var(--ink); color: var(--ink); }
+    ol.clues { margin: 10px 0 0; padding-left: 22px; color: var(--ink); font-size: 15.5px; }
+    ol.clues li { margin-bottom: 4px; }
+    svg path { fill: none; }
+    .edge.hl .road { stroke: var(--orange); stroke-width: 7; }
+    .edge.found .road { stroke: #3f7a1f; stroke-width: 6; }
+    .town.dim { opacity: .28; }
+    .town.found .dot { fill: var(--green); }
+    .town.ask .dot { fill: var(--yellow); }
+    .deg rect { fill: var(--yellow); stroke: var(--ink); stroke-width: 1.5; }
+    .deg text { font: 700 11.5px "DM Sans", sans-serif; fill: var(--ink); }
+    .disc-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; margin-top: 8px; }
+    .degtab td, .degtab th { padding: 7px 10px; }
+    .degtab tr.sum td { font-weight: 700; border-top: 2px dashed var(--line); }
+    input.cell {
+      width: 52px; padding: 7px 8px; text-align: center; border: 2px solid var(--line); border-radius: 10px;
+      font: inherit; font-size: 16px; font-weight: 700; color: var(--ink); background: #fff;
+    }
+    input.cell:focus { outline: none; border-color: var(--orange); }
+    input.cell.ok { background: var(--green-soft); border-color: #3f7a1f; }
+    input.cell.bad { border-color: var(--terra); background: var(--terra-soft); }
+
     @media (max-width:600px) {
+      .disc-grid { grid-template-columns: 1fr; }
       .wrap {
         padding: 12px 14px 64px;
       }
@@ -1257,6 +1288,32 @@
     </section>
 
     <!-- ============ DISCOVER ============ -->
+    <!-- ============ CASE (World 2) ============ -->
+    <section id="screen-case" class="hidden">
+      <div class="lvl-head">
+        <div class="lvl-meta">
+          <button class="btn ghost sm" id="c-map"></button>
+          <span id="c-where"></span>
+          <span class="clock" id="c-clock"></span>
+        </div>
+        <div class="steps" id="c-steps"></div>
+      </div>
+      <div class="mission">
+        <h2 id="c-title"></h2>
+        <p id="c-story" style="margin-bottom:8px;"></p>
+        <div id="c-terms"></div>
+      </div>
+      <div class="board"><svg id="svg2" viewBox="0 0 640 400" role="group"></svg></div>
+      <div class="note ask" id="c-ask"></div>
+      <div class="say" id="c-say" role="status" aria-live="polite"></div>
+      <div class="controls">
+        <button class="btn ghost sm" id="c-hint"></button>
+        <button class="btn ghost sm" id="c-learn"></button>
+      </div>
+      <div id="c-aid"></div>
+      <div id="c-panel"></div>
+    </section>
+
     <section id="screen-discover" class="card hidden"></section>
 
     <!-- ============ PROGRESS ============ -->
@@ -1269,6 +1326,7 @@
 
   <script src="../counter.js" defer></script>
   <script src="graph.js"></script>
+  <script src="world2.js"></script>
   <script>
     /* ============================================================
        1. CONFIG  —  paste your Apps Script Web App URL here
@@ -1386,21 +1444,28 @@
     function save() { try { localStorage.setItem(STORE, JSON.stringify(st)); } catch (e) { } }
 
     const studentCode = () => st.classCode.split('-')[0] + '-' + st.reg;
-    const lvKey = i => '3-' + (i + 1);
+    /* The playable worlds. Each has its levels and a start(i). World 3 lives in
+       this file; World 2 comes from world2.js. A world missing here shows as
+       "Coming soon" on the map. */
+    const WORLD = { 3: { levels: LEVELS, start: i => startLevel(i) } };
+    if (window.W2) WORLD[2] = W2;
+    const levelsOf = w => WORLD[w].levels;
+
+    const lvKey = (w, i) => w + '-' + (i + 1);
     function totalXP() {
       let x = Object.values(st.best).reduce((a, b) => a + b, 0);
-      if (st.discovered[3]) x += 20;
+      x += 20 * Object.keys(st.discovered).filter(k => st.discovered[k]).length;
       return x;
     }
     const rankOf = xp => Math.min(Math.floor(xp / 500), RANKS.length - 1);
-    const mastery = () => LEVELS.reduce((a, _, i) => a + (st.best[lvKey(i)] || 0), 0) / LEVELS.length;
-    const unlocked = i => i === 0 || !!st.done[lvKey(i - 1)];
+    const mastery = w => levelsOf(w).reduce((a, _, i) => a + (st.best[lvKey(w, i)] || 0), 0) / levelsOf(w).length;
+    const unlocked = (w, i) => i === 0 || !!st.done[lvKey(w, i - 1)];
 
     /* ============================================================
        5. SCREENS
        ============================================================ */
     const $ = id => document.getElementById(id);
-    const SCREENS = ['entry', 'map', 'level', 'discover', 'progress'];
+    const SCREENS = ['entry', 'map', 'level', 'case', 'discover', 'progress'];
     let current = 'entry';
     function show(name) {
       current = name;
@@ -1421,7 +1486,7 @@
       $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
       $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
       $('lnk-tool').textContent = '← GraphTheory';
-      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, discover: renderDiscover, progress: renderProgress })[current]();
+      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), discover: renderDiscover, progress: renderProgress })[current]();
     }
     $('btn-lang').addEventListener('click', () => {
       LANG = LANG === 'bm' ? 'en' : 'bm';
@@ -1486,23 +1551,24 @@
       $('worlds').innerHTML = WORLDS.map(w => {
         const head = '<div class="n" style="background:var(' + w.c + ')">' + w.n + '</div>' +
           '<h3>' + tt(w.name) + '</h3><div class="topic">' + tt(w.topic) + '</div>';
-        if (!w.open) {
+        if (!WORLD[w.n]) {
           return '<div class="world locked">' + head +
             '<span class="corner pill lock">' + T('Coming soon', 'Akan datang') + '</span></div>';
         }
-        const doneN = LEVELS.filter((_, i) => st.done[lvKey(i)]).length;
-        const next = LEVELS.findIndex((_, i) => !st.done[lvKey(i)]);
-        const steps = LEVELS.map((_, i) => {
-          const cls = st.done[lvKey(i)] ? 'done' : (i === next ? 'now' : '');
-          const dis = unlocked(i) ? '' : ' disabled';
-          return '<button class="step ' + cls + '" data-level="' + i + '"' + dis + ' aria-label="' + T('Level ', 'Tahap ') + (i + 1) + '">' +
-            '<b>' + (st.done[lvKey(i)] ? '✓' : i + 1) + '</b>' + (st.best[lvKey(i)] ? st.best[lvKey(i)] : '·') + '</button>';
+        const LV = levelsOf(w.n), k = i => lvKey(w.n, i);
+        const doneN = LV.filter((_, i) => st.done[k(i)]).length;
+        const next = LV.findIndex((_, i) => !st.done[k(i)]);
+        const steps = LV.map((_, i) => {
+          const cls = st.done[k(i)] ? 'done' : (i === next ? 'now' : '');
+          const dis = unlocked(w.n, i) ? '' : ' disabled';
+          return '<button class="step ' + cls + '" data-world="' + w.n + '" data-level="' + i + '"' + dis + ' aria-label="' + T('Level ', 'Tahap ') + (i + 1) + '">' +
+            '<b>' + (st.done[k(i)] ? '✓' : i + 1) + '</b>' + (st.best[k(i)] ? st.best[k(i)] : '·') + '</button>';
         }).join('');
-        const pill = doneN === LEVELS.length ? '<span class="corner pill done">' + T('Cleared', 'Selesai') + '</span>'
-          : '<span class="corner pill part">' + doneN + ' / ' + LEVELS.length + '</span>';
-        const disc = doneN === LEVELS.length
-          ? '<button class="btn sm' + (st.discovered[3] ? ' ghost' : ' pulse') + '" data-discover="3" style="margin-top:12px;">' +
-          (st.discovered[3] ? T('Discover ✓', 'Temui ✓') : T('Discover the rule', 'Temui peraturannya')) + '</button>' : '';
+        const pill = doneN === LV.length ? '<span class="corner pill done">' + T('Cleared', 'Selesai') + '</span>'
+          : '<span class="corner pill part">' + doneN + ' / ' + LV.length + '</span>';
+        const disc = doneN === LV.length
+          ? '<button class="btn sm' + (st.discovered[w.n] ? ' ghost' : ' pulse') + '" data-discover="' + w.n + '" style="margin-top:12px;">' +
+          (st.discovered[w.n] ? T('Discover ✓', 'Temui ✓') : T('Discover the rule', 'Temui peraturannya')) + '</button>' : '';
         return '<div class="world open">' + head + pill + '<div class="steps">' + steps + '</div>' + disc + '</div>';
       }).join('');
 
@@ -1511,8 +1577,9 @@
     }
     $('worlds').addEventListener('click', e => {
       const b = e.target.closest('[data-level]');
-      if (b && !b.disabled) return startLevel(+b.dataset.level);
-      if (e.target.closest('[data-discover]')) { renderDiscover(); show('discover'); }
+      if (b && !b.disabled) return WORLD[+b.dataset.world].start(+b.dataset.level);
+      const d = e.target.closest('[data-discover]');
+      if (d) openDiscover(+d.dataset.discover);
     });
     $('btn-progress').addEventListener('click', () => { renderProgress(); show('progress'); });
     $('btn-switch').addEventListener('click', () => { renderEntry(); show('entry'); });
@@ -1569,8 +1636,8 @@
       $('btn-map').textContent = T('← Map', '← Peta');
       $('lvl-where').textContent = T('World 3 · Level ', 'Dunia 3 · Tahap ') + (i + 1) + T(' of ', ' daripada ') + LEVELS.length;
       $('lvl-steps').innerHTML = LEVELS.map((_, k) => {
-        const cls = k === i ? 'now' : (st.done[lvKey(k)] ? 'done' : '');
-        return '<div class="step ' + cls + '" style="cursor:default"><b>' + (st.done[lvKey(k)] && k !== i ? '✓' : k + 1) + '</b></div>';
+        const cls = k === i ? 'now' : (st.done[lvKey(3, k)] ? 'done' : '');
+        return '<div class="step ' + cls + '" style="cursor:default"><b>' + (st.done[lvKey(3, k)] && k !== i ? '✓' : k + 1) + '</b></div>';
       }).join('');
       $('lvl-title').innerHTML = T('Level ', 'Tahap ') + (i + 1) + ' · <span class="script">' + tt(L.title) + '</span>';
       $('lvl-story').innerHTML = tt(L.story);
@@ -1804,14 +1871,31 @@
     /* ============================================================
        11. SUBMIT → feedback → quick check → XP
        ============================================================ */
+    /* One row per attempt, for every world. The caller supplies world, level,
+       correct, optimal, score_xp, mistake_tag, hints_used, learn_used, time_s. */
     function logAttempt(a) {
       const d = new Date(), p = x => String(x).padStart(2, '0');
       st.attempts.push(Object.assign({
         attempt_id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
         timestamp: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()),
-        class_code: st.classCode, student_code: studentCode(), world: 3, level: run.i + 1,
-        hints_used: run.hints, learn_used: run.learn, time_s: secs(), boss_tool_choice: ''
+        class_code: st.classCode, student_code: studentCode(), boss_tool_choice: ''
       }, a));
+    }
+    const logW3 = a => logAttempt(Object.assign({ world: 3, level: run.i + 1, hints_used: run.hints, learn_used: run.learn, time_s: secs() }, a));
+
+    /* Shared end of a level: keep the best score, mark it done, log it. */
+    function finishLevel(w, i, parts, time, hints, learn) {
+      const key = lvKey(w, i), score = parts.reduce((a, p) => a + p[2], 0), prev = st.best[key] || 0;
+      st.best[key] = Math.max(prev, score);
+      st.done[key] = true;
+      logAttempt({ world: w, level: i + 1, correct: true, optimal: true, score_xp: score, mistake_tag: '', hints_used: hints, learn_used: learn, time_s: time });
+      return { parts, score, prev };
+    }
+    function giveBadges(keys) {
+      const fresh = keys.filter(k => !st.badges.includes(k));
+      fresh.forEach(k => st.badges.push(k));
+      save();
+      fresh.forEach((k, j) => setTimeout(() => toast('🏅 ' + T('Badge: ', 'Lencana: ') + tt(BADGES.find(b => b.k === k).name)), j * 900));
     }
 
     $('btn-send').addEventListener('click', () => {
@@ -1822,8 +1906,8 @@
 
       if (!res.optimal) {
         st.streak = 0;
-        st.best[lvKey(run.i)] = Math.max(st.best[lvKey(run.i)] || 0, 30);
-        logAttempt({ correct: true, optimal: false, score_xp: 30, mistake_tag: res.tag });
+        st.best[lvKey(3, run.i)] = Math.max(st.best[lvKey(3, run.i)] || 0, 30);
+        logW3({ correct: true, optimal: false, score_xp: 30, mistake_tag: res.tag });
         save();
         const extra = {
           fewest_edges_not_shortest: T('You picked a route with the fewest roads. Fewer roads doesn’t always mean fewer km.',
@@ -1897,8 +1981,8 @@
         return;
       }
       // phase 'xp'
-      $('panel').innerHTML = head + xpCard();
-      wireXpButtons();
+      $('panel').innerHTML = head + xpCardHtml(3, run.i, run.xp);
+      wireXp($('panel'), 3, run.i);
     }
 
     function answerCheck(pick) {
@@ -1917,7 +2001,7 @@
     }
 
     function award() {
-      const L = run.L, key = lvKey(run.i);
+      const L = run.L;
       const parts = [
         ['correct', T('Best route', 'Laluan terbaik'), 60],
         ['reasoning', T('Quick check', 'Semakan pantas'), run.reasoning ? 20 : 0],
@@ -1925,48 +2009,37 @@
         ['speed', T('Speed · under ', 'Kelajuan · bawah ') + L.target + ' s (' + run.solveTime + ' s)', run.solveTime <= L.target ? 10 : 0]
       ];
       if (run.learn) parts.push(['learn', T('Used Learn', 'Guna Belajar'), -10]);
-      const score = parts.reduce((a, p) => a + p[2], 0);
-      const prev = st.best[key] || 0;
-      st.best[key] = Math.max(prev, score);
-      const firstClear = !st.done[key];
-      st.done[key] = true;
+      run.xp = finishLevel(3, run.i, parts, run.solveTime, run.hints, run.learn);
       st.streak = (st.streak || 0) + 1;
-      logAttempt({ correct: true, optimal: true, score_xp: score, mistake_tag: '', time_s: run.solveTime });
+      giveBadges(st.streak >= 5 ? ['first_connection', 'road_master'] : ['first_connection']);
 
-      const newBadges = [];
-      const give = k => { if (!st.badges.includes(k)) { st.badges.push(k); newBadges.push(k); } };
-      give('first_connection');
-      if (st.streak >= 5) give('road_master');
-      save();
-
-      run.xp = { parts, score, prev, firstClear };
       run.phase = 'xp';
       clearInterval(clockTimer);
       $('lvl-clock').textContent = run.solveTime + ' s';
       renderPanel();
-      newBadges.forEach((k, j) => setTimeout(() => toast('🏅 ' + T('Badge: ', 'Lencana: ') + tt(BADGES.find(b => b.k === k).name)), j * 900));
     }
 
-    function xpCard() {
-      const x = run.xp, last = run.i === LEVELS.length - 1;
+    /* The XP card and its buttons, shared by every world. */
+    function xpCardHtml(w, i, x) {
+      const last = i === levelsOf(w).length - 1;
       const rows = x.parts.map(p => '<div class="xp-row' + (p[2] === 0 ? ' zero' : '') + '"><span>' + p[1] + '</span><b>' + (p[2] > 0 ? '+' : '') + p[2] + '</b></div>').join('');
       let next;
-      if (last && !st.discovered[3]) next = '<button class="btn" data-go="discover">' + T('Discover the rule →', 'Temui peraturannya →') + '</button>';
+      if (last && !st.discovered[w]) next = '<button class="btn" data-go="discover">' + T('Discover the rule →', 'Temui peraturannya →') + '</button>';
       else if (last) next = '<button class="btn" data-go="map">' + T('Back to map', 'Kembali ke peta') + '</button>';
       else next = '<button class="btn" data-go="next">' + T('Next level →', 'Tahap seterusnya →') + '</button>';
-      return '<div class="note" style="background:#fff;"><h3>' + T('Level ', 'Tahap ') + (run.i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
+      return '<div class="note" style="background:#fff;"><h3>' + T('Level ', 'Tahap ') + (i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
         '<div class="xp-total"><span class="muted">' +
         (x.score > x.prev ? T('New best for this level', 'Markah terbaik baharu untuk tahap ini') : T('Your best stays ', 'Markah terbaik kekal ') + x.prev) +
         '</span><b>' + x.score + ' XP</b></div>' +
         '<div class="row" style="margin-top:14px;">' + next +
         '<button class="btn ghost sm" data-go="replay">' + T('Replay', 'Main semula') + '</button></div></div>';
     }
-    function wireXpButtons() {
-      $('panel').querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+    function wireXp(el, w, i) {
+      el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
         const go = b.dataset.go;
-        if (go === 'next') startLevel(run.i + 1);
-        else if (go === 'replay') startLevel(run.i);
-        else if (go === 'discover') { renderDiscover(); show('discover'); }
+        if (go === 'next') WORLD[w].start(i + 1);
+        else if (go === 'replay') WORLD[w].start(i);
+        else if (go === 'discover') openDiscover(w);
         else { renderMap(); show('map'); }
       }));
     }
@@ -1974,8 +2047,10 @@
     /* ============================================================
        12. DISCOVER — the student states the rule, then gets the term
        ============================================================ */
-    let discoverPick = null;
+    let discoverPick = null, discoverWorld = 3;
+    function openDiscover(w) { discoverWorld = w; renderDiscover(); show('discover'); }
     function renderDiscover() {
+      if (discoverWorld === 2) return W2.renderDiscover();
       const opts = [
         ['a', T('The route with the fewest roads is always the shortest.', 'Laluan dengan jalan paling sedikit sentiasa yang terpendek.')],
         ['b', T('Fewest roads is not always shortest distance — you have to add up the weights.', 'Jalan paling sedikit tidak semestinya jarak terpendek — anda perlu menjumlahkan pemberat.')],
@@ -2018,10 +2093,21 @@
        13. MY PROGRESS  +  submit results to the teacher's Sheet
        ============================================================ */
     function renderProgress() {
-      const xp = totalXP(), r = rankOf(xp), m = Math.round(mastery());
-      const trail = i => {
-        const a = st.attempts.filter(x => x.world === 3 && x.level === i + 1).slice(-8);
+      const xp = totalXP(), r = rankOf(xp);
+      const trail = (w, i) => {
+        const a = st.attempts.filter(x => x.world === w && x.level === i + 1).slice(-8);
         return a.length ? a.map(x => x.optimal ? '✓' : '✗').join(' → ') : '—';
+      };
+      const worldCard = w => {
+        const m = Math.round(mastery(w.n));
+        return '<div class="card" style="margin-bottom:16px;">' +
+          '<div class="row spread"><h3 style="margin:0;">' + T('World ', 'Dunia ') + w.n + ' · ' + tt(w.name) + '</h3>' +
+          '<span class="pill ' + (m >= 70 ? 'done' : 'alert') + '">' + T('mastery ', 'penguasaan ') + m + '%</span></div>' +
+          '<div class="m-bar"><i class="' + (m < 70 ? 'warn' : '') + '" style="width:' + m + '%"></i></div>' +
+          '<p class="muted" style="margin:0 0 8px;">' + T('Mastery = average of your best score on each of the 5 levels.', 'Penguasaan = purata markah terbaik anda bagi setiap 5 tahap.') + '</p>' +
+          levelsOf(w.n).map((L, i) => '<div class="lrow"><span><b>' + (i + 1) + '</b> · ' + tt(L.title) + '</span><span class="trail">' + trail(w.n, i) + '</span>' +
+            '<b>' + (st.best[lvKey(w.n, i)] || 0) + '</b></div>').join('') +
+          '</div>';
       };
       const unsent = st.attempts.length - st.sent;
       $('screen-progress').innerHTML =
@@ -2032,14 +2118,7 @@
         '<div class="kpi"><b>' + st.attempts.reduce((a, x) => a + x.hints_used + x.learn_used, 0) + '</b><span>' + T('hints & Learn used', 'petunjuk & Belajar digunakan') + '</span></div>' +
         '<div class="kpi"><b>' + st.attempts.length + '</b><span>' + T('attempts', 'cubaan') + '</span></div>' +
         '</div>' +
-        '<div class="card">' +
-        '<div class="row spread"><h3 style="margin:0;">' + T('World 3 · Shortest Path Race', 'Dunia 3 · Perlumbaan Laluan Terpendek') + '</h3>' +
-        '<span class="pill ' + (m >= 70 ? 'done' : 'alert') + '">' + T('mastery ', 'penguasaan ') + m + '%</span></div>' +
-        '<div class="m-bar"><i class="' + (m < 70 ? 'warn' : '') + '" style="width:' + m + '%"></i></div>' +
-        '<p class="muted" style="margin:0 0 8px;">' + T('Mastery = average of your best score on each of the 5 levels.', 'Penguasaan = purata markah terbaik anda bagi setiap 5 tahap.') + '</p>' +
-        LEVELS.map((L, i) => '<div class="lrow"><span><b>' + (i + 1) + '</b> · ' + tt(L.title) + '</span><span class="trail">' + trail(i) + '</span>' +
-          '<b>' + (st.best[lvKey(i)] || 0) + '</b></div>').join('') +
-        '</div>' +
+        WORLDS.filter(w => WORLD[w.n]).map(worldCard).join('') +
         '<div class="sec-title">' + T('Badges', 'Lencana') + '</div>' +
         '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span></div>').join('') + '</div>' +
         '<div class="sec-title">' + T('Send to my teacher', 'Hantar kepada guru') + '</div>' +
@@ -2082,6 +2161,7 @@
     }
 
     /* ---------- go ---------- */
+    if (window.W2) W2.wire();
     if (st.classCode) { current = 'map'; }
     applyLang();
     show(current);

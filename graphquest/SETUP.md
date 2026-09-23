@@ -1,10 +1,11 @@
 # GRAPH QUEST — setup
 
-Three files, in `graphquest/`:
+Four files, in `graphquest/`:
 
 | File | What it is |
 |---|---|
-| `index.html` | The game students play |
+| `index.html` | The game shell (entry, world map, My progress, Discover) and World 3 |
+| `world2.js` | World 2, Graph Detective |
 | `graph.js` | The graph engine: draws nothing, solves everything. Every puzzle is solved before it is shown |
 | `graphquest-apps-script.gs` | The backend that saves results to your Google Sheet |
 
@@ -14,9 +15,27 @@ Takes about 10 minutes.
 
 ---
 
-## What's built — Stage 1
+## What's built — Stages 1 and 2
 
-**World 3, Shortest Path Race**, complete: 5 levels, feedback, hints, Learn, the quick check, XP, and the Discover screen. The other five worlds show on the map as *Coming soon*.
+Two worlds are playable. Worlds 1, 4, 5 and 6 show on the map as *Coming soon*.
+
+### World 2 · Graph Detective (Stage 2)
+
+*Case #007: The Missing Trophy.* School places are vertices, corridors are edges, and every clue is about degree.
+
+| Level | What the student does | What it teaches |
+|---|---|---|
+| 1 · Count the corridors | Says how many corridors meet at 3 places | Vertex, edge, degree |
+| 2 · Follow the suspect | Taps the place with degree 4, then 1, then 3 | Finding a vertex from its degree; degree 1 = a dead end |
+| 3 · Loops and twin corridors | Finds the loop and the double corridor, then counts degrees there | A loop adds 2; multiple edges; simple graph |
+| 4 · Three witnesses | Taps the one place that fits 3 clues (degree 2, next to the Surau, not next to the Library) | Combining degree and adjacency. Every clue is needed |
+| 5 · Timed case | A new school map every time: one count, one find, one clue case | Generated and checked: every question has one answer |
+
+**Discover:** students fill in the degree table for the Level 1 map and count the corridors (12 and 6). Then they pick the true statement. Only after that do they see the rule *sum of degrees = 2 × number of edges*, with a table showing it holds on every map they solved.
+
+### World 3 · Shortest Path Race (Stage 1)
+
+5 levels, feedback, hints, Learn, the quick check, XP, and the Discover screen.
 
 | Level | Map | What it teaches |
 |---|---|---|
@@ -28,7 +47,7 @@ Takes about 10 minutes.
 
 Distances are simplified for the game — they are not real road distances.
 
-**Both languages throughout.** The BM / EN button is top right. It shares its setting with the GraphTheory tool, so a student who switched the tool to BM opens the game in BM too. Graph terms follow the tool: *bucu, sisi, pemberat, graf berpemberat, laluan terpendek, lorong*. New terms appear in both languages together (e.g. *pemberat · weight*).
+**Both languages throughout.** The BM / EN button is top right. It shares its setting with the GraphTheory tool, so a student who switched the tool to BM opens the game in BM too. Graph terms follow the tool: *bucu, sisi, darjah, pemberat, graf berpemberat, laluan terpendek, lorong*, plus *gelung, sisi berbilang, graf mudah* in World 2. New terms appear in both languages together (e.g. *pemberat · weight*).
 
 ---
 
@@ -101,11 +120,20 @@ Progress lives on the student's device, so the game works offline in class. When
 
 ### Mistake tags
 
-| Tag | Means |
-|---|---|
-| `fewest_edges_not_shortest` | Chose the route with the fewest roads, when the best route has more |
-| `chose_distance_not_time` | Level 4: found the shortest route in km instead of the fastest |
-| `valid_not_optimal` | A legal route that simply wasn't the best |
+| World | Tag | Means |
+|---|---|---|
+| 3 | `fewest_edges_not_shortest` | Chose the route with the fewest roads, when the best route has more |
+| 3 | `chose_distance_not_time` | Level 4: found the shortest route in km instead of the fastest |
+| 3 | `valid_not_optimal` | A legal route that simply wasn't the best |
+| 2 | `miscounted_degree` | Gave the wrong degree for a place |
+| 2 | `loop_counted_once` | Counted a loop as 1 instead of 2 |
+| 2 | `multiple_edge_counted_once` | Counted two corridors between the same places as one |
+| 2 | `wrong_vertex_for_degree` | Tapped a place with the wrong degree |
+| 2 | `missed_loop` | Tapped something that isn't a loop |
+| 2 | `missed_multiple_edge` | Tapped a corridor that has no twin |
+| 2 | `clue_ignored` | Tapped a place that fails one of the clues |
+
+In World 2 every wrong answer is its own row (`correct` false, 0 XP). Solving the case adds one row with the level's score.
 
 These are what the dashboard will turn into *"Chose fewest roads, not shortest distance — 41% of attempts."*
 
@@ -150,7 +178,7 @@ Replaying keeps the **best** score. Mastery = the average of the best scores acr
 
 ## Next stages
 
-2. World 2 Graph Detective, and a combined *My progress* across worlds
+2. ~~World 2 Graph Detective, and a combined *My progress* across worlds~~ — done
 3. The teacher dashboard page, reading the published Sheet as CSV. The pre-test/post-test trial can start here
 4. World 1 Graph Maze, World 4 Build the Network, Boss Level
 5. World 5 Euler Escape, World 6 Colour Master, team leaderboard

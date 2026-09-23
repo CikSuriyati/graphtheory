@@ -143,7 +143,7 @@ function checkRow(r) {
   if (!/^[a-z0-9]+-[a-z0-9]+$/i.test(String(r.attempt_id || ''))) return 'missing attempt_id.';
   if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(String(r.class_code || ''))) return 'bad class_code.';
   if (!/^[A-Z0-9]+-\d{1,3}$/.test(String(r.student_code || ''))) return 'bad student_code.';
-  if (!isInt(r.world, 1, 6)) return 'bad world.';
+  if (!isInt(r.world, 1, 7)) return 'bad world.';          // 7 = the Boss Level
   if (!isInt(r.level, 1, 5)) return 'bad level.';
   if (typeof r.correct !== 'boolean' || typeof r.optimal !== 'boolean') return 'correct/optimal must be true or false.';
   if (!isInt(r.score_xp, -20, 100)) return 'bad score_xp.';

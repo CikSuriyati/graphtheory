@@ -1,6 +1,6 @@
 # GRAPH QUEST — setup
 
-Six files, in `graphquest/`, plus a review sheet:
+Ten files, in `graphquest/`, plus a review sheet:
 
 | File | What it is |
 |---|---|
@@ -8,6 +8,10 @@ Six files, in `graphquest/`, plus a review sheet:
 | `world2.js` | World 2, Graph Detective |
 | `teacher.html` | The teacher dashboard (Stage 3) — see *Teacher dashboard* below |
 | `tests.js` | The pre-test, post-test and survey — see *Pre-test and post-test* below |
+| `play.js` | The shared play screen and graph tools (routes, one-way edges, networks) used by World 1, World 4 and the Boss |
+| `world1.js` | World 1, Graph Maze |
+| `world4.js` | World 4, Build the Network |
+| `boss.js` | The Boss Level |
 | `TEST-FORMS.md` | Both test forms written out with their answers, for review |
 | `graph.js` | The graph engine: draws nothing, solves everything. Every puzzle is solved before it is shown |
 | `graphquest-apps-script.gs` | The backend that saves results to your Google Sheet |
@@ -18,9 +22,50 @@ Takes about 10 minutes.
 
 ---
 
-## What's built — Stages 1 and 2
+## What's built — Stages 1 to 4
 
-Two worlds are playable. Worlds 1, 4, 5 and 6 show on the map as *Coming soon*.
+All four core worlds and the Boss Level are playable. The bonus Worlds 5 (Euler Escape) and 6 (Colour Master) show on the map as *Coming soon*.
+
+### World 1 · Graph Maze (Stage 4)
+
+A scout finds the way through the trails of Taman Negara.
+
+| Level | What the student does | What it teaches |
+|---|---|---|
+| 1 · Find a way out | Any route from the Gate to the Exit; places may repeat | A walk; every walk hides a path |
+| 2 · Never twice | A route that never repeats a place, past two dead ends | Path; a path through 8 places uses at most 7 edges |
+| 3 · Checkpoints | A path through the Waterfall and the Bridge | Planning a path; walk vs path |
+| 4 · One-way trails | Follow the arrows; the obvious shortcuts run the wrong way | Directed graph |
+| 5 · Any way out? | Three flooded forests: find the way out, or press *No way out* | Connected vs not connected |
+
+**Discover:** there is no way out exactly when no path joins the Gate and the Exit. Then: walk, path, connected graph, directed graph.
+
+### World 4 · Build the Network (Stage 4)
+
+A telco engineer lays fibre between kampung; every cable costs RM. It says **cycle** (kitaran), because World 2 already uses *loop* (gelung) for an edge from a vertex to itself.
+
+| Level | Goal | What it teaches |
+|---|---|---|
+| 1 · Connect every kampung | Any network that reaches everyone | Connecting a graph |
+| 2 · No wasted cable | Connected with no cycle | A cycle's cables are never all needed |
+| 3 · On a budget | Connected, no cycle, within the cheapest cost + RM3k | Different trees cost different amounts |
+| 4 · Cheapest possible | The lowest possible total | Tree with minimum total weight (Kruskal: cheapest first, skip cycles) |
+| 5 · Random challenge | A new district every time | Same, generated and checked |
+
+The map shows live *All connected ✓ / Cycle ✗ / cost*. **Learn** shows every cable in cost order, taken or skipped. **Discover:** a network with no cycles always uses one cable fewer than the number of places. Then: subgraph, tree, tree with minimum total weight.
+
+### Boss Level (Stage 4)
+
+Opens once Worlds 1–4 are cleared. One town, four missions. Before each, the student picks **which world's idea to use**, with no hint. The first pick is saved as `boss_tool_choice`, and the dashboard reports it as a measure of problem-solving.
+
+| Mission | Right tool |
+|---|---|
+| 1 · Water for everyone — pipe every place for the least cost | Build the Network |
+| 2 · Ambulance! — Market to Clinic, fastest | Shortest Path Race (the fastest route isn't the direct-looking one) |
+| 3 · Traffic lights — the busiest junction | Graph Detective (highest degree) |
+| 4 · The bridge is down — can the fire engine get through? | Graph Maze (yes, the long way round) |
+
+Each mission is worth up to 100 XP: right first pick 20, solved 60, no hint 10, speed 10. Clearing all four earns the *Graph Legend* badge. Boss rows are stored as world 7, levels 1–4.
 
 ### World 2 · Graph Detective (Stage 2)
 
@@ -135,6 +180,14 @@ Progress lives on the student's device, so the game works offline in class. When
 | 2 | `missed_loop` | Tapped something that isn't a loop |
 | 2 | `missed_multiple_edge` | Tapped a corridor that has no twin |
 | 2 | `clue_ignored` | Tapped a place that fails one of the clues |
+| 1 | `repeated_vertex` | Tried to pass the same place twice in a path |
+| 1 | `missed_checkpoint` | Reached the Exit without every checkpoint |
+| 1 | `against_direction` | Tried a one-way trail the wrong way |
+| 1 | `said_no_way_but_connected` | Pressed *No way out* when a way existed (also Boss mission 4) |
+| 4 | `cycle_created` | Switched on a network with a cycle (also Boss mission 1) |
+| 4 | `over_budget` | Over the Level 3 budget |
+| 4 | `not_minimum` | A tree, but not the cheapest (banks 30 XP, like a valid-but-longer route in World 3) |
+| Boss | `not_fastest` | Mission 2: reached the Clinic, but not by the fastest route |
 
 In World 2 every wrong answer is its own row (`correct` false, 0 XP). Solving the case adds one row with the level's score.
 
@@ -167,6 +220,7 @@ It shows, for the class you pick:
 - **Mastery per world**, flagged under 70%, and the **most common mistakes** as a share of that world's attempts
 - **Level by level** — how much of the class cleared each level, the wrong-answer rate, how many needed Hint or Learn, and the top mistake
 - **Students needing support** — the lowest 5 by mastery in each world
+- **Boss Level** — for each mission, the share of students whose first tool pick was right, the most common wrong pick, and how many solved it
 - **Every student** — tap one for their attempt trail (✗ → ✗ → ✓) and mistakes, level by level
 - **Pre-test and post-test** — filled in automatically from the in-game tests: means, mean gain, % improved and a paired t, for the students who played and for a control group that didn't. Also the difference in gain between the two groups, question-by-question results, and the survey. Paper tests instead? Open a CSV with columns `student_code, pre, post`
 
@@ -237,5 +291,5 @@ The Tests tab has one row per test: `test_id, timestamp, class_code, student_cod
 
 2. ~~World 2 Graph Detective, and a combined *My progress* across worlds~~ — done
 3. ~~The teacher dashboard page~~ — done. The pre-test/post-test trial can start from here
-4. World 1 Graph Maze, World 4 Build the Network, Boss Level
+4. ~~World 1 Graph Maze, World 4 Build the Network, Boss Level~~ — done
 5. World 5 Euler Escape, World 6 Colour Master, team leaderboard

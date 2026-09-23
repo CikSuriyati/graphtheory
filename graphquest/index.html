@@ -1122,6 +1122,32 @@
       animation: drop .35s cubic-bezier(.2, .7, .3, 1.4);
     }
 
+    /* ---- World 1, World 4, Boss (play.js) ---- */
+    .edge.off .road { stroke: #cdc5c0; stroke-dasharray: 7 7; }
+    .edge.off:hover .road { stroke: var(--orange); }
+    .lbl.off rect { fill: #faf7f5; stroke: #cdc5c0; }
+    .lbl.off text { fill: var(--ink-soft); }
+    .lbl.on rect { fill: var(--yellow); }
+    .edge.bad .route { stroke: var(--terra); }
+    .lbl.bad rect { fill: var(--terra-soft); stroke: var(--terra); }
+    .edge.ovl .road { stroke: var(--blue); stroke-width: 7; stroke-dasharray: 1 13; }
+    .arrow { fill: var(--ink); pointer-events: none; }
+    .edge.on .arrow { fill: var(--ink); }
+    .town.flag .dot { fill: var(--yellow); }
+    .town.picked .dot { fill: var(--orange); }
+    .town.hintn .dot { stroke: var(--yellow); stroke-width: 6; }
+    .town .tag { font-size: 12px; }
+    .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
+    .tool { appearance: none; text-align: left; font: inherit; border: 2px solid var(--ink); border-radius: 14px; background: #fff; padding: 11px 13px;
+      box-shadow: 0 3px 0 var(--ink); cursor: pointer; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; }
+    .tool:hover { background: var(--orange-soft); }
+    .tool:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+    .tool .ti { font-size: 24px; grid-row: span 2; }
+    .tool b { font-size: 14.5px; color: var(--ink); }
+    .tool span:last-child { font-size: 12.5px; color: var(--ink-soft); }
+    .bosscard.open { background: var(--yellow-soft); }
+    .bosscard .steps { grid-template-columns: repeat(4, 1fr); }
+
     /* ---- Pre-test / post-test / survey ---- */
     .testcard { background: var(--green-soft); grid-column: 1 / -1; }
     .trow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-weight: 700; font-size: 14.5px; }
@@ -1445,6 +1471,9 @@
 
     <section id="screen-discover" class="card hidden"></section>
 
+    <!-- ============ PLAY (World 1, World 4, Boss — play.js) ============ -->
+    <section id="screen-play" class="hidden"></section>
+
     <!-- ============ PRE / POST TEST (tests.js) ============ -->
     <section id="screen-test" class="hidden"></section>
 
@@ -1459,7 +1488,11 @@
 
   <script src="../counter.js" defer></script>
   <script src="graph.js"></script>
+  <script src="play.js"></script>
+  <script src="world1.js"></script>
   <script src="world2.js"></script>
+  <script src="world4.js"></script>
+  <script src="boss.js"></script>
   <script src="tests.js"></script>
   <script>
     /* ============================================================
@@ -1582,7 +1615,10 @@
        this file; World 2 comes from world2.js. A world missing here shows as
        "Coming soon" on the map. */
     const WORLD = { 3: { levels: LEVELS, start: i => startLevel(i) } };
+    if (window.W1) WORLD[1] = W1;
     if (window.W2) WORLD[2] = W2;
+    if (window.W4) WORLD[4] = W4;
+    if (window.BOSS) WORLD[7] = BOSS;               // the Boss Level is stored as world 7
     const levelsOf = w => WORLD[w].levels;
 
     const lvKey = (w, i) => w + '-' + (i + 1);
@@ -1599,7 +1635,7 @@
        5. SCREENS
        ============================================================ */
     const $ = id => document.getElementById(id);
-    const SCREENS = ['entry', 'map', 'level', 'case', 'discover', 'progress', 'test'];
+    const SCREENS = ['entry', 'map', 'level', 'case', 'play', 'discover', 'progress', 'test'];
     let current = 'entry';
     function show(name) {
       current = name;
@@ -1620,7 +1656,7 @@
       $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
       $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
       $('lnk-tool').textContent = '← GraphTheory';
-      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render() })[current]();
+      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), play: () => PLAY.rerender(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render() })[current]();
     }
     $('btn-lang').addEventListener('click', () => {
       LANG = LANG === 'bm' ? 'en' : 'bm';
@@ -1705,7 +1741,7 @@
           ? '<button class="btn sm' + (st.discovered[w.n] ? ' ghost' : ' pulse') + '" data-discover="' + w.n + '" style="margin-top:12px;">' +
           (st.discovered[w.n] ? T('Discover ✓', 'Temui ✓') : T('Discover the rule', 'Temui peraturannya')) + '</button>' : '';
         return '<div class="world open">' + head + pill + '<div class="steps">' + steps + '</div>' + disc + '</div>';
-      }).join('') + GQT.card();
+      }).join('') + (window.BOSS ? BOSS.card() : '') + GQT.card();
 
       $('btn-progress').textContent = T('My progress', 'Kemajuan saya');
       $('btn-switch').textContent = T('Not ' + studentCode() + '? Change', 'Bukan ' + studentCode() + '? Tukar');
@@ -1717,6 +1753,8 @@
         if (GQT.gate(() => WORLD[w].start(i))) return;   // the pre-test comes first, once
         return WORLD[w].start(i);
       }
+      const bb = e.target.closest('[data-boss]');
+      if (bb && !bb.disabled) return BOSS.start(+bb.dataset.boss);
       const tb = e.target.closest('[data-test]');
       if (tb) return GQT.start(tb.dataset.test);
       const d = e.target.closest('[data-discover]');
@@ -2025,11 +2063,11 @@
     const logW3 = a => logAttempt(Object.assign({ world: 3, level: run.i + 1, hints_used: run.hints, learn_used: run.learn, time_s: secs() }, a));
 
     /* Shared end of a level: keep the best score, mark it done, log it. */
-    function finishLevel(w, i, parts, time, hints, learn) {
+    function finishLevel(w, i, parts, time, hints, learn, extra) {
       const key = lvKey(w, i), score = parts.reduce((a, p) => a + p[2], 0), prev = st.best[key] || 0;
       st.best[key] = Math.max(prev, score);
       st.done[key] = true;
-      logAttempt({ world: w, level: i + 1, correct: true, optimal: true, score_xp: score, mistake_tag: '', hints_used: hints, learn_used: learn, time_s: time });
+      logAttempt(Object.assign({ world: w, level: i + 1, correct: true, optimal: true, score_xp: score, mistake_tag: '', hints_used: hints, learn_used: learn, time_s: time }, extra || {}));
       return { parts, score, prev };
     }
     function giveBadges(keys) {
@@ -2165,10 +2203,11 @@
       const last = i === levelsOf(w).length - 1;
       const rows = x.parts.map(p => '<div class="xp-row' + (p[2] === 0 ? ' zero' : '') + '"><span>' + p[1] + '</span><b>' + (p[2] > 0 ? '+' : '') + p[2] + '</b></div>').join('');
       let next;
-      if (last && !st.discovered[w]) next = '<button class="btn" data-go="discover">' + T('Discover the rule →', 'Temui peraturannya →') + '</button>';
+      if (last && w === 7) next = '<button class="btn" data-go="map">' + T('Back to map', 'Kembali ke peta') + '</button>';
+      else if (last && w !== 7 && !st.discovered[w]) next = '<button class="btn" data-go="discover">' + T('Discover the rule →', 'Temui peraturannya →') + '</button>';
       else if (last) next = '<button class="btn" data-go="map">' + T('Back to map', 'Kembali ke peta') + '</button>';
-      else next = '<button class="btn" data-go="next">' + T('Next level →', 'Tahap seterusnya →') + '</button>';
-      return '<div class="note" style="background:#fff;"><h3>' + T('Level ', 'Tahap ') + (i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
+      else next = '<button class="btn" data-go="next">' + (w === 7 ? T('Next mission →', 'Misi seterusnya →') : T('Next level →', 'Tahap seterusnya →')) + '</button>';
+      return '<div class="note" style="background:#fff;"><h3>' + (w === 7 ? T('Mission ', 'Misi ') : T('Level ', 'Tahap ')) + (i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
         '<div class="xp-total"><span class="muted">' +
         (x.score > x.prev ? T('New best for this level', 'Markah terbaik baharu untuk tahap ini') : T('Your best stays ', 'Markah terbaik kekal ') + x.prev) +
         '</span><b>' + x.score + ' XP</b></div>' +
@@ -2191,7 +2230,7 @@
     let discoverPick = null, discoverWorld = 3;
     function openDiscover(w) { discoverWorld = w; renderDiscover(); show('discover'); }
     function renderDiscover() {
-      if (discoverWorld === 2) return W2.renderDiscover();
+      if (WORLD[discoverWorld] && WORLD[discoverWorld].renderDiscover) return WORLD[discoverWorld].renderDiscover();
       const opts = [
         ['a', T('The route with the fewest roads is always the shortest.', 'Laluan dengan jalan paling sedikit sentiasa yang terpendek.')],
         ['b', T('Fewest roads is not always shortest distance — you have to add up the weights.', 'Jalan paling sedikit tidak semestinya jarak terpendek — anda perlu menjumlahkan pemberat.')],
@@ -2242,10 +2281,10 @@
       const worldCard = w => {
         const m = Math.round(mastery(w.n));
         return '<div class="card" style="margin-bottom:16px;">' +
-          '<div class="row spread"><h3 style="margin:0;">' + T('World ', 'Dunia ') + w.n + ' · ' + tt(w.name) + '</h3>' +
+          '<div class="row spread"><h3 style="margin:0;">' + (w.n === 7 ? '' : T('World ', 'Dunia ') + w.n + ' · ') + tt(w.name) + '</h3>' +
           '<span class="pill ' + (m >= 70 ? 'done' : 'alert') + '">' + T('mastery ', 'penguasaan ') + m + '%</span></div>' +
           '<div class="m-bar"><i class="' + (m < 70 ? 'warn' : '') + '" style="width:' + m + '%"></i></div>' +
-          '<p class="muted" style="margin:0 0 8px;">' + T('Mastery = average of your best score on each of the 5 levels.', 'Penguasaan = purata markah terbaik anda bagi setiap 5 tahap.') + '</p>' +
+          '<p class="muted" style="margin:0 0 8px;">' + T('Mastery = average of your best score on each level.', 'Penguasaan = purata markah terbaik anda bagi setiap tahap.') + '</p>' +
           levelsOf(w.n).map((L, i) => '<div class="lrow"><span><b>' + (i + 1) + '</b> · ' + tt(L.title) + '</span><span class="trail">' + trail(w.n, i) + '</span>' +
             '<b>' + (st.best[lvKey(w.n, i)] || 0) + '</b></div>').join('') +
           '</div>';
@@ -2260,6 +2299,7 @@
         '<div class="kpi"><b>' + st.attempts.length + '</b><span>' + T('attempts', 'cubaan') + '</span></div>' +
         '</div>' +
         WORLDS.filter(w => WORLD[w.n]).map(worldCard).join('') +
+        (WORLD[7] && Object.keys(st.best).some(k => k.indexOf('7-') === 0) ? worldCard({ n: 7, name: ['Boss Level', 'Tahap Bos'] }) : '') +
         '<div class="sec-title">' + T('Badges', 'Lencana') + '</div>' +
         '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span></div>').join('') + '</div>' +
         '<div class="sec-title">' + T('Send to my teacher', 'Hantar kepada guru') + '</div>' +

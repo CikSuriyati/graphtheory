@@ -177,6 +177,9 @@
     <div class="card scroll" id="students"></div>
     <div id="student"></div>
 
+    <div class="band"><div class="kicker" id="k-boss"></div><h2 id="h-boss"></h2></div>
+    <div class="card" id="boss"></div>
+
     <div class="band"><div class="kicker" id="k-prepost"></div><h2 id="h-prepost"></h2></div>
     <div class="card" id="prepost"></div>
   </section>
@@ -204,9 +207,17 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 
 /* ---------- what the game contains ---------- */
 const WORLDS = {
+  1: { name: ['Graph Maze', 'Labirin Graf'], levels: [['Find a way out', 'Cari jalan keluar'], ['Never twice', 'Jangan dua kali'], ['Checkpoints', 'Pusat pemeriksaan'], ['One-way trails', 'Denai sehala'], ['Any way out?', 'Ada jalan keluar?']] },
   2: { name: ['Graph Detective', 'Detektif Graf'], levels: [['Count the corridors', 'Kira koridor'], ['Follow the suspect', 'Jejak suspek'], ['Loops and twin corridors', 'Gelung dan koridor berkembar'], ['Three witnesses', 'Tiga saksi'], ['Timed case', 'Kes berpemasa']] },
-  3: { name: ['Shortest Path Race', 'Perlumbaan Laluan Terpendek'], levels: [['4 towns', '4 pekan'], ['6 towns', '6 pekan'], ['Road closed!', 'Jalan ditutup!'], ['Fastest, not shortest', 'Paling pantas, bukan terpendek'], ['Random challenge', 'Cabaran rawak']] }
+  3: { name: ['Shortest Path Race', 'Perlumbaan Laluan Terpendek'], levels: [['4 towns', '4 pekan'], ['6 towns', '6 pekan'], ['Road closed!', 'Jalan ditutup!'], ['Fastest, not shortest', 'Paling pantas, bukan terpendek'], ['Random challenge', 'Cabaran rawak']] },
+  4: { name: ['Build the Network', 'Bina Rangkaian'], levels: [['Connect every kampung', 'Sambung setiap kampung'], ['No wasted cable', 'Tiada kabel membazir'], ['On a budget', 'Dalam bajet'], ['Cheapest possible', 'Paling murah'], ['Random challenge', 'Cabaran rawak']] }
 };
+const WKEYS = Object.keys(WORLDS);
+const BOSS_MISSIONS = [
+  { name: ['Water for everyone', 'Air untuk semua'], tool: 'network' }, { name: ['Ambulance!', 'Ambulans!'], tool: 'shortest' },
+  { name: ['Traffic lights', 'Lampu isyarat'], tool: 'degree' }, { name: ['The bridge is down', 'Jambatan runtuh'], tool: 'maze' }
+];
+const TOOL_NAMES = { maze: ['Graph Maze', 'Labirin Graf'], degree: ['Graph Detective', 'Detektif Graf'], shortest: ['Shortest Path Race', 'Perlumbaan Laluan Terpendek'], network: ['Build the Network', 'Bina Rangkaian'] };
 const RANKS = [['Novice', 'Pemula'], ['Graph Explorer', 'Penjelajah Graf'], ['Path Finder', 'Pencari Laluan'], ['Network Builder', 'Pembina Rangkaian'], ['Graph Master', 'Pakar Graf'], ['Graph Legend', 'Lagenda Graf']];
 
 /* Each mistake tag: what it means, and a one-line idea for tomorrow's lesson. */
@@ -229,6 +240,22 @@ const TAGS = {
     tip: ['Contrast a loop (one vertex) with an ordinary edge (two different vertices) on the same diagram.', 'Bandingkan gelung (satu bucu) dengan sisi biasa (dua bucu berbeza) dalam gambar rajah yang sama.'] },
   missed_multiple_edge: { l: ['Could not find the multiple edges', 'Tidak jumpa sisi berbilang'],
     tip: ['Ask: which pair of vertices is joined more than once? Then define a simple graph as one where the answer is "none".', 'Tanya: pasangan bucu manakah yang dihubungkan lebih daripada sekali? Kemudian takrifkan graf mudah sebagai graf yang jawapannya "tiada".'] },
+  repeated_vertex: { l: ['Passed the same place twice in a path', 'Melalui tempat yang sama dua kali dalam lorong'],
+    tip: ['Contrast a walk (repeats allowed) with a path (no vertex twice): trace both on one map.', 'Bandingkan jalan (boleh berulang) dengan lorong (tiada bucu berulang): lukis kedua-duanya pada satu peta.'] },
+  missed_checkpoint: { l: ['Reached the end but missed a checkpoint', 'Sampai ke hujung tetapi terlepas pusat pemeriksaan'],
+    tip: ['Plan backwards from the checkpoints: which order lets one path visit them all?', 'Rancang dari pusat pemeriksaan: susunan mana yang membolehkan satu lorong melawat semuanya?'] },
+  against_direction: { l: ['Went against a one-way edge', 'Melawan arah sisi sehala'],
+    tip: ['In a directed graph, read each arrow aloud as "from … to …" before moving.', 'Dalam graf terarah, baca setiap anak panah sebagai "dari … ke …" sebelum bergerak.'] },
+  said_no_way_but_connected: { l: ['Said "no way" when a path existed', 'Kata "tiada jalan" sedangkan lorong wujud'],
+    tip: ['Before deciding a graph isn’t connected, colour everything reachable from the start.', 'Sebelum memutuskan graf tidak tersambung, warnakan semua yang boleh dicapai dari titik mula.'] },
+  cycle_created: { l: ['Left a cycle in the network', 'Meninggalkan kitaran dalam rangkaian'],
+    tip: ['Every cable in a cycle can be removed without cutting anyone off. A tree has none.', 'Setiap kabel dalam kitaran boleh dibuang tanpa memutuskan sesiapa. Pokok tiada kitaran.'] },
+  over_budget: { l: ['Went over the budget', 'Melebihi bajet'],
+    tip: ['Compare two trees on the same map: same number of edges, different totals.', 'Bandingkan dua pokok pada peta yang sama: bilangan sisi sama, jumlah berbeza.'] },
+  not_minimum: { l: ['A tree, but not the cheapest', 'Pokok, tetapi bukan paling murah'],
+    tip: ['Model Kruskal’s method: list edges cheapest first, take each unless it closes a cycle.', 'Tunjukkan kaedah Kruskal: senaraikan sisi paling murah dahulu, ambil setiap satu kecuali ia menutup kitaran.'] },
+  not_fastest: { l: ['A route, but not the fastest', 'Laluan, tetapi bukan paling pantas'],
+    tip: ['Total each route before choosing; the most direct-looking one is often not the fastest.', 'Jumlahkan setiap laluan sebelum memilih; yang nampak paling terus selalunya bukan paling pantas.'] },
   clue_ignored: { l: ['Ignored one of the clues', 'Abaikan salah satu petunjuk'],
     tip: ['Model it as elimination: cross out places that fail clue 1, then clue 2, then clue 3.', 'Tunjukkan sebagai penyingkiran: potong tempat yang gagal petunjuk 1, kemudian 2, kemudian 3.'] }
 };
@@ -299,7 +326,8 @@ function clean(r) {
   return {
     id: String(r.attempt_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(),
     w: +r.world, lv: +r.level, correct: bool(r.correct), ok: bool(r.optimal), xp: +r.score_xp || 0,
-    hints: +r.hints_used || 0, learn: +r.learn_used || 0, t: +r.time_s || 0, tag: String(r.mistake_tag || '').trim()
+    hints: +r.hints_used || 0, learn: +r.learn_used || 0, t: +r.time_s || 0, tag: String(r.mistake_tag || '').trim(),
+    tool: String(r.boss_tool_choice || '').trim()
   };
 }
 
@@ -420,13 +448,13 @@ function render() {
   if (!rows.length) {
     renderPrePost(X);
     $('kpis').innerHTML = ''; $('reteach').innerHTML = '<div class="card"><p style="margin:0;">' + T('No attempts yet. Once students press Submit results in the game, they appear here.', 'Belum ada cubaan. Setelah murid menekan Hantar keputusan dalam permainan, ia akan dipaparkan di sini.') + '</p></div>';
-    ['mastery', 'mistakes', 'levels', 'support', 'students', 'student'].forEach(id => { $(id).innerHTML = ''; });
+    ['mastery', 'mistakes', 'levels', 'support', 'students', 'student', 'boss'].forEach(id => { $(id).innerHTML = ''; });
     return;
   }
 
   // ---- KPIs ----
   const n = X.students.length;
-  const cleared = X.students.reduce((a, s) => a + Object.keys(X.S[s].cleared).length, 0);
+  const cleared = X.students.reduce((a, s) => a + Object.keys(X.S[s].cleared).filter(k => WORLDS[k.split('-')[0]]).length, 0);
   const masteries = X.students.flatMap(s => Object.values(X.S[s].mastery));
   const avgM = masteries.length ? Math.round(masteries.reduce((a, b) => a + b, 0) / masteries.length) : 0;
   $('kpis').innerHTML =
@@ -441,13 +469,14 @@ function render() {
   renderLevels(X, n);
   renderSupport(X);
   renderStudents(X, rows);
+  renderBoss(rows);
   renderPrePost(X);
 }
 
 /* The one answer the page exists for. */
 function renderReteach(X) {
   const minTried = Math.min(3, X.students.length);
-  const cand = Object.values(X.L).filter(x => x.tried.size >= minTried && x.wrong > 0).sort((a, b) => b.errRate - a.errRate);
+  const cand = Object.values(X.L).filter(x => WORLDS[x.w] && x.tried.size >= minTried && x.wrong > 0).sort((a, b) => b.errRate - a.errRate);
   if (!cand.length) {
     $('reteach').innerHTML = '<div class="reteach" style="background:var(--green-soft);"><h2>' + T('Nothing stands out yet', 'Belum ada yang menonjol') + '</h2><p style="margin:0;">' +
       T('No level has enough wrong answers to point at. Check back after more students have played.', 'Tiada tahap yang cukup jawapan salah untuk ditunjukkan. Semak semula selepas lebih ramai murid bermain.') + '</p></div>';
@@ -552,11 +581,11 @@ function renderStudents(X, rows) {
   const body = X.students.map(s => {
     const st = X.S[s];
     const cell = w => st.mastery[w] == null ? '<td class="num muted">—</td>' : '<td class="num' + (st.mastery[w] < 70 ? ' low' : '') + '">' + Math.round(st.mastery[w]) + '%</td>';
-    return '<tr class="pick" data-stu="' + esc(s) + '"><td><b>' + esc(s) + '</b></td><td class="num">' + st.xp + '</td>' + cell(2) + cell(3) +
-      '<td class="num">' + Object.keys(st.cleared).length + '</td><td class="num">' + st.wrong + '</td><td class="num">' + (st.hints + st.learn) + '</td><td class="muted">' + esc(st.last.slice(0, 16).replace('T', ' ')) + '</td></tr>';
+    return '<tr class="pick" data-stu="' + esc(s) + '"><td><b>' + esc(s) + '</b></td><td class="num">' + st.xp + '</td>' + WKEYS.map(w => cell(w)).join('') +
+      '<td class="num">' + Object.keys(st.cleared).filter(k => WORLDS[k.split('-')[0]]).length + '</td><td class="num">' + st.wrong + '</td><td class="num">' + (st.hints + st.learn) + '</td><td class="muted">' + esc(st.last.slice(0, 16).replace('T', ' ')) + '</td></tr>';
   }).join('');
-  $('students').innerHTML = '<table><tr><th>' + T('Student', 'Murid') + '</th><th class="num">XP</th><th class="num">' + T('World 2', 'Dunia 2') + '</th><th class="num">' + T('World 3', 'Dunia 3') +
-    '</th><th class="num">' + T('Levels cleared', 'Tahap selesai') + '</th><th class="num">' + T('Wrong', 'Salah') + '</th><th class="num">' + T('Help used', 'Bantuan') + '</th><th>' + T('Last active', 'Aktif terakhir') + '</th></tr>' + body + '</table>';
+  $('students').innerHTML = '<table><tr><th>' + T('Student', 'Murid') + '</th><th class="num">XP</th>' + WKEYS.map(w => '<th class="num">' + T('World ', 'Dunia ') + w + '</th>').join('') +
+    '<th class="num">' + T('Levels cleared', 'Tahap selesai') + '</th><th class="num">' + T('Wrong', 'Salah') + '</th><th class="num">' + T('Help used', 'Bantuan') + '</th><th>' + T('Last active', 'Aktif terakhir') + '</th></tr>' + body + '</table>';
   renderStudent(X, rows);
 }
 
@@ -575,12 +604,38 @@ function renderStudent(X, rows) {
   }).join('');
   $('student').innerHTML = '<div class="student"><div class="row spread"><h2 style="margin:0;">' + esc(openStudent) + '</h2><button class="btn ghost sm" id="btn-close-stu">' + T('Close', 'Tutup') + '</button></div>' +
     '<div class="kpis"><div class="kpi"><b>' + st.xp + ' XP</b><span>' + esc(rank) + '</span></div>' +
-    '<div class="kpi"><b>' + Object.keys(st.cleared).length + '</b><span>' + T('levels cleared', 'tahap selesai') + '</span></div>' +
+    '<div class="kpi"><b>' + Object.keys(st.cleared).filter(k => WORLDS[k.split('-')[0]]).length + '</b><span>' + T('levels cleared', 'tahap selesai') + '</span></div>' +
     '<div class="kpi"><b>' + st.wrong + '</b><span>' + T('wrong answers', 'jawapan salah') + '</span></div>' +
     '<div class="kpi"><b>' + (st.hints + st.learn) + '</b><span>' + T('attempts using Hint or Learn', 'cubaan guna Petunjuk atau Belajar') + '</span></div></div>' +
     worlds + '<p class="muted" style="margin:12px 0 0;">' + T('XP here counts level scores only; the +20 Discover bonus stays on the student’s device.', 'XP di sini mengira markah tahap sahaja; bonus Temui +20 kekal pada peranti murid.') + '</p></div>';
   $('btn-close-stu').addEventListener('click', () => { openStudent = null; $('student').innerHTML = ''; });
   $('student').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ---------- Boss Level: did they choose the right idea? ----------
+   Each student's first tool pick per mission (every row of a mission carries
+   it) — the cleanest measure of problem-solving in the game. */
+function renderBoss(rows) {
+  $('k-boss').textContent = T('Part five', 'Bahagian lima');
+  $('h-boss').textContent = T('Boss Level: choosing the right idea', 'Tahap Bos: memilih idea yang betul');
+  const b = rows.filter(r => r.w === 7);
+  if (!b.length) { $('boss').innerHTML = '<p style="margin:0;">' + T('No one has reached the Boss Level yet. It opens once a student has cleared Worlds 1–4.', 'Belum ada yang sampai ke Tahap Bos. Ia dibuka setelah murid menyelesaikan Dunia 1–4.') + '</p>'; return; }
+  const body = BOSS_MISSIONS.map((M, k) => {
+    const mr = b.filter(r => r.lv === k + 1).sort(byTime), first = {};
+    mr.forEach(r => { if (!(r.stu in first) && r.tool) first[r.stu] = r.tool; });
+    const picks = Object.values(first), right = picks.filter(p => p === M.tool).length;
+    const wrongPicks = {}; picks.filter(p => p !== M.tool).forEach(p => { wrongPicks[p] = (wrongPicks[p] || 0) + 1; });
+    const topWrong = Object.entries(wrongPicks).sort((a, c) => c[1] - a[1])[0];
+    const solved = new Set(mr.filter(r => r.ok).map(r => r.stu)).size, t = topTag(mr.reduce((a, r) => { if (r.tag) a[r.tag] = (a[r.tag] || 0) + 1; return a; }, {}));
+    const p = pct(right, picks.length);
+    return '<tr><td>' + (k + 1) + '. ' + esc(tt(M.name)) + '<br><span class="muted">' + T('needs ', 'perlu ') + esc(tt(TOOL_NAMES[M.tool])) + '</span></td>' +
+      '<td class="num' + (p < 60 ? ' low' : '') + '">' + (picks.length ? p + '%' : '—') + '</td><td class="num">' + picks.length + '</td>' +
+      '<td>' + (topWrong ? esc(tt(TOOL_NAMES[topWrong[0]] || [topWrong[0], topWrong[0]])) + ' (' + topWrong[1] + ')' : '—') + '</td>' +
+      '<td class="num">' + solved + '</td><td>' + (t ? esc(tagLabel(t[0])) : '—') + '</td></tr>';
+  }).join('');
+  $('boss').innerHTML = '<p>' + T('Before each mission, students pick which world’s idea to use — with no hint. The first pick shows whether they can recognise the right idea, not just use it when told.',
+    'Sebelum setiap misi, murid memilih idea dunia mana yang hendak digunakan — tanpa petunjuk. Pilihan pertama menunjukkan sama ada mereka dapat mengenal pasti idea yang betul, bukan sekadar menggunakannya apabila disuruh.') + '</p>' +
+    '<div class="scroll"><table><tr><th>' + T('Mission', 'Misi') + '</th><th class="num">' + T('Right first pick', 'Pilihan pertama betul') + '</th><th class="num">' + T('Students', 'Murid') + '</th><th>' + T('Most common wrong pick', 'Pilihan salah paling kerap') + '</th><th class="num">' + T('Solved', 'Selesai') + '</th><th>' + T('Top mistake', 'Kesilapan utama') + '</th></tr>' + body + '</table></div>';
 }
 
 /* ---------- pre-test / post-test ----------
@@ -598,7 +653,7 @@ function paired(list) {
 }
 
 function renderPrePost(X) {
-  $('k-prepost').textContent = T('Part five', 'Bahagian lima');
+  $('k-prepost').textContent = T('Part six', 'Bahagian enam');
   $('h-prepost').textContent = T('Pre-test and post-test', 'Ujian pra dan ujian pasca');
   const loader = '<span class="btn ghost sm file"><span>' + T('Open paper-test CSV', 'Buka CSV ujian kertas') + '</span><input type="file" id="in-pre" accept=".csv,text/csv"></span>';
   const tests = TESTS.filter(r => !current || r.cls === current);
@@ -691,10 +746,10 @@ function renderPrePost(X) {
   // per student
   if (pairs.length) {
     html += '<h3 style="margin:22px 0 4px;">' + T('Every student', 'Setiap murid') + '</h3><div class="scroll"><table><tr><th>' + T('Student', 'Murid') + '</th><th>' + T('Group', 'Kumpulan') + '</th><th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Gain', 'Peningkatan') +
-      '</th><th class="num">' + T('World 2', 'Dunia 2') + '</th><th class="num">' + T('World 3', 'Dunia 3') + '</th></tr>' +
+      '</th>' + WKEYS.map(w => '<th class="num">' + T('World ', 'Dunia ') + w + '</th>').join('') + '</tr>' +
       pairs.sort((a, b) => a.stu.localeCompare(b.stu, undefined, { numeric: true })).map(p => {
         const st = X.S[p.stu], m = w => st && st.mastery[w] != null ? Math.round(st.mastery[w]) + '%' : '—';
-        return '<tr><td>' + esc(p.stu) + '</td><td>' + (p.game ? T('game', 'permainan') : T('control', 'kawalan')) + '</td><td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num' + (p.post - p.pre < 0 ? ' low' : '') + '">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td><td class="num">' + m(2) + '</td><td class="num">' + m(3) + '</td></tr>';
+        return '<tr><td>' + esc(p.stu) + '</td><td>' + (p.game ? T('game', 'permainan') : T('control', 'kawalan')) + '</td><td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num' + (p.post - p.pre < 0 ? ' low' : '') + '">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td>' + WKEYS.map(w => '<td class="num">' + m(w) + '</td>').join('') + '</tr>';
       }).join('') + '</table></div>';
   }
   $('prepost').innerHTML = html + '<div style="margin-top:14px;">' + loader + (PRE ? ' <button class="btn ghost sm" id="btn-pre-clear">' + T('Use in-game tests', 'Guna ujian dalam permainan') + '</button>' : '') + '</div>';

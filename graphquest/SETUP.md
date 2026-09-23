@@ -1,10 +1,12 @@
 # GRAPH QUEST — setup
 
-Twelve files, in `graphquest/`, plus a review sheet:
+Files in `graphquest/`:
 
 | File | What it is |
 |---|---|
 | `index.html` | The game shell (entry, world map, My progress, Discover) and World 3 |
+| `adventure.js` | Decorative SVG landmarks for the adventure map |
+| `interface.css` | Responsive game interface: welcome screen, world cards, next mission and shared controls |
 | `world2.js` | World 2, Graph Detective |
 | `teacher.html` | The teacher dashboard (Stage 3) — see *Teacher dashboard* below |
 | `tests.js` | The pre-test, post-test and survey — see *Pre-test and post-test* below |
@@ -21,6 +23,22 @@ Twelve files, in `graphquest/`, plus a review sheet:
 The game is live at `graphtheory.visuallymath.com/graphquest/` as soon as this folder is pushed. It works with no setup at all. Students play, and progress is saved on their device. The Sheet is only needed when you want results to reach you.
 
 Takes about 10 minutes.
+
+## Interface and navigation
+
+The original Fraunces headings, Caveat accents, DM Sans body text and colour palette are retained. The welcome page explains the three-step game flow. Map and My Progress navigation is available throughout gameplay and Discover; active tests keep their existing answer flow, with a Map return on the test introduction.
+
+My Progress groups levels into expandable worlds with replay controls, displays rank progress and pending submissions near the top, and loads the class board only when opened. Unplayed worlds are labelled “Not started”; bonus worlds remain locked until their original threshold. The teacher dashboard includes section links and accessible loading/error feedback. Motion respects reduced-motion preferences.
+
+## Interface preview
+
+From the GraphTheory project folder, run `python3 -m http.server 8793 --bind 127.0.0.1`, then open `http://127.0.0.1:8793/graphquest/`.
+
+The lobby recommends the first unfinished level in the most recently attempted core world, falling back to the first unfinished core world. The same pre-test gate still applies. Once all 20 core levels are cleared, it points players toward the bonus worlds or replaying levels. New interface labels are available in English and Bahasa Melayu.
+
+The world selector is a connected trail: core worlds remain freely selectable, bonus branches open at 10 core levels, and the Boss remains locked until all 20 are cleared. Completed worlds display flags. Milestone celebrations appear when returning to the map during the same session, and animations respect reduced-motion preferences.
+
+Deploy `adventure.js` and `interface.css` alongside `index.html`; no Apps Script update is needed for the interface. The local preview still uses the configured live results endpoint, so avoid submitting test results from it.
 
 ---
 

@@ -195,6 +195,8 @@
         (k === 'pre' ? '<button class="btn ghost" id="t-skip">' + T('Skip', 'Langkau') + '</button>' : '<button class="btn ghost" id="t-later">' + T('Later', 'Nanti') + '</button>') + '</div>' +
         (k === 'pre' ? '<p class="muted" style="margin-top:14px;">' + T('Skip only if your teacher hasn’t asked you to do it. Once you clear a level, the pre-test closes.', 'Langkau hanya jika guru anda tidak meminta anda menjawabnya. Setelah anda menyelesaikan satu tahap, ujian pra ditutup.') + '</p>' : '') +
         '</div>';
+      el.insertAdjacentHTML('afterbegin', '<button class="btn ghost sm test-map" id="t-map">' + T('← Map', '← Peta') + '</button>');
+      $('t-map').addEventListener('click', () => { run = null; renderMap(); show('map'); });
       $('t-go').addEventListener('click', () => { run.stage = 'q'; run.t0 = Date.now(); render(); });
       if ($('t-skip')) $('t-skip').addEventListener('click', () => { record({ test: 'pre', form: run.form, skipped: true }); finish(); });
       if ($('t-later')) $('t-later').addEventListener('click', () => { run = null; renderMap(); show('map'); });
@@ -227,9 +229,9 @@
         num.focus();
       }
       el.querySelectorAll('[data-o]').forEach(b => b.addEventListener('click', () => { run.ans[run.i] = b.dataset.o; render(); }));
-      $('t-back').addEventListener('click', () => { run.i--; render(); });
+      $('t-back').addEventListener('click', () => { run.i--; render(); window.scrollTo({top:0, behavior:'instant'}); });
       $('t-next').addEventListener('click', () => {
-        if (run.i < n - 1) { run.i++; render(); return; }
+        if (run.i < n - 1) { run.i++; render(); window.scrollTo({top:0, behavior:'instant'}); return; }
         if (!confirm(T('Submit your answers? You can’t change them after this.', 'Hantar jawapan anda? Anda tidak boleh mengubahnya selepas ini.'))) return;
         submit();
       });

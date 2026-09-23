@@ -1674,6 +1674,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="interface.css">
 </head>
 
 <body>
@@ -1682,6 +1683,8 @@
     <div class="topbar">
       <a class="brand" href="./">GRAPH <i>QUEST</i></a>
       <div class="toplinks">
+        <button class="tlink hidden" id="nav-map"></button>
+        <button class="tlink hidden" id="nav-progress"></button>
         <a class="tlink" href="../" id="lnk-tool">← GraphTheory</a>
         <button class="tlink" id="btn-lang">BM</button>
       </div>
@@ -1689,14 +1692,7 @@
 
     <!-- ============ ENTRY ============ -->
     <section id="screen-entry" class="card hidden" style="position:relative;overflow:hidden;">
-      <svg class="doodle" style="top:18px;right:20px;" width="92" height="70" viewBox="0 0 92 70" fill="none"
-        aria-hidden="true">
-        <path d="M14 52 L44 18 L78 44" stroke="#17130c" stroke-width="3" stroke-linecap="round" />
-        <path d="M14 52 L78 44" stroke="#ee6c34" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 8" />
-        <circle cx="14" cy="52" r="8" fill="#a2dd70" stroke="#17130c" stroke-width="2.5" />
-        <circle cx="44" cy="18" r="8" fill="#fff" stroke="#17130c" stroke-width="2.5" />
-        <circle cx="78" cy="44" r="8" fill="#df876e" stroke="#17130c" stroke-width="2.5" />
-      </svg>
+      <div class="entry-copy">
       <div class="kicker" id="entry-kicker"></div>
       <h1 id="entry-title"></h1>
       <p id="entry-lede" style="font-size:17px;"></p>
@@ -1704,6 +1700,24 @@
         <span class="chip" id="chip-1"></span><span class="chip" id="chip-2"></span><span class="chip"
           id="chip-3"></span>
       </div>
+      <ol class="entry-guide" id="entry-guide"></ol>
+      </div>
+      <div class="quest-art" aria-hidden="true">
+        <span class="art-label">GRAPH QUEST / 01</span>
+        <svg viewBox="0 0 400 270" fill="none">
+          <path d="M58 185L142 65L238 150L342 58M58 185L238 150L330 235M142 65L342 58L330 235" stroke="#8d867e" stroke-width="3" stroke-dasharray="7 8"/>
+          <path d="M58 185L142 65L238 150L342 58" stroke="#ee6c34" stroke-width="9" stroke-linejoin="round"/>
+          <g stroke="#17130c" stroke-width="5">
+            <circle cx="58" cy="185" r="22" fill="#a2dd70"/><circle cx="142" cy="65" r="22" fill="#ee6c34"/>
+            <circle cx="238" cy="150" r="22" fill="#ee6c34"/><circle cx="342" cy="58" r="27" fill="#f8fafc"/>
+            <circle cx="330" cy="235" r="18" fill="#7ca3f9"/>
+          </g>
+          <path d="M332 58l7 7 13-15" stroke="#17130c" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="art-caption" id="art-caption"></div>
+      </div>
+      <div class="entry-join">
+      <h2 id="join-title"></h2>
       <div class="fields">
         <div>
           <label class="fld" for="in-class" id="lbl-class"></label>
@@ -1715,7 +1729,9 @@
         </div>
       </div>
       <p class="muted" id="entry-privacy" style="margin-bottom:22px;"></p>
+      <p id="entry-error" class="entry-error" role="alert"></p>
       <button class="btn" id="btn-enter"></button>
+      </div>
     </section>
 
     <!-- ============ MAP ============ -->
@@ -1723,6 +1739,10 @@
       <div class="kicker" id="map-kicker"></div>
       <h1 id="map-title"></h1>
       <div class="player" id="player"></div>
+      <div id="next-mission" class="next-mission"></div>
+      <div class="map-section"><h2 id="worlds-title"></h2><span id="worlds-caption"></span></div>
+      <p id="map-guide" class="map-guide"></p>
+      <div id="map-reward" role="status" aria-live="polite"></div>
       <div class="worlds" id="worlds"></div>
       <div class="row" style="margin-top:24px;">
         <button class="btn ghost sm" id="btn-progress"></button>
@@ -1815,6 +1835,7 @@
 
   <script src="../counter.js" defer></script>
   <script src="graph.js"></script>
+  <script src="adventure.js"></script>
   <script src="play.js"></script>
   <script src="world1.js"></script>
   <script src="world2.js"></script>
@@ -1973,8 +1994,25 @@
     function show(name) {
       current = name;
       SCREENS.forEach(s => $('screen-' + s).classList.toggle('hidden', s !== name));
+      updateNavigation();
       window.scrollTo({ top: 0, behavior: 'instant' });
+      requestAnimationFrame(() => {
+        const heading = $('screen-' + name).querySelector('h1, h2');
+        if (current === name && heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+      });
     }
+
+    function updateNavigation() {
+      const visible = st.classCode && !['entry', 'test'].includes(current);
+      $('nav-map').classList.toggle('hidden', !visible);
+      $('nav-progress').classList.toggle('hidden', !visible);
+      $('nav-map').textContent = T('Map', 'Peta');
+      $('nav-progress').textContent = T('My progress', 'Kemajuan saya');
+      $('nav-map').setAttribute('aria-current', current === 'map' ? 'page' : 'false');
+      $('nav-progress').setAttribute('aria-current', current === 'progress' ? 'page' : 'false');
+    }
+    $('nav-map').addEventListener('click', () => { renderMap(); show('map'); });
+    $('nav-progress').addEventListener('click', () => { renderProgress(); show('progress'); });
 
     function toast(msg) {
       const t = document.createElement('div');
@@ -1989,12 +2027,15 @@
       $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
       $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
       $('lnk-tool').textContent = '← GraphTheory';
+      updateNavigation();
       ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), play: () => PLAY.rerender(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render() })[current]();
     }
     $('btn-lang').addEventListener('click', () => {
+      const entryValues = current === 'entry' ? [$('in-class').value, $('in-reg').value] : null;
       LANG = LANG === 'bm' ? 'en' : 'bm';
       try { localStorage.setItem(LANG_KEY, LANG); } catch (e) { }
       applyLang();
+      if (entryValues) { $('in-class').value = entryValues[0]; $('in-reg').value = entryValues[1]; }
     });
 
     /* ============================================================
@@ -2013,7 +2054,14 @@
       $('lbl-reg').textContent = T('Register number', 'Nombor giliran');
       $('entry-privacy').textContent = T('Your teacher gives you the class code. No names or passwords — your progress is saved on this device.',
         'Guru anda akan memberi kod kelas. Tiada nama atau kata laluan — kemajuan anda disimpan pada peranti ini.');
-      $('btn-enter').textContent = T("Let's go", 'Jom mula');
+      $('btn-enter').textContent = T('Enter the quest →', 'Mulakan pengembaraan →');
+      $('entry-guide').innerHTML = [
+        T('Choose a world', 'Pilih dunia'), T('Solve five challenges', 'Selesaikan lima cabaran'), T('Earn XP & discover the rule', 'Kumpul XP & temui peraturan')
+      ].map((text, i) => '<li><b>' + (i + 1) + '</b><span>' + text + '</span></li>').join('');
+      $('join-title').textContent = T('Ready, explorer?', 'Sedia, penjelajah?');
+      $('art-caption').textContent = T('Every connection is a new possibility.', 'Setiap sambungan membuka peluang baharu.');
+      $('entry-error').textContent = '';
+
       $('in-class').value = st.classCode; $('in-reg').value = st.reg;
     }
     $('btn-enter').addEventListener('click', () => {
@@ -2023,25 +2071,30 @@
       const okR = /^\d{1,3}$/.test(rg) && +rg >= 1;
       $('in-class').classList.toggle('bad', !okC);
       $('in-reg').classList.toggle('bad', !okR);
+      $('in-class').setAttribute('aria-invalid', String(!okC));
+      $('in-reg').setAttribute('aria-invalid', String(!okR));
+      $('entry-error').textContent = !okC ? T('Enter your class code, for example 4S1-2026.', 'Masukkan kod kelas, contohnya 4S1-2026.') : !okR ? T('Enter a register number from 1 to 999.', 'Masukkan nombor giliran dari 1 hingga 999.') : '';
       if (!okC) return $('in-class').focus();
       if (!okR) return $('in-reg').focus();
       if (st.classCode && (st.classCode !== cc || st.reg !== String(+rg))) {
         if (!confirm(T('This device has progress for ' + studentCode() + '. Start fresh as ' + cc.split('-')[0] + '-' + (+rg) + '?',
           'Peranti ini ada kemajuan untuk ' + studentCode() + '. Mula baharu sebagai ' + cc.split('-')[0] + '-' + (+rg) + '?'))) return;
-        st = blank();
+        st = blank(); mapMilestones = null;
       }
       st.classCode = cc; st.reg = String(+rg); save();
       renderMap(); show('map');
       GQT.fromUrl();
     });
     ['in-class', 'in-reg'].forEach(id => {
-      $(id).addEventListener('input', e => e.target.classList.remove('bad'));
+      $(id).setAttribute('aria-describedby', 'entry-error');
+      $(id).addEventListener('input', e => { e.target.classList.remove('bad'); e.target.removeAttribute('aria-invalid'); $('entry-error').textContent = ''; });
       $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-enter').click(); });
     });
 
     /* ============================================================
        7. WORLD MAP
        ============================================================ */
+    let mapMilestones = null;
     function renderMap() {
       const xp = totalXP(), r = rankOf(xp);
       $('map-kicker').textContent = T('Graph Quest · ', 'Graph Quest · ') + studentCode();
@@ -2052,15 +2105,38 @@
         (r < RANKS.length - 1 ? T((500 - xp % 500) + ' XP to next rank', (500 - xp % 500) + ' XP ke pangkat seterusnya') : T('top rank', 'pangkat tertinggi')) + '</span></div>' +
         '<div class="kpi"><b>' + st.badges.length + ' / ' + BADGES.length + '</b><span>' + T('badges', 'lencana') + '</span></div>';
 
-      $('worlds').innerHTML = WORLDS.map(w => {
-        const head = '<div class="n" style="background:var(' + w.c + ')">' + w.n + '</div>' +
+      $('worlds-title').textContent = T('Your adventure map', 'Peta pengembaraan anda');
+      $('map-guide').textContent = T('Follow the trail, or choose any core world. Each location holds five challenges.', 'Ikuti jejak, atau pilih mana-mana dunia teras. Setiap lokasi mempunyai lima cabaran.');
+      $('worlds-caption').textContent = T('Explore · Solve · Discover', 'Teroka · Selesaikan · Temui');
+      const coreWorlds = WORLDS.filter(w => WORLD[w.n] && !w.bonus);
+      const last = [...st.attempts].reverse().find(a => coreWorlds.some(w => w.n === a.world));
+      const unfinished = w => levelsOf(w.n).some((_, i) => !st.done[lvKey(w.n, i)]);
+      const nextWorld = coreWorlds.find(w => last && w.n === last.world && unfinished(w)) || coreWorlds.find(unfinished);
+      const nextLevel = nextWorld ? levelsOf(nextWorld.n).findIndex((_, i) => !st.done[lvKey(nextWorld.n, i)]) : -1;
+      $('next-mission').innerHTML = '<div><div class="kicker">' + T('YOUR NEXT MISSION', 'MISI SETERUSNYA') + '</div><h2>' +
+        (nextWorld ? tt(nextWorld.name) : T('Core worlds complete!', 'Dunia teras selesai!')) + '</h2><p>' +
+        (nextWorld ? T('Level ', 'Tahap ') + (nextLevel + 1) + ' · ' + tt(levelsOf(nextWorld.n)[nextLevel].title) : T('Explore the bonus worlds below or replay to improve your score.', 'Teroka dunia bonus di bawah atau main semula untuk menambah markah.')) +
+        '</p></div>' + (nextWorld ? '<button class="btn" id="btn-next-mission">' + T(st.attempts.length ? 'Continue quest →' : 'Start playing →', st.attempts.length ? 'Teruskan →' : 'Mula bermain →') + '</button>' : '') +
+        '<div class="quest-progress"><span>' + T('Core levels cleared', 'Tahap teras selesai') + ' <b>' + coreCleared() + '/20</b></span><progress max="20" value="' + coreCleared() + '" aria-label="' + T('Core levels cleared', 'Tahap teras selesai') + '"></progress></div>';
+      if (nextWorld) $('btn-next-mission').addEventListener('click', () => {
+        if (!GQT.gate(() => WORLD[nextWorld.n].start(nextLevel))) WORLD[nextWorld.n].start(nextLevel);
+      });
+      const milestones = WORLDS.filter(w => WORLD[w.n] && levelsOf(w.n).every((_, i) => st.done[lvKey(w.n, i)])).map(w => 'world-' + w.n);
+      if (coreCleared() >= BONUS_AFTER) milestones.push('bonus');
+      if (coreCleared() === 20) milestones.push('boss');
+      const gained = mapMilestones && milestones.filter(m => !mapMilestones.includes(m));
+      $('map-reward').innerHTML = gained && gained.length ? '<div class="map-celebration"><span aria-hidden="true">✦</span> ' +
+        (gained.includes('boss') ? T('Boss destination unlocked! Your final challenge awaits.', 'Destinasi Bos dibuka! Cabaran terakhir menanti anda.') : gained.includes('bonus') ? T('New paths unlocked! Explore both bonus worlds.', 'Laluan baharu dibuka! Teroka kedua-dua dunia bonus.') : T('World cleared! Your adventure flag is up.', 'Dunia selesai! Bendera pengembaraan anda dikibarkan.')) + '</div>' : '';
+      mapMilestones = milestones;
+      const worldCards = WORLDS.map(w => {
+        const head = worldLandmark(w.n) + '<div class="n" style="background:var(' + w.c + ')">' + w.n + '</div>' +
           '<h3>' + tt(w.name) + '</h3><div class="topic">' + tt(w.topic) + '</div>';
         if (!WORLD[w.n]) {
-          return '<div class="world locked">' + head +
+          return '<div class="world locked" style="--world-color:var(' + w.c + ')">' + head +
             '<span class="corner pill lock">' + T('Coming soon', 'Akan datang') + '</span></div>';
         }
         if (w.bonus && coreCleared() < BONUS_AFTER) {
-          return '<div class="world locked">' + head +
+          return '<div class="world locked" style="--world-color:var(' + w.c + ')">' + head +
             '<span class="corner pill lock">' + T('Clear ' + BONUS_AFTER + ' core levels · ', 'Selesaikan ' + BONUS_AFTER + ' tahap teras · ') + coreCleared() + ' / ' + BONUS_AFTER + '</span></div>';
         }
         const LV = levelsOf(w.n), k = i => lvKey(w.n, i);
@@ -2077,8 +2153,11 @@
         const disc = doneN === LV.length
           ? '<button class="btn sm' + (st.discovered[w.n] ? ' ghost' : ' pulse') + '" data-discover="' + w.n + '" style="margin-top:12px;">' +
           (st.discovered[w.n] ? T('Discover ✓', 'Temui ✓') : T('Discover the rule', 'Temui peraturannya')) + '</button>' : '';
-        return '<div class="world open">' + head + pill + '<div class="steps">' + steps + '</div>' + disc + '</div>';
-      }).join('') + (window.BOSS ? BOSS.card() : '') + GQT.card();
+        return '<div class="world open' + (nextWorld && nextWorld.n === w.n ? ' recommended' : '') + (doneN === LV.length ? ' cleared' : '') + '" style="--world-color:var(' + w.c + ')">' + head + (doneN === LV.length ? '<span class="world-flag" aria-hidden="true">⚑</span>' : '') + pill + '<div class="steps">' + steps + '</div>' + disc + '</div>';
+      });
+      $('worlds').innerHTML = '<div class="core-trail">' + worldCards.slice(0, 4).map((card, i) => '<div class="trail-stop"><span class="trail-marker" aria-hidden="true">' + (i + 1) + '</span>' + card + '</div>').join('') + '</div>' +
+        '<section class="bonus-trail" aria-labelledby="bonus-heading"><h3 id="bonus-heading">' + T('The bonus trails', 'Jejak bonus') + '</h3><p>' + T('Two extra adventures · unlock after 10 core levels', 'Dua pengembaraan tambahan · dibuka selepas 10 tahap teras') + '</p><div class="bonus-worlds">' + worldCards.slice(4).join('') + '</div></section>' +
+        (window.BOSS ? '<section class="boss-destination" aria-label="' + T('Final destination', 'Destinasi terakhir') + '"><div class="kicker">' + T('FINAL DESTINATION', 'DESTINASI TERAKHIR') + '</div>' + BOSS.card().replace('<div class="n"', worldLandmark(7) + '<div class="n"') + '</section>' : '') + GQT.card();
 
       $('btn-progress').textContent = T('My progress', 'Kemajuan saya');
       $('btn-switch').textContent = T('Not ' + studentCode() + '? Change', 'Bukan ' + studentCode() + '? Tukar');
@@ -2544,7 +2623,7 @@
       else if (last && w !== 7 && !st.discovered[w]) next = '<button class="btn" data-go="discover">' + T('Discover the rule →', 'Temui peraturannya →') + '</button>';
       else if (last) next = '<button class="btn" data-go="map">' + T('Back to map', 'Kembali ke peta') + '</button>';
       else next = '<button class="btn" data-go="next">' + (w === 7 ? T('Next mission →', 'Misi seterusnya →') : T('Next level →', 'Tahap seterusnya →')) + '</button>';
-      return '<div class="note" style="background:#fff;"><h3>' + (w === 7 ? T('Mission ', 'Misi ') : T('Level ', 'Tahap ')) + (i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
+      return '<div class="note xp-reward" style="background:#fff;"><h3>' + (w === 7 ? T('Mission ', 'Misi ') : T('Level ', 'Tahap ')) + (i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
         '<div class="xp-total"><span class="muted">' +
         (x.score > x.prev ? T('New best for this level', 'Markah terbaik baharu untuk tahap ini') : T('Your best stays ', 'Markah terbaik kekal ') + x.prev) +
         '</span><b>' + x.score + ' XP</b></div>' +
@@ -2617,40 +2696,43 @@
       };
       const worldCard = w => {
         const m = Math.round(mastery(w.n));
-        return '<div class="card" style="margin-bottom:16px;">' +
-          '<div class="row spread"><h3 style="margin:0;">' + (w.n === 7 ? '' : T('World ', 'Dunia ') + w.n + ' · ') + tt(w.name) + '</h3>' +
-          '<span class="pill ' + (m >= 70 ? 'done' : 'alert') + '">' + T('mastery ', 'penguasaan ') + m + '%</span></div>' +
-          '<div class="m-bar"><i class="' + (m < 70 ? 'warn' : '') + '" style="width:' + m + '%"></i></div>' +
-          '<p class="muted" style="margin:0 0 8px;">' + T('Mastery = average of your best score on each level.', 'Penguasaan = purata markah terbaik anda bagi setiap tahap.') + '</p>' +
-          levelsOf(w.n).map((L, i) => '<div class="lrow"><span><b>' + (i + 1) + '</b> · ' + tt(L.title) + '</span><span class="trail">' + trail(w.n, i) + '</span>' +
-            '<b>' + (st.best[lvKey(w.n, i)] || 0) + '</b></div>').join('') +
-          '</div>';
+        const attempted = st.attempts.some(a => a.world === w.n) || levelsOf(w.n).some((_, i) => st.done[lvKey(w.n, i)] || st.best[lvKey(w.n, i)] > 0);
+        const locked = w.bonus && coreCleared() < BONUS_AFTER;
+        const cleared = levelsOf(w.n).filter((_, i) => st.done[lvKey(w.n, i)]).length;
+        return '<details class="progress-world"' + (attempted ? ' open' : '') + '><summary><span><b>' +
+          (w.n === 7 ? '' : T('World ', 'Dunia ') + w.n + ' · ') + tt(w.name) + '</b><small>' + cleared + ' / ' + levelsOf(w.n).length + T(' levels cleared', ' tahap selesai') + '</small></span>' +
+          '<span class="pill ' + (!attempted ? 'new' : m >= 70 ? 'done' : 'part') + '">' + (locked ? T('Locked', 'Terkunci') : !attempted ? T('Not started', 'Belum mula') : m + '%') + '</span></summary>' +
+          '<div class="progress-detail"><progress max="100" value="' + m + '" aria-label="' + tt(w.name) + ' ' + T('mastery', 'penguasaan') + '"></progress>' +
+          levelsOf(w.n).map((L, i) => '<div class="progress-level"><span><b>' + (i + 1) + '</b> · ' + tt(L.title) + '<small>' + trail(w.n, i) + '</small></span><b>' + (st.best[lvKey(w.n, i)] || 0) + ' XP</b>' +
+            '<button class="btn ghost sm" data-revisit-world="' + w.n + '" data-revisit-level="' + i + '"' + (locked || !unlocked(w.n, i) ? ' disabled' : '') + '>' + T(st.done[lvKey(w.n, i)] ? 'Replay' : 'Play', st.done[lvKey(w.n, i)] ? 'Main semula' : 'Mula') + '</button></div>').join('') +
+          '</div></details>';
       };
       const unsent = st.attempts.length - st.sent + unsentTests().length;
       $('screen-progress').innerHTML =
         '<div class="kicker">' + studentCode() + ' · ' + st.classCode + '</div>' +
         '<h1>' + T('My <span class="script">progress</span>', 'Kemajuan <span class="script">saya</span>') + '</h1>' +
-        '<div class="player">' +
-        '<div class="kpi"><b>' + xp + ' XP</b><span>' + tt(RANKS[r]) + '</span></div>' +
-        '<div class="kpi"><b>' + st.attempts.reduce((a, x) => a + x.hints_used + x.learn_used, 0) + '</b><span>' + T('hints & Learn used', 'petunjuk & Belajar digunakan') + '</span></div>' +
-        '<div class="kpi"><b>' + st.attempts.length + '</b><span>' + T('attempts', 'cubaan') + '</span></div>' +
-        '</div>' +
+        '<p>' + T('Every attempt helps you learn. Replaying keeps your best score.', 'Setiap cubaan membantu anda belajar. Markah terbaik dikekalkan apabila bermain semula.') + '</p>' +
+        '<div class="player"><div class="kpi"><b>' + xp + ' XP</b><span>' + tt(RANKS[r]) + '</span></div>' +
+        '<div class="kpi"><b>' + coreCleared() + ' / 20</b><span>' + T('core levels cleared', 'tahap teras selesai') + '</span></div>' +
+        '<div class="kpi"><b>' + st.badges.length + ' / ' + BADGES.length + '</b><span>' + T('badges earned', 'lencana diperoleh') + '</span></div></div>' +
+        '<div class="rank-track"><div class="row spread"><b>' + tt(RANKS[r]) + '</b><span>' + (r < RANKS.length - 1 ? T((500 - xp % 500) + ' XP to ', (500 - xp % 500) + ' XP lagi ke ') + tt(RANKS[r + 1]) : T('Highest rank reached!', 'Pangkat tertinggi dicapai!')) + '</span></div><progress max="500" value="' + (r < RANKS.length - 1 ? xp % 500 : 500) + '" aria-label="' + T('Progress to next rank', 'Kemajuan ke pangkat seterusnya') + '"></progress></div>' +
+        '<section class="sync-card"><div><h2>' + T('Your results', 'Keputusan anda') + '</h2><p>' + (unsent ? T(unsent + (unsent === 1 ? ' result ready to send to your teacher.' : ' results ready to send to your teacher.'), unsent + ' keputusan sedia dihantar kepada guru.') : st.attempts.length || st.tests.length ? T('All saved results have been sent.', 'Semua keputusan tersimpan telah dihantar.') : T('Play your first level to start your journey.', 'Main tahap pertama untuk memulakan pengembaraan anda.')) + '</p><small>' + T('Progress is saved on this device.', 'Kemajuan disimpan pada peranti ini.') + '</small></div><button class="btn" id="btn-submit"' + (unsent ? '' : ' disabled') + '>' + T('Submit results', 'Hantar keputusan') + '</button><div id="submit-msg" role="status" aria-live="polite"></div></section>' +
+        '<div class="sec-title">' + T('Your learning journey', 'Perjalanan pembelajaran anda') + '</div>' +
+        '<p class="muted">' + T('Open a world to view levels or play again. Mastery is your average best score across its levels.', 'Buka dunia untuk melihat tahap atau bermain semula. Penguasaan ialah purata markah terbaik bagi semua tahapnya.') + '</p>' +
         WORLDS.filter(w => WORLD[w.n]).map(worldCard).join('') +
         (WORLD[7] && Object.keys(st.best).some(k => k.indexOf('7-') === 0) ? worldCard({ n: 7, name: ['Boss Level', 'Tahap Bos'] }) : '') +
-        '<div class="sec-title">' + T('Badges', 'Lencana') + '</div>' +
-        '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span></div>').join('') + '</div>' +
-        '<div class="sec-title">' + T('Class board · this week', 'Papan kelas · minggu ini') + '</div>' +
-        '<div id="board"><p class="muted">' + T('Loading…', 'Memuatkan…') + '</p></div>' +
-        '<div class="sec-title">' + T('Send to my teacher', 'Hantar kepada guru') + '</div>' +
-        '<p>' + (unsent
-          ? T(unsent + ' result' + (unsent > 1 ? 's' : '') + ' not sent yet.', unsent + ' keputusan belum dihantar.')
-          : T('Everything has been sent.', 'Semuanya telah dihantar.')) + '</p>' +
-        '<div class="row"><button class="btn" id="btn-submit"' + (unsent ? '' : ' disabled') + '>' + T('Submit results', 'Hantar keputusan') + '</button>' +
-        '<button class="btn ghost" id="btn-prog-map">' + T('Back to map', 'Kembali ke peta') + '</button></div>' +
-        '<div class="muted" id="submit-msg" style="margin-top:12px;"></div>';
+        '<div class="sec-title">' + T('Your badge collection', 'Koleksi lencana anda') + '</div>' +
+        '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span><small>' + T(st.badges.includes(b.k) ? 'Earned' : 'To unlock', st.badges.includes(b.k) ? 'Diperoleh' : 'Untuk dibuka') + '</small></div>').join('') + '</div>' +
+        '<details class="class-board" id="class-board"><summary>' + T('Class board · this week', 'Papan kelas · minggu ini') + '</summary><div id="board"><p class="muted">' + T('Loading…', 'Memuatkan…') + '</p></div></details>' +
+        '<div class="row"><button class="btn" id="btn-prog-map">' + T('Continue exploring →', 'Teruskan pengembaraan →') + '</button><span class="muted">' + st.attempts.length + T(' attempts · ', ' cubaan · ') + st.attempts.reduce((a, x) => a + x.hints_used + x.learn_used, 0) + T(' hints & Learn used', ' petunjuk & Belajar digunakan') + '</span></div>';
       $('btn-submit').addEventListener('click', sendResults);
       $('btn-prog-map').addEventListener('click', () => { renderMap(); show('map'); });
-      loadBoard();
+      $('class-board').addEventListener('toggle', () => { if ($('class-board').open) loadBoard(); });
+      $('screen-progress').querySelectorAll('[data-revisit-world]').forEach(b => b.addEventListener('click', () => {
+        if (b.disabled) return;
+        const w = +b.dataset.revisitWorld, i = +b.dataset.revisitLevel;
+        if (!GQT.gate(() => WORLD[w].start(i))) WORLD[w].start(i);
+      }));
     }
 
     /* ---------- class board: teams first, then students (this week) ---------- */
@@ -2682,8 +2764,8 @@
       el.innerHTML = '<div class="grid2b"><div class="card"><h3 style="margin:0 0 4px;">' + T('Teams', 'Pasukan') + '</h3><p class="muted" style="margin:0 0 6px;">' +
         T('Average XP per member — help your teammates.', 'Purata XP setiap ahli — bantu rakan sepasukan anda.') + '</p>' + (tRows || '<p class="muted">—</p>') + '</div>' +
         '<div class="card"><h3 style="margin:0 0 6px;">' + T('Players', 'Pemain') + '</h3>' + (sRows || '<p class="muted">—</p>') + '</div></div>' +
-        '<p class="muted" style="margin-top:10px;">' + T('Counts results sent this week (from Monday). Press Submit results below to update yours. Team Player badge: every member of your team clears a level this week.',
-          'Mengira keputusan yang dihantar minggu ini (dari Isnin). Tekan Hantar keputusan di bawah untuk mengemas kini markah anda. Lencana Pemain Pasukan: setiap ahli pasukan anda menyelesaikan satu tahap minggu ini.') + '</p>';
+        '<p class="muted" style="margin-top:10px;">' + T('Counts results sent this week (from Monday). Use Submit results above to update yours. Team Player badge: every member of your team clears a level this week.',
+          'Mengira keputusan yang dihantar minggu ini (dari Isnin). Tekan Hantar keputusan di atas untuk mengemas kini markah anda. Lencana Pemain Pasukan: setiap ahli pasukan anda menyelesaikan satu tahap minggu ini.') + '</p>';
     }
 
     /* One POST carries attempt rows and test rows. Tests are only marked

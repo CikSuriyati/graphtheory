@@ -1122,38 +1122,167 @@
       animation: drop .35s cubic-bezier(.2, .7, .3, 1.4);
     }
 
+    /* ---- Pre-test / post-test / survey ---- */
+    .testcard { background: var(--green-soft); grid-column: 1 / -1; }
+    .trow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-weight: 700; font-size: 14.5px; }
+    .tprog { position: sticky; top: 0; z-index: 20; background: var(--bg); padding: 12px 0 14px; font-size: 13.5px; color: var(--ink-soft); }
+    .tprog .progress { height: 12px; background: #fff; border: 2px solid var(--ink); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+    .tprog .progress > i { display: block; height: 100%; background: var(--orange); transition: width .35s; }
+    .qn { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 9px; border: 2px solid var(--ink); background: var(--yellow);
+      font-weight: 700; display: grid; place-items: center; transform: rotate(-3deg); }
+    .tdiag { margin: 14px 0 4px; border: 2px solid var(--line); border-radius: 14px; background: #fffdfb; }
+    .tdiag svg { display: block; width: 100%; max-width: 460px; height: auto; margin: 0 auto; }
+    input.tnum { width: 110px; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; font: inherit; font-size: 22px; font-weight: 700; text-align: center; }
+    input.tnum:focus { outline: none; border-color: var(--orange); }
+    .opt.chosen { background: var(--orange); }
+    .lk { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .lk p { margin: 0 0 8px; color: var(--ink); font-weight: 500; }
+    .lk-key { display: flex; justify-content: space-between; font-family: "Caveat", cursive; font-size: 18px; color: var(--ink-faint); border-bottom: 2px dashed var(--line); padding-bottom: 8px; }
+    .scale { display: flex; gap: 7px; }
+    .scale button { flex: 1; height: 46px; border: 2px solid var(--line); background: #fff; border-radius: 11px; font: inherit; font-size: 15px; font-weight: 700; color: var(--ink-faint); cursor: pointer; }
+    .scale button:hover { border-color: var(--orange); color: var(--orange); }
+    .scale button.on { background: var(--orange); border-color: var(--ink); color: var(--ink); box-shadow: 0 3px 0 var(--ink); }
+    textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; font: inherit; font-size: 15px; resize: vertical; }
+    textarea:focus { outline: none; border-color: var(--orange); }
+
     /* ---- World 2: Graph Detective ---- */
-    .ask { background: var(--yellow-soft); margin: 16px 0 6px; }
-    .pad { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .ask {
+      background: var(--yellow-soft);
+      margin: 16px 0 6px;
+    }
+
+    .pad {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
     .pad button {
-      width: 50px; height: 50px; border: 2px solid var(--line); background: #fff; border-radius: 12px;
-      font: inherit; font-size: 18px; font-weight: 700; color: var(--ink-soft); cursor: pointer; transition: all .12s;
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all .12s;
     }
-    .pad button:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
-    .pad button:active { background: var(--orange); border-color: var(--ink); color: var(--ink); }
-    ol.clues { margin: 10px 0 0; padding-left: 22px; color: var(--ink); font-size: 15.5px; }
-    ol.clues li { margin-bottom: 4px; }
-    svg path { fill: none; }
-    .edge.hl .road { stroke: var(--orange); stroke-width: 7; }
-    .edge.found .road { stroke: #3f7a1f; stroke-width: 6; }
-    .town.dim { opacity: .28; }
-    .town.found .dot { fill: var(--green); }
-    .town.ask .dot { fill: var(--yellow); }
-    .deg rect { fill: var(--yellow); stroke: var(--ink); stroke-width: 1.5; }
-    .deg text { font: 700 11.5px "DM Sans", sans-serif; fill: var(--ink); }
-    .disc-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; margin-top: 8px; }
-    .degtab td, .degtab th { padding: 7px 10px; }
-    .degtab tr.sum td { font-weight: 700; border-top: 2px dashed var(--line); }
+
+    .pad button:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      transform: translateY(-2px);
+    }
+
+    .pad button:active {
+      background: var(--orange);
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    ol.clues {
+      margin: 10px 0 0;
+      padding-left: 22px;
+      color: var(--ink);
+      font-size: 15.5px;
+    }
+
+    ol.clues li {
+      margin-bottom: 4px;
+    }
+
+    svg path {
+      fill: none;
+    }
+
+    .edge.hl .road {
+      stroke: var(--orange);
+      stroke-width: 7;
+    }
+
+    .edge.found .road {
+      stroke: #3f7a1f;
+      stroke-width: 6;
+    }
+
+    .town.dim {
+      opacity: .28;
+    }
+
+    .town.found .dot {
+      fill: var(--green);
+    }
+
+    .town.ask .dot {
+      fill: var(--yellow);
+    }
+
+    .deg rect {
+      fill: var(--yellow);
+      stroke: var(--ink);
+      stroke-width: 1.5;
+    }
+
+    .deg text {
+      font: 700 11.5px "DM Sans", sans-serif;
+      fill: var(--ink);
+    }
+
+    .disc-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      align-items: start;
+      margin-top: 8px;
+    }
+
+    .degtab td,
+    .degtab th {
+      padding: 7px 10px;
+    }
+
+    .degtab tr.sum td {
+      font-weight: 700;
+      border-top: 2px dashed var(--line);
+    }
+
     input.cell {
-      width: 52px; padding: 7px 8px; text-align: center; border: 2px solid var(--line); border-radius: 10px;
-      font: inherit; font-size: 16px; font-weight: 700; color: var(--ink); background: #fff;
+      width: 52px;
+      padding: 7px 8px;
+      text-align: center;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      background: #fff;
     }
-    input.cell:focus { outline: none; border-color: var(--orange); }
-    input.cell.ok { background: var(--green-soft); border-color: #3f7a1f; }
-    input.cell.bad { border-color: var(--terra); background: var(--terra-soft); }
+
+    input.cell:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    input.cell.ok {
+      background: var(--green-soft);
+      border-color: #3f7a1f;
+    }
+
+    input.cell.bad {
+      border-color: var(--terra);
+      background: var(--terra-soft);
+    }
 
     @media (max-width:600px) {
-      .disc-grid { grid-template-columns: 1fr; }
+      .disc-grid {
+        grid-template-columns: 1fr;
+      }
+
       .wrap {
         padding: 12px 14px 64px;
       }
@@ -1316,6 +1445,9 @@
 
     <section id="screen-discover" class="card hidden"></section>
 
+    <!-- ============ PRE / POST TEST (tests.js) ============ -->
+    <section id="screen-test" class="hidden"></section>
+
     <!-- ============ PROGRESS ============ -->
     <section id="screen-progress" class="hidden"></section>
 
@@ -1328,11 +1460,12 @@
   <script src="../counter.js" defer></script>
   <script src="graph.js"></script>
   <script src="world2.js"></script>
+  <script src="tests.js"></script>
   <script>
     /* ============================================================
        1. CONFIG  —  paste your Apps Script Web App URL here
        ============================================================ */
-    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbywcNzXKYHWLkl6ELysdanTtDapPZguX8m_j5IHFQGMCA5yYEvoz9UjDCeweInCquV_/exec';
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzsdFweDlKcmaJKB0lfoAGZDmZRKl0jvB4JwNYCF0CaGHTC6_Lh8lzU5rKbHYCihw/exec';
 
     const E = GraphEngine;
     const STORE = 'graphquest.v1';
@@ -1439,7 +1572,7 @@
     /* ============================================================
        4. SAVED PROGRESS  (this device only)
        ============================================================ */
-    function blank() { return { classCode: '', reg: '', best: {}, done: {}, streak: 0, badges: [], discovered: {}, attempts: [], sent: 0 }; }
+    function blank() { return { classCode: '', reg: '', best: {}, done: {}, streak: 0, badges: [], discovered: {}, attempts: [], sent: 0, tests: [], testsSent: 0 }; }
     let st = blank();
     try { const raw = localStorage.getItem(STORE); if (raw) st = Object.assign(blank(), JSON.parse(raw)); } catch (e) { }
     function save() { try { localStorage.setItem(STORE, JSON.stringify(st)); } catch (e) { } }
@@ -1466,7 +1599,7 @@
        5. SCREENS
        ============================================================ */
     const $ = id => document.getElementById(id);
-    const SCREENS = ['entry', 'map', 'level', 'case', 'discover', 'progress'];
+    const SCREENS = ['entry', 'map', 'level', 'case', 'discover', 'progress', 'test'];
     let current = 'entry';
     function show(name) {
       current = name;
@@ -1487,7 +1620,7 @@
       $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
       $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
       $('lnk-tool').textContent = '← GraphTheory';
-      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), discover: renderDiscover, progress: renderProgress })[current]();
+      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render() })[current]();
     }
     $('btn-lang').addEventListener('click', () => {
       LANG = LANG === 'bm' ? 'en' : 'bm';
@@ -1530,6 +1663,7 @@
       }
       st.classCode = cc; st.reg = String(+rg); save();
       renderMap(); show('map');
+      GQT.fromUrl();
     });
     ['in-class', 'in-reg'].forEach(id => {
       $(id).addEventListener('input', e => e.target.classList.remove('bad'));
@@ -1571,14 +1705,20 @@
           ? '<button class="btn sm' + (st.discovered[w.n] ? ' ghost' : ' pulse') + '" data-discover="' + w.n + '" style="margin-top:12px;">' +
           (st.discovered[w.n] ? T('Discover ✓', 'Temui ✓') : T('Discover the rule', 'Temui peraturannya')) + '</button>' : '';
         return '<div class="world open">' + head + pill + '<div class="steps">' + steps + '</div>' + disc + '</div>';
-      }).join('');
+      }).join('') + GQT.card();
 
       $('btn-progress').textContent = T('My progress', 'Kemajuan saya');
       $('btn-switch').textContent = T('Not ' + studentCode() + '? Change', 'Bukan ' + studentCode() + '? Tukar');
     }
     $('worlds').addEventListener('click', e => {
       const b = e.target.closest('[data-level]');
-      if (b && !b.disabled) return WORLD[+b.dataset.world].start(+b.dataset.level);
+      if (b && !b.disabled) {
+        const w = +b.dataset.world, i = +b.dataset.level;
+        if (GQT.gate(() => WORLD[w].start(i))) return;   // the pre-test comes first, once
+        return WORLD[w].start(i);
+      }
+      const tb = e.target.closest('[data-test]');
+      if (tb) return GQT.start(tb.dataset.test);
       const d = e.target.closest('[data-discover]');
       if (d) openDiscover(+d.dataset.discover);
     });
@@ -2110,7 +2250,7 @@
             '<b>' + (st.best[lvKey(w.n, i)] || 0) + '</b></div>').join('') +
           '</div>';
       };
-      const unsent = st.attempts.length - st.sent;
+      const unsent = st.attempts.length - st.sent + unsentTests().length;
       $('screen-progress').innerHTML =
         '<div class="kicker">' + studentCode() + ' · ' + st.classCode + '</div>' +
         '<h1>' + T('My <span class="script">progress</span>', 'Kemajuan <span class="script">saya</span>') + '</h1>' +
@@ -2124,7 +2264,7 @@
         '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span></div>').join('') + '</div>' +
         '<div class="sec-title">' + T('Send to my teacher', 'Hantar kepada guru') + '</div>' +
         '<p>' + (unsent
-          ? T(unsent + ' attempt' + (unsent > 1 ? 's' : '') + ' not sent yet.', unsent + ' cubaan belum dihantar.')
+          ? T(unsent + ' result' + (unsent > 1 ? 's' : '') + ' not sent yet.', unsent + ' keputusan belum dihantar.')
           : T('Everything has been sent.', 'Semuanya telah dihantar.')) + '</p>' +
         '<div class="row"><button class="btn" id="btn-submit"' + (unsent ? '' : ' disabled') + '>' + T('Submit results', 'Hantar keputusan') + '</button>' +
         '<button class="btn ghost" id="btn-prog-map">' + T('Back to map', 'Kembali ke peta') + '</button></div>' +
@@ -2133,9 +2273,24 @@
       $('btn-prog-map').addEventListener('click', () => { renderMap(); show('map'); });
     }
 
+    /* One POST carries attempt rows and test rows. Tests are only marked
+       sent when the Apps Script confirms them (testsReceived) — an older
+       script ignores tests, so they wait on the device instead of vanishing. */
+    const unsentTests = () => (st.tests || []).slice(st.testsSent || 0);
+    async function post(rows, tests) {
+      const res = await fetch(ENDPOINT, {
+        // text/plain avoids a CORS preflight that Apps Script cannot answer
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ rows, tests }), redirect: 'follow'
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'rejected');
+      return data;
+    }
+
     async function sendResults() {
-      const rows = st.attempts.slice(st.sent), msg = $('submit-msg');
-      if (!rows.length) return;
+      const rows = st.attempts.slice(st.sent), tests = unsentTests(), msg = $('submit-msg');
+      if (!rows.length && !tests.length) return;
       if (ENDPOINT.indexOf('PASTE_') === 0) {
         msg.textContent = T('Results aren’t connected yet — your teacher needs to add the results link. Your progress is safe on this device.',
           'Keputusan belum disambungkan — guru anda perlu menambah pautan keputusan. Kemajuan anda selamat pada peranti ini.');
@@ -2144,16 +2299,12 @@
       $('btn-submit').disabled = true;
       msg.textContent = T('Sending…', 'Menghantar…');
       try {
-        // text/plain avoids a CORS preflight that Apps Script cannot answer
-        const res = await fetch(ENDPOINT, {
-          method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ rows }), redirect: 'follow'
-        });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || 'rejected');
-        st.sent = st.attempts.length; save();
+        const data = await post(rows, tests);
+        st.sent = st.attempts.length;
+        if (data.testsReceived != null) st.testsSent = st.tests.length;
+        save();
         renderProgress();
-        $('submit-msg').textContent = T('Sent! ' + rows.length + ' attempts are with your teacher.', 'Berjaya! ' + rows.length + ' cubaan telah sampai kepada guru anda.');
+        $('submit-msg').textContent = T('Sent! Your results are with your teacher.', 'Berjaya! Keputusan anda telah sampai kepada guru anda.');
       } catch (err) {
         $('btn-submit').disabled = false;
         msg.textContent = T('That didn’t go through — check your connection and try again. Nothing is lost.',
@@ -2161,13 +2312,26 @@
       }
     }
 
+    /** Called by tests.js right after a test: send it now, quietly. */
+    async function sendTests() {
+      const tests = unsentTests();
+      if (!tests.length || ENDPOINT.indexOf('PASTE_') === 0) return;
+      try {
+        const data = await post([], tests);
+        if (data.testsReceived != null) { st.testsSent = st.tests.length; save(); }
+      } catch (e) { /* stays queued; Submit results tries again */ }
+    }
+
     /* ---------- go ---------- */
     if (window.W2) W2.wire();
     if (st.classCode) { current = 'map'; }
     applyLang();
     show(current);
+    if (st.classCode) GQT.fromUrl();
   </script>
-    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64111b69c3f540099828ebc636708e31"}'></script><!-- End Cloudflare Web Analytics -->
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js'
+    data-cf-beacon='{"token": "64111b69c3f540099828ebc636708e31"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>

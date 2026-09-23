@@ -1,12 +1,14 @@
 # GRAPH QUEST — setup
 
-Five files, in `graphquest/`:
+Six files, in `graphquest/`, plus a review sheet:
 
 | File | What it is |
 |---|---|
 | `index.html` | The game shell (entry, world map, My progress, Discover) and World 3 |
 | `world2.js` | World 2, Graph Detective |
 | `teacher.html` | The teacher dashboard (Stage 3) — see *Teacher dashboard* below |
+| `tests.js` | The pre-test, post-test and survey — see *Pre-test and post-test* below |
+| `TEST-FORMS.md` | Both test forms written out with their answers, for review |
 | `graph.js` | The graph engine: draws nothing, solves everything. Every puzzle is solved before it is shown |
 | `graphquest-apps-script.gs` | The backend that saves results to your Google Sheet |
 
@@ -60,7 +62,7 @@ Make a new Google Sheet. The script creates its own tab called **Attempts**.
 
 **Extensions → Apps Script**. Delete whatever is in `Code.gs`, paste the entire contents of `graphquest-apps-script.gs`, Save.
 
-## 3. Run the two setup functions
+## 3. Run the two setup functions (creates the Attempts and Tests tabs)
 
 Run **`setupSheet`**. Authorise when prompted — Google will warn the app "isn't verified," which is expected for your own script. **Advanced → Go to (project name) → Allow**.
 
@@ -166,21 +168,42 @@ It shows, for the class you pick:
 - **Level by level** — how much of the class cleared each level, the wrong-answer rate, how many needed Hint or Learn, and the top mistake
 - **Students needing support** — the lowest 5 by mastery in each world
 - **Every student** — tap one for their attempt trail (✗ → ✗ → ✓) and mistakes, level by level
-- **Pre-test and post-test** — open a CSV with columns `student_code, pre, post` to see the means, the mean gain and a paired t next to game mastery
+- **Pre-test and post-test** — filled in automatically from the in-game tests: means, mean gain, % improved and a paired t, for the students who played and for a control group that didn't. Also the difference in gain between the two groups, question-by-question results, and the survey. Paper tests instead? Open a CSV with columns `student_code, pre, post`
 
 Everything is computed in the teacher's browser. Nothing is sent anywhere.
 
 ### Two ways to load results
 
-**A. Connect to the Sheet (recommended).** The dashboard reads the Attempts tab through the same Apps Script, but only with a teacher key. The Sheet stays private.
+**A. Connect to the Sheet (recommended).** The dashboard reads the Attempts and Tests tabs through the same Apps Script, but only with a teacher key. The Sheet stays private.
 
 1. In the Apps Script, change `var TEACHER_KEY = 'CHANGE_ME';` to your own long random phrase (e.g. four unrelated words). Keep it out of GitHub — only your Apps Script copy holds the real key.
 2. **Deploy → Manage deployments → pencil → Version: New version → Deploy.** The /exec link stays the same.
 3. Open the dashboard, paste the /exec link (already filled in) and your key, and press **Load results**. The key is remembered on that device only, and **Reload** fetches the latest rows.
 
-**B. Open a CSV file.** In the Sheet, on the Attempts tab: **File → Download → Comma-separated values (.csv)**. Then choose that file on the dashboard. This needs no setup, and the file never leaves the device.
+**B. Open CSV files.** In the Sheet, download each tab: on Attempts, then on Tests, **File → Download → Comma-separated values (.csv)**. Choose both files together on the dashboard. This needs no setup, and the file never leaves the device.
 
 Don't use *File → Share → Publish to web* for this: it makes every row readable by anyone with the link.
+
+---
+
+## Pre-test and post-test
+
+Built into the game, open to everyone, controlled only by the order of play. There is no switch to turn it on.
+
+| | When it appears | What the student sees |
+|---|---|---|
+| **Pre-test** | On the *Before & after test* card, and automatically the first time a student taps a level | 10 questions, then *Submitted ✓* and *Start playing*. It can be skipped, and it closes once the student clears a level |
+| **Post-test** | Once the student has cleared **5 levels** and pressed **Submit results** | 10 matched questions, then the 8-item survey and one open question, then *before x/10 → after y/10* |
+| **Control class** | Give them `graphtheory.visuallymath.com/graphquest/?test=pre` and later `…?test=post` | The test straight away, no playing needed and no survey |
+
+- **Two matched forms.** Odd register numbers take form A before and B after; even numbers take B then A. Item *n* tests the same idea on both. **Review them in `TEST-FORMS.md` before a class uses them.**
+- **A test, not a game.** No hints, no feedback on answers, no XP, one attempt. The pre-test score isn't shown until after the post-test.
+- **Sent straight away.** Test answers go to a new **Tests** tab in the Sheet when the student finishes, and again with *Submit results* if the first try failed.
+- **The dashboard keeps the data honest.** It leaves out pre-tests taken after a student had already cleared a level, and says how many skipped, took only one test, or took the pre-test late.
+
+The Tests tab has one row per test: `test_id, timestamp, class_code, student_code, test (pre / post / survey), form, score, max, answers, correct_items, time_s, levels_cleared, skipped, received`. `correct_items` is ten 1s and 0s, one per question, which makes item analysis in Excel or SPSS straightforward.
+
+**Needs the updated Apps Script.** Until you paste in the new `graphquest-apps-script.gs` and deploy a new version, test answers wait safely on each student's device. They are sent the next time the student presses *Submit results* after the update.
 
 ---
 

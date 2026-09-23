@@ -103,6 +103,8 @@
     .wrap{padding:12px 14px 60px;} h1{font-size:29px;}
     .fields,.connect,.grid2{grid-template-columns:1fr;}
     .card{padding:18px 15px;}
+    .kpi{min-width:0;flex:1 1 calc(50% - 12px);}
+    .kpi b{font-size:22px;}
   }
 </style>
 </head>
@@ -136,7 +138,7 @@
       <div class="or">
         <h3 id="c-h2"></h3>
         <p class="muted" id="c-p2" style="margin-top:4px;"></p>
-        <span class="btn ghost file"><span id="lbl-csv"></span><input type="file" id="in-csv" accept=".csv,text/csv"></span>
+        <span class="btn ghost file"><span id="lbl-csv"></span><input type="file" id="in-csv" accept=".csv,text/csv" multiple></span>
       </div>
     </div>
     <div id="c-err"></div>
@@ -182,6 +184,7 @@
   <p class="muted" id="privacy" style="margin-top:40px;"></p>
 </div>
 
+<script src="tests.js"></script>
 <script>
 /* ============================================================
    GRAPH QUEST — teacher dashboard
@@ -234,7 +237,7 @@ const tagLabel = t => TAGS[t] ? tt(TAGS[t].l) : t;
 /* ============================================================
    Loading
    ============================================================ */
-let ALL = [], PRE = null, source = null, loadedAt = null, current = null, openStudent = null;
+let ALL = [], TESTS = [], PRE = null, source = null, loadedAt = null, current = null, openStudent = null;
 
 function conn() { try { return JSON.parse(localStorage.getItem(CONN_KEY)) || {}; } catch (e) { return {}; } }
 function saveConn(o) { try { localStorage.setItem(CONN_KEY, JSON.stringify(o)); } catch (e) {} }
@@ -256,6 +259,7 @@ async function loadFromScript() {
       throw new Error(m);
     }
     saveConn({ url, key });
+    TESTS = (data.tests || []).map(cleanTest);
     useRows(data.rows, 'script');
   } catch (err) {
     showErr(err.message && err.message !== 'Failed to fetch' ? err.message
@@ -299,12 +303,22 @@ function clean(r) {
   };
 }
 
+function cleanTest(r) {
+  let answers = null;
+  try { answers = JSON.parse(r.answers || 'null'); } catch (e) {}
+  return {
+    id: String(r.test_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(),
+    test: String(r.test || ''), form: String(r.form || ''), score: +r.score || 0, max: +r.max || 0, answers,
+    items: String(r.correct_items || ''), t: +r.time_s || 0, levels: +r.levels_cleared || 0, skipped: bool(r.skipped)
+  };
+}
+
 function useRows(rows, src) {
   const seen = new Set();
   ALL = rows.map(clean).filter(r => r.stu && r.w && r.lv && !seen.has(r.id) && (seen.add(r.id), true));
   ALL.forEach((r, i) => { r.n = i; });                  // sheet order breaks ties inside the same minute
   source = src; loadedAt = new Date(); openStudent = null;
-  const classes = [...new Set(ALL.map(r => r.cls))].sort();
+  const classes = [...new Set(ALL.map(r => r.cls).concat(TESTS.map(r => r.cls)))].filter(Boolean).sort();
   if (!classes.includes(current)) current = classes.length === 1 ? classes[0] : '';
   $('sel-class').innerHTML = (classes.length > 1 ? '<option value="">' + T('All classes', 'Semua kelas') + '</option>' : '') +
     classes.map(c => '<option value="' + esc(c) + '"' + (c === current ? ' selected' : '') + '>' + esc(c) + '</option>').join('');
@@ -384,9 +398,9 @@ function renderStatic() {
   $('lbl-key').textContent = T('Teacher key', 'Kunci guru');
   $('btn-load').textContent = T('Load results', 'Muatkan keputusan');
   $('c-h2').textContent = T('Or open a CSV file', 'Atau buka fail CSV');
-  $('c-p2').textContent = T('In the Sheet: File → Download → CSV, on the Attempts tab. Nothing is uploaded — the file is read on this device.',
-    'Dalam Sheet: Fail → Muat turun → CSV, pada tab Attempts. Tiada apa dimuat naik — fail dibaca pada peranti ini.');
-  $('lbl-csv').textContent = T('Choose CSV file', 'Pilih fail CSV');
+  $('c-p2').textContent = T('In the Sheet: File → Download → CSV, once on the Attempts tab and once on the Tests tab. Choose both files together. Nothing is uploaded — they are read on this device.',
+    'Dalam Sheet: Fail → Muat turun → CSV, sekali pada tab Attempts dan sekali pada tab Tests. Pilih kedua-dua fail serentak. Tiada apa dimuat naik — ia dibaca pada peranti ini.');
+  $('lbl-csv').textContent = T('Choose CSV files', 'Pilih fail CSV');
   $('lbl-class').textContent = T('Class', 'Kelas');
   $('btn-reload').textContent = T('Reload', 'Muat semula');
   $('btn-disconnect').textContent = T('Change source', 'Tukar sumber');
@@ -404,8 +418,9 @@ function render() {
   $('btn-reload').classList.toggle('hidden', source !== 'script');
 
   if (!rows.length) {
+    renderPrePost(X);
     $('kpis').innerHTML = ''; $('reteach').innerHTML = '<div class="card"><p style="margin:0;">' + T('No attempts yet. Once students press Submit results in the game, they appear here.', 'Belum ada cubaan. Setelah murid menekan Hantar keputusan dalam permainan, ia akan dipaparkan di sini.') + '</p></div>';
-    ['mastery', 'mistakes', 'levels', 'support', 'students', 'student', 'prepost'].forEach(id => { $(id).innerHTML = ''; });
+    ['mastery', 'mistakes', 'levels', 'support', 'students', 'student'].forEach(id => { $(id).innerHTML = ''; });
     return;
   }
 
@@ -568,36 +583,125 @@ function renderStudent(X, rows) {
   $('student').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/* ---------- pre-test / post-test (a separate CSV: student_code, pre, post) ---------- */
+/* ---------- pre-test / post-test ----------
+   In-app tests (the Tests tab) are used when there are any. A pre-test only
+   counts if it was taken before the student cleared a level. Students with
+   game attempts are the game group; those with none are the control group.
+   A paper-test CSV (student_code, pre, post) can be opened instead. */
+const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+const f1 = x => (Math.round(x * 10) / 10).toFixed(1);
+function paired(list) {
+  const gains = list.map(p => p.post - p.pre), g = mean(gains);
+  const sd = gains.length > 1 ? Math.sqrt(gains.reduce((a, x) => a + (x - g) * (x - g), 0) / (gains.length - 1)) : 0;
+  return { n: list.length, pre: mean(list.map(p => p.pre)), post: mean(list.map(p => p.post)), gain: g,
+    up: pct(gains.filter(x => x > 0).length, gains.length), t: sd ? g / (sd / Math.sqrt(gains.length)) : 0 };
+}
+
 function renderPrePost(X) {
   $('k-prepost').textContent = T('Part five', 'Bahagian lima');
   $('h-prepost').textContent = T('Pre-test and post-test', 'Ujian pra dan ujian pasca');
-  const loader = '<span class="btn ghost sm file"><span>' + T('Open scores CSV', 'Buka CSV markah') + '</span><input type="file" id="in-pre" accept=".csv,text/csv"></span>';
-  if (!PRE) {
-    $('prepost').innerHTML = '<p>' + T('Once both tests are marked, open a CSV with three columns — <b class="ink">student_code, pre, post</b> — and the class averages appear here next to game mastery.',
-      'Setelah kedua-dua ujian ditanda, buka CSV dengan tiga lajur — <b class="ink">student_code, pre, post</b> — dan purata kelas akan dipaparkan di sini bersama penguasaan permainan.') + '</p>' + loader;
-  } else {
-    const inClass = PRE.filter(p => !current || X.S[p.stu] || p.stu.indexOf(current.split('-')[0] + '-') === 0);
-    const both = inClass.filter(p => !isNaN(p.pre) && !isNaN(p.post));
-    const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
-    const gains = both.map(p => p.post - p.pre), g = mean(gains);
-    const sd = gains.length > 1 ? Math.sqrt(gains.reduce((a, x) => a + (x - g) * (x - g), 0) / (gains.length - 1)) : 0;
-    const tStat = sd ? g / (sd / Math.sqrt(gains.length)) : 0;
-    const f1 = x => (Math.round(x * 10) / 10).toFixed(1);
-    $('prepost').innerHTML = '<div class="kpis">' +
-      '<div class="kpi"><b>' + f1(mean(both.map(p => p.pre))) + '</b><span>' + T('pre-test mean', 'min ujian pra') + '</span></div>' +
-      '<div class="kpi"><b>' + f1(mean(both.map(p => p.post))) + '</b><span>' + T('post-test mean', 'min ujian pasca') + '</span></div>' +
-      '<div class="kpi"><b>' + (g >= 0 ? '+' : '') + f1(g) + '</b><span>' + T('mean gain', 'min peningkatan') + '</span></div>' +
-      '<div class="kpi"><b>' + both.length + '</b><span>' + T('students with both tests', 'murid dengan kedua-dua ujian') + '</span></div></div>' +
-      '<p>' + T(pct(gains.filter(x => x > 0).length, gains.length) + '% of students improved. Paired t = ' + tStat.toFixed(2) + ', df = ' + Math.max(gains.length - 1, 0) + ' — confirm the p-value in SPSS or Excel, and use Wilcoxon if the class is small.',
-        pct(gains.filter(x => x > 0).length, gains.length) + '% murid meningkat. t berpasangan = ' + tStat.toFixed(2) + ', df = ' + Math.max(gains.length - 1, 0) + ' — sahkan nilai-p dalam SPSS atau Excel, dan guna Wilcoxon jika kelas kecil.') + '</p>' +
-      '<div class="scroll"><table><tr><th>' + T('Student', 'Murid') + '</th><th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Gain', 'Peningkatan') +
-      '</th><th class="num">' + T('World 2', 'Dunia 2') + '</th><th class="num">' + T('World 3', 'Dunia 3') + '</th></tr>' +
-      both.map(p => {
-        const st = X.S[p.stu], m = w => st && st.mastery[w] != null ? Math.round(st.mastery[w]) + '%' : '—';
-        return '<tr><td>' + esc(p.stu) + '</td><td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td><td class="num">' + m(2) + '</td><td class="num">' + m(3) + '</td></tr>';
-      }).join('') + '</table></div><div style="margin-top:12px;">' + loader + '</div>';
+  const loader = '<span class="btn ghost sm file"><span>' + T('Open paper-test CSV', 'Buka CSV ujian kertas') + '</span><input type="file" id="in-pre" accept=".csv,text/csv"></span>';
+  const tests = TESTS.filter(r => !current || r.cls === current);
+  const played = new Set(ALL.map(r => r.stu));
+  let pairs = [], notes = [], itemsPre = [], itemsPost = [];
+
+  if (PRE) {
+    pairs = PRE.filter(p => !current || p.stu.indexOf(current.split('-')[0] + '-') === 0).filter(p => !isNaN(p.pre) && !isNaN(p.post))
+      .map(p => ({ stu: p.stu, pre: p.pre, post: p.post, game: played.has(p.stu) }));
+  } else if (tests.some(r => r.test === 'pre' || r.test === 'post')) {
+    const by = {};
+    tests.forEach(r => { (by[r.stu] = by[r.stu] || []).push(r); });
+    let skipped = 0, late = 0, preOnly = 0, postOnly = 0;
+    Object.keys(by).forEach(stu => {
+      const rs = by[stu].sort((a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : 0));
+      const pres = rs.filter(r => r.test === 'pre');
+      const pre = pres.find(r => !r.skipped && r.levels === 0);
+      if (!pre && pres.some(r => r.skipped)) skipped++;
+      if (!pre && pres.some(r => !r.skipped && r.levels > 0)) late++;
+      const post = rs.filter(r => r.test === 'post').slice(-1)[0];
+      const game = played.has(stu);
+      if (pre && game) itemsPre.push(pre.items);
+      if (post && game) itemsPost.push(post.items);
+      if (pre && post) pairs.push({ stu, pre: pre.score, post: post.score, max: post.max, game, preForm: pre.form, postForm: post.form, levels: post.levels });
+      else if (pre) preOnly++;
+      else if (post) postOnly++;
+    });
+    if (preOnly) notes.push(T(preOnly + ' with a pre-test but no post-test yet', preOnly + ' ada ujian pra tetapi belum ujian pasca'));
+    if (postOnly) notes.push(T(postOnly + ' with a post-test but no usable pre-test', postOnly + ' ada ujian pasca tetapi tiada ujian pra yang sah'));
+    if (skipped) notes.push(T(skipped + ' skipped the pre-test', skipped + ' melangkau ujian pra'));
+    if (late) notes.push(T(late + ' took the pre-test after playing (left out)', late + ' menjawab ujian pra selepas bermain (tidak dikira)'));
   }
+
+  if (!pairs.length && !tests.length) {
+    $('prepost').innerHTML = '<p>' + T('Students take the pre-test in Graph Quest before their first level, and the post-test once they have cleared ' + GQT.POST_AFTER_LEVELS + ' levels and submitted results. A control class that doesn’t play uses the link <b class="ink">…/graphquest/?test=pre</b> and <b class="ink">?test=post</b>. Results appear here automatically.',
+      'Murid menjawab ujian pra dalam Graph Quest sebelum tahap pertama, dan ujian pasca setelah menyelesaikan ' + GQT.POST_AFTER_LEVELS + ' tahap dan menghantar keputusan. Kelas kawalan yang tidak bermain guna pautan <b class="ink">…/graphquest/?test=pre</b> dan <b class="ink">?test=post</b>. Keputusan dipaparkan di sini secara automatik.') +
+      '</p><p class="muted">' + T('Used paper tests instead? Open a CSV with columns student_code, pre, post.', 'Guna ujian kertas? Buka CSV dengan lajur student_code, pre, post.') + '</p>' + loader;
+    wirePre();
+    return;
+  }
+
+  const grp = (list, label, cls) => {
+    if (!list.length) return '';
+    const r = paired(list);
+    return '<div class="card" style="margin-top:14px;"><h3>' + label + ' <span class="pill ' + cls + '">n = ' + r.n + '</span></h3><div class="kpis">' +
+      '<div class="kpi"><b>' + f1(r.pre) + '</b><span>' + T('pre-test mean', 'min ujian pra') + '</span></div>' +
+      '<div class="kpi"><b>' + f1(r.post) + '</b><span>' + T('post-test mean', 'min ujian pasca') + '</span></div>' +
+      '<div class="kpi"><b>' + (r.gain >= 0 ? '+' : '') + f1(r.gain) + '</b><span>' + T('mean gain', 'min peningkatan') + '</span></div>' +
+      '<div class="kpi"><b>' + r.up + '%</b><span>' + T('improved', 'meningkat') + '</span></div></div>' +
+      '<p class="muted" style="margin:6px 0 0;">' + T('Paired t = ' + r.t.toFixed(2) + ', df = ' + Math.max(r.n - 1, 0) + '. Confirm the p-value in SPSS or Excel; with a small class use Wilcoxon.', 't berpasangan = ' + r.t.toFixed(2) + ', df = ' + Math.max(r.n - 1, 0) + '. Sahkan nilai-p dalam SPSS atau Excel; bagi kelas kecil guna Wilcoxon.') + '</p></div>';
+  };
+  const game = pairs.filter(p => p.game), ctrl = pairs.filter(p => !p.game);
+  let html = (PRE ? '<p class="muted">' + T('From the paper-test CSV.', 'Daripada CSV ujian kertas.') + '</p>' : '<p class="muted">' + T('From the in-game tests (out of 10). Forms A and B are swapped between pre and post.', 'Daripada ujian dalam permainan (daripada 10). Borang A dan B ditukar antara pra dan pasca.') + '</p>') +
+    grp(game, T('Played Graph Quest', 'Bermain Graph Quest'), 'done') +
+    grp(ctrl, T('Didn’t play (control)', 'Tidak bermain (kawalan)'), 'new');
+  if (game.length && ctrl.length) {
+    const d = paired(game).gain - paired(ctrl).gain;
+    html += '<p style="margin-top:14px;color:var(--ink);"><b>' + T('Difference in mean gain: ', 'Beza min peningkatan: ') + (d >= 0 ? '+' : '') + f1(d) + '</b> ' +
+      T('(game group minus control). Test it with an independent-samples t-test on the gains.', '(kumpulan permainan tolak kawalan). Uji dengan ujian-t sampel tak bersandar ke atas peningkatan.') + '</p>';
+  }
+  if (!pairs.length) html += '<p style="margin-top:12px;">' + T('No student has both tests yet.', 'Belum ada murid yang menjawab kedua-dua ujian.') + '</p>';
+  if (notes.length) html += '<p class="muted" style="margin-top:10px;">' + notes.join(' · ') + '</p>';
+
+  // question by question (game group)
+  if (itemsPre.length || itemsPost.length) {
+    const rate = (list, j) => pct(list.filter(s => s[j] === '1').length, list.length);
+    html += '<h3 style="margin:22px 0 4px;">' + T('Question by question', 'Soalan demi soalan') + '</h3><p class="muted" style="margin:0 0 6px;">' +
+      T('Share correct, game group. Item n tests the same idea on both forms.', 'Peratus betul, kumpulan permainan. Item n menguji idea yang sama pada kedua-dua borang.') + '</p>' +
+      '<div class="scroll"><table><tr><th>#</th><th>' + T('Idea', 'Idea') + '</th><th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Change', 'Perubahan') + '</th></tr>' +
+      GQT.SLOTS.map((sl, j) => {
+        const a = rate(itemsPre, j), b = rate(itemsPost, j), d = b - a;
+        return '<tr><td>' + (j + 1) + '</td><td>' + esc(tt(sl)) + '</td><td class="num">' + (itemsPre.length ? a + '%' : '—') + '</td><td class="num">' + (itemsPost.length ? b + '%' : '—') + '</td>' +
+          '<td class="num' + (itemsPre.length && itemsPost.length && d < 0 ? ' low' : '') + '">' + (itemsPre.length && itemsPost.length ? (d >= 0 ? '+' : '') + d : '—') + '</td></tr>';
+      }).join('') + '</table></div>';
+  }
+
+  // survey
+  const surveys = tests.filter(r => r.test === 'survey' && r.answers && Array.isArray(r.answers.likert));
+  if (surveys.length) {
+    const comments = surveys.map(r => (r.answers.comment || '').trim()).filter(Boolean);
+    html += '<h3 style="margin:22px 0 4px;">' + T('Engagement survey', 'Soal selidik penglibatan') + ' <span class="pill new">n = ' + surveys.length + '</span></h3>' +
+      GQT.SURVEY.map((q, j) => {
+        const vals = surveys.map(r => r.answers.likert[j]).filter(v => v >= 1 && v <= 5), m = mean(vals);
+        return '<div class="m-row"><div class="m-top"><span>' + (j + 1) + '. ' + esc(tt(q)) + '</span><b>' + f1(m) + ' / 5</b></div><div class="m-bar"><i class="b" style="width:' + (m / 5 * 100) + '%"></i></div></div>';
+      }).join('') +
+      (comments.length ? '<h3 style="margin:18px 0 6px;font-size:15px;">' + T('In their words', 'Kata-kata mereka') + '</h3>' +
+        comments.slice(-6).map(c => '<div class="flag" style="margin-top:8px;"><span style="font-size:14px;color:var(--ink);">“' + esc(c) + '”</span></div>').join('') : '');
+  }
+
+  // per student
+  if (pairs.length) {
+    html += '<h3 style="margin:22px 0 4px;">' + T('Every student', 'Setiap murid') + '</h3><div class="scroll"><table><tr><th>' + T('Student', 'Murid') + '</th><th>' + T('Group', 'Kumpulan') + '</th><th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Gain', 'Peningkatan') +
+      '</th><th class="num">' + T('World 2', 'Dunia 2') + '</th><th class="num">' + T('World 3', 'Dunia 3') + '</th></tr>' +
+      pairs.sort((a, b) => a.stu.localeCompare(b.stu, undefined, { numeric: true })).map(p => {
+        const st = X.S[p.stu], m = w => st && st.mastery[w] != null ? Math.round(st.mastery[w]) + '%' : '—';
+        return '<tr><td>' + esc(p.stu) + '</td><td>' + (p.game ? T('game', 'permainan') : T('control', 'kawalan')) + '</td><td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num' + (p.post - p.pre < 0 ? ' low' : '') + '">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td><td class="num">' + m(2) + '</td><td class="num">' + m(3) + '</td></tr>';
+      }).join('') + '</table></div>';
+  }
+  $('prepost').innerHTML = html + '<div style="margin-top:14px;">' + loader + (PRE ? ' <button class="btn ghost sm" id="btn-pre-clear">' + T('Use in-game tests', 'Guna ujian dalam permainan') + '</button>' : '') + '</div>';
+  wirePre();
+}
+
+function wirePre() {
   $('in-pre').addEventListener('change', ev => {
     const f = ev.target.files[0]; if (!f) return;
     readFile(f, text => {
@@ -605,6 +709,8 @@ function renderPrePost(X) {
       render();
     });
   });
+  const c = $('btn-pre-clear');
+  if (c) c.addEventListener('click', () => { PRE = null; render(); });
 }
 
 /* ============================================================
@@ -617,13 +723,18 @@ $('btn-lang').addEventListener('click', () => {
 });
 $('btn-load').addEventListener('click', loadFromScript);
 $('in-key').addEventListener('keydown', e => { if (e.key === 'Enter') loadFromScript(); });
+/* One or two CSVs: the Attempts tab and/or the Tests tab, told apart by their columns. */
 $('in-csv').addEventListener('change', ev => {
-  const f = ev.target.files[0]; if (!f) return;
-  readFile(f, text => {
+  const files = [...ev.target.files]; if (!files.length) return;
+  let attempts = null, left = files.length;
+  files.forEach(f => readFile(f, text => {
     const rows = parseCSV(text);
-    if (!rows.length || !('student_code' in rows[0])) return showErr(T('That file doesn’t look like the Attempts sheet — it needs a student_code column.', 'Fail itu bukan sheet Attempts — ia perlu lajur student_code.'));
-    showErr(''); useRows(rows, 'csv');
-  });
+    if (rows.length && 'test_id' in rows[0]) TESTS = rows.map(cleanTest);
+    else if (rows.length && 'attempt_id' in rows[0]) attempts = rows;
+    if (--left) return;
+    if (!attempts && !TESTS.length) return showErr(T('Those files don’t look like the Attempts or Tests tabs.', 'Fail itu bukan tab Attempts atau Tests.'));
+    showErr(''); useRows(attempts || [], 'csv');
+  }));
   ev.target.value = '';
 });
 $('sel-class').addEventListener('change', e => { current = e.target.value; openStudent = null; render(); });

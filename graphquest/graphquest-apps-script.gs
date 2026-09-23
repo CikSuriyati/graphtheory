@@ -44,6 +44,14 @@ var FIELDS = [
 ];
 var RECEIVED_COL = FIELDS.length + 1;          // server time, added by this script
 
+/* Pre-test, post-test and survey rows go to their own tab. */
+var TESTS_SHEET = 'Tests';
+var TEST_FIELDS = [
+  'test_id', 'timestamp', 'class_code', 'student_code', 'test', 'form', 'score', 'max',
+  'answers', 'correct_items', 'time_s', 'levels_cleared', 'skipped'
+];
+var TEST_RECEIVED_COL = TEST_FIELDS.length + 1;
+
 var MAX_ROWS_PER_POST = 500;
 
 
@@ -61,15 +69,18 @@ function doGet(e) {
   }
   if (String(p.key || '') !== TEACHER_KEY) return json({ ok: false, code: 'BAD_KEY', error: 'That teacher key is not right.' });
 
-  var sheet = getSheet(), last = sheet.getLastRow();
-  if (last < 2) return json({ ok: true, rows: [] });
-  var head = sheet.getRange(1, 1, 1, RECEIVED_COL).getValues()[0];
-  var rows = sheet.getRange(2, 1, last - 1, RECEIVED_COL).getValues().map(function (r) {
+  return json({ ok: true, rows: readTab(getSheet(), RECEIVED_COL), tests: readTab(getTestsSheet(), TEST_RECEIVED_COL) });
+}
+
+function readTab(sheet, cols) {
+  var last = sheet.getLastRow();
+  if (last < 2) return [];
+  var head = sheet.getRange(1, 1, 1, cols).getValues()[0];
+  return sheet.getRange(2, 1, last - 1, cols).getValues().map(function (r) {
     var o = {};
     head.forEach(function (h, i) { o[h] = (r[i] instanceof Date) ? r[i].toISOString() : r[i]; });
     return o;
   });
-  return json({ ok: true, rows: rows });
 }
 
 function doPost(e) {
@@ -80,14 +91,20 @@ function doPost(e) {
     if (!e || !e.postData || !e.postData.contents) return json({ ok: false, error: 'No data received.' });
 
     var body = JSON.parse(e.postData.contents);
-    var rows = body.rows;
-    if (!Array.isArray(rows) || !rows.length) return json({ ok: false, error: 'No attempts in the submission.' });
-    if (rows.length > MAX_ROWS_PER_POST) return json({ ok: false, error: 'Too many attempts in one submission.' });
+    var rows = Array.isArray(body.rows) ? body.rows : [];
+    var tests = Array.isArray(body.tests) ? body.tests : [];
+    if (!rows.length && !tests.length) return json({ ok: false, error: 'Nothing in the submission.' });
+    if (rows.length + tests.length > MAX_ROWS_PER_POST) return json({ ok: false, error: 'Too many rows in one submission.' });
 
     for (var i = 0; i < rows.length; i++) {
       var problem = checkRow(rows[i]);
       if (problem) return json({ ok: false, error: 'Attempt ' + (i + 1) + ': ' + problem });
     }
+    for (var j = 0; j < tests.length; j++) {
+      var tp = checkTest(tests[j]);
+      if (tp) return json({ ok: false, error: 'Test ' + (j + 1) + ': ' + tp });
+    }
+    var testsAdded = appendNew(getTestsSheet(), tests, TEST_FIELDS, 'test_id');
 
     var sheet = getSheet();
     var known = knownIds(sheet);
@@ -106,7 +123,8 @@ function doPost(e) {
     if (out.length) {
       sheet.getRange(sheet.getLastRow() + 1, 1, out.length, RECEIVED_COL).setValues(out);
     }
-    return json({ ok: true, received: rows.length, added: out.length, skipped: rows.length - out.length });
+    return json({ ok: true, received: rows.length, added: out.length, skipped: rows.length - out.length,
+                  testsReceived: tests.length, testsAdded: testsAdded });
 
   } catch (err) {
     return json({ ok: false, error: String(err && err.message ? err.message : err) });
@@ -135,6 +153,36 @@ function checkRow(r) {
   return '';
 }
 
+function checkTest(r) {
+  if (!r || typeof r !== 'object') return 'not an object.';
+  if (!/^t[a-z0-9]+-[a-z0-9]+$/i.test(String(r.test_id || ''))) return 'missing test_id.';
+  if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(String(r.class_code || ''))) return 'bad class_code.';
+  if (!/^[A-Z0-9]+-\d{1,3}$/.test(String(r.student_code || ''))) return 'bad student_code.';
+  if (['pre', 'post', 'survey'].indexOf(r.test) < 0) return 'test must be pre, post or survey.';
+  if (['A', 'B', ''].indexOf(r.form) < 0) return 'bad form.';
+  if (!isInt(r.score, 0, 50) || !isInt(r.max, 0, 50)) return 'bad score.';
+  if (String(r.answers || '').length > 2000 || String(r.correct_items || '').length > 50) return 'answers too long.';
+  if (!isInt(r.time_s, 0, 86400) || !isInt(r.levels_cleared, 0, 100)) return 'bad time or levels.';
+  if (typeof r.skipped !== 'boolean') return 'skipped must be true or false.';
+  return '';
+}
+
+/** Append rows whose id isn't in the tab yet; returns how many were added. */
+function appendNew(sheet, list, fields, idField) {
+  if (!list.length) return 0;
+  var known = knownIds(sheet), now = new Date(), out = [];
+  list.forEach(function (r) {
+    var id = String(r[idField]);
+    if (known[id]) return;
+    known[id] = true;
+    var line = fields.map(function (f) { return r[f] === undefined ? '' : r[f]; });
+    line.push(now);
+    out.push(line);
+  });
+  if (out.length) sheet.getRange(sheet.getLastRow() + 1, 1, out.length, fields.length + 1).setValues(out);
+  return out.length;
+}
+
 function isInt(v, lo, hi) { return typeof v === 'number' && v === Math.round(v) && v >= lo && v <= hi; }
 
 
@@ -149,13 +197,25 @@ function knownIds(sheet) {
   return out;
 }
 
+function getTestsSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(TESTS_SHEET) || ss.insertSheet(TESTS_SHEET);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(TEST_FIELDS.concat(['received']));
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, TEST_RECEIVED_COL).setFontWeight('bold');
+  }
+  return sh;
+}
+
 function getSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   return ss.getSheetByName(SHEET_NAME) || setupSheet();
 }
 
-/** Run this once from the editor to create the sheet and header row. */
+/** Run this once from the editor to create both tabs and their header rows. */
 function setupSheet() {
+  getTestsSheet();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
   if (sh.getLastRow() === 0) {
@@ -195,6 +255,12 @@ function testCollector() {
   bad({ student_code: 'Ali' }, 'a name as student_code');
   bad({ attempt_id: '' }, 'missing id');
 
-  Logger.log('All tests passed. %s fields per attempt.', FIELDS.length);
+  var t = { test_id: 'tlx3k9a-abc12', timestamp: '2026-10-14 10:32', class_code: '4S1-2026', student_code: '4S1-17',
+    test: 'pre', form: 'A', score: 6, max: 10, answers: '[\"3\"]', correct_items: '1101100110', time_s: 240, levels_cleared: 0, skipped: false };
+  if (checkTest(t)) throw new Error('Good test row rejected: ' + checkTest(t));
+  var bt = JSON.parse(JSON.stringify(t)); bt.test = 'mid';
+  if (!checkTest(bt)) throw new Error('Bad test row accepted: test=mid');
+
+  Logger.log('All tests passed. %s fields per attempt, %s per test.', FIELDS.length, TEST_FIELDS.length);
   return 'OK';
 }

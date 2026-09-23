@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="copyright" content="© 2025–2026 GraphTheory. Licensed CC BY-NC-ND 4.0.">
+<title>GRAPH QUEST — Teacher dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..900&family=Caveat:wght@600;700&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf7f7; --card:#fff; --ink:#17130c; --ink-soft:#57514a; --ink-faint:#8d867e; --line:#eae4e1;
+    --orange:#ee6c34; --orange-soft:#fdeee7; --blue:#7ca3f9; --blue-soft:#eaf0fe;
+    --green:#a2dd70; --green-soft:#eef8e6; --yellow:#ffd54a; --yellow-soft:#fff7e0;
+    --terra:#df876e; --terra-soft:#fdeae5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font:15px/1.6 "DM Sans",-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 22px 90px;}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;letter-spacing:-0.02em;line-height:1.1;margin:0;}
+  h1{font-size:38px;font-weight:800;margin-bottom:10px;}
+  h2{font-size:25px;font-weight:800;margin:0 0 6px;}
+  h3{font-size:17px;font-weight:700;}
+  .script{font-family:"Caveat",cursive;font-weight:700;color:var(--orange);font-size:1.3em;display:inline-block;transform:rotate(-2deg);line-height:.9;}
+  p{margin:0 0 12px;color:var(--ink-soft);}
+  .muted{color:var(--ink-faint);font-size:13px;}
+  b.ink{color:var(--ink);}
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;}
+  .hidden{display:none !important;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;}
+  .brand{font-family:"Fraunces",serif;font-weight:900;font-size:18px;text-decoration:none;color:var(--ink);}
+  .brand i{font-style:normal;color:var(--orange);}
+  .toplinks{display:flex;gap:8px;align-items:center;}
+  .tlink{font:inherit;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;border:2px solid var(--line);
+    border-radius:10px;background:#fff;color:var(--ink-soft);cursor:pointer;text-decoration:none;white-space:nowrap;}
+  .tlink:hover{border-color:var(--orange);color:var(--orange);}
+
+  .band{margin:40px 0 16px;padding-bottom:10px;border-bottom:2px dashed var(--line);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 2px 0 rgba(23,19,12,.04),0 12px 32px -18px rgba(23,19,12,.28);}
+
+  .btn{appearance:none;border:2px solid var(--ink);border-radius:12px;padding:11px 20px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;
+    background:var(--orange);color:var(--ink);box-shadow:0 3px 0 var(--ink);transition:transform .08s,box-shadow .08s,background .15s;}
+  .btn:hover{background:#f4854f;}
+  .btn:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink);}
+  .btn.ghost{background:#fff;} .btn.ghost:hover{background:#fdf6f2;}
+  .btn.sm{padding:7px 13px;font-size:13px;border-radius:10px;}
+  .btn[disabled]{background:#e8e3df;color:#7a736c;border-color:#cfc8c3;box-shadow:0 3px 0 #cfc8c3;cursor:not-allowed;}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .spread{justify-content:space-between;}
+
+  label.fld{display:block;font-size:13.5px;font-weight:700;margin:0 0 6px;}
+  input[type=text],input[type=password],select{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font:inherit;font-size:15px;background:#fff;color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--orange);}
+  .fields{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin:16px 0 10px;}
+  .file{display:inline-block;position:relative;overflow:hidden;}
+  .file input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .connect{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;}
+  .or{border:2px dashed var(--line);border-radius:16px;padding:18px;background:var(--bg);}
+  .err{background:var(--terra-soft);border:2px solid var(--terra);padding:12px 15px;border-radius:12px;font-size:14px;color:var(--ink);margin-top:12px;}
+
+  .kpis{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 6px;}
+  .kpi{flex:1;min-width:150px;border:2px solid var(--ink);border-radius:14px;padding:11px 14px;background:var(--blue-soft);box-shadow:0 3px 0 var(--ink);}
+  .kpi b{display:block;font-family:"Fraunces",serif;font-size:26px;font-weight:800;letter-spacing:-0.02em;line-height:1.15;}
+  .kpi span{font-size:12px;color:var(--ink-faint);}
+  .kpi:nth-child(2){background:var(--green-soft);} .kpi:nth-child(3){background:var(--yellow-soft);} .kpi:nth-child(4){background:var(--orange-soft);}
+
+  .reteach{border:2px solid var(--ink);border-radius:18px;padding:18px 20px;background:var(--terra-soft);box-shadow:0 4px 0 var(--ink);margin-top:10px;}
+  .reteach h2{margin-bottom:8px;}
+  .reteach .tip{background:#fff;border:2px dashed var(--ink);border-radius:12px;padding:11px 14px;font-size:14px;color:var(--ink);margin:10px 0;}
+  .also{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px;}
+  .flag{border:2px solid var(--ink);border-radius:12px;padding:11px 13px;background:var(--yellow-soft);}
+  .flag.hot{background:var(--terra-soft);}
+  .flag b{display:block;font-size:14px;margin-bottom:2px;}
+  .flag span{font-size:12.5px;color:var(--ink-soft);line-height:1.45;}
+
+  .pill{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;border:1.5px solid var(--ink);white-space:nowrap;display:inline-block;}
+  .pill.done{background:var(--green);} .pill.part{background:var(--yellow);} .pill.alert{background:var(--terra);color:#fff;} .pill.new{background:#fff;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .m-row{padding:9px 0;border-bottom:1px solid var(--line);}
+  .m-row:last-child{border-bottom:0;}
+  .m-top{display:flex;justify-content:space-between;gap:10px;font-size:14px;}
+  .m-bar{height:15px;border:2px solid var(--ink);border-radius:99px;background:#fff;overflow:hidden;margin:5px 0 2px;}
+  .m-bar i{display:block;height:100%;background:var(--orange);}
+  .m-bar i.warn{background:var(--terra);} .m-bar i.b{background:var(--blue);}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;white-space:nowrap;}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+  tr.pick{cursor:pointer;} tr.pick:hover td{background:var(--orange-soft);}
+  .low{color:#a4462a;font-weight:700;}
+  .scroll{overflow-x:auto;}
+
+  .student{border:2px solid var(--ink);border-radius:18px;padding:18px 20px;background:#fff;box-shadow:0 4px 0 var(--ink);margin-top:14px;}
+  .trail{font-variant-numeric:tabular-nums;letter-spacing:.04em;color:var(--ink-soft);}
+
+  @media (max-width:760px){
+    .wrap{padding:12px 14px 60px;} h1{font-size:29px;}
+    .fields,.connect,.grid2{grid-template-columns:1fr;}
+    .card{padding:18px 15px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="brand" href="./">GRAPH <i>QUEST</i></a>
+    <div class="toplinks">
+      <a class="tlink" href="./" id="lnk-game"></a>
+      <button class="tlink" id="btn-lang">BM</button>
+    </div>
+  </div>
+
+  <div class="kicker" id="kicker"></div>
+  <h1 id="title"></h1>
+  <p id="lede" style="font-size:16.5px;max-width:70ch;"></p>
+
+  <!-- ============ CONNECT ============ -->
+  <section id="connect" class="card">
+    <div class="connect">
+      <div>
+        <h3 id="c-h1"></h3>
+        <p class="muted" id="c-p1" style="margin-top:4px;"></p>
+        <div class="fields">
+          <div><label class="fld" for="in-url" id="lbl-url"></label><input type="text" id="in-url" spellcheck="false" autocomplete="off"></div>
+          <div><label class="fld" for="in-key" id="lbl-key"></label><input type="password" id="in-key" autocomplete="off"></div>
+        </div>
+        <button class="btn" id="btn-load"></button>
+      </div>
+      <div class="or">
+        <h3 id="c-h2"></h3>
+        <p class="muted" id="c-p2" style="margin-top:4px;"></p>
+        <span class="btn ghost file"><span id="lbl-csv"></span><input type="file" id="in-csv" accept=".csv,text/csv"></span>
+      </div>
+    </div>
+    <div id="c-err"></div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section id="dash" class="hidden">
+    <div class="row spread" style="margin-top:6px;">
+      <div class="row" style="flex:1;min-width:260px;">
+        <label class="fld" for="sel-class" id="lbl-class" style="margin:0;"></label>
+        <select id="sel-class" style="max-width:260px;"></select>
+      </div>
+      <div class="row">
+        <span class="muted" id="loaded-at"></span>
+        <button class="btn ghost sm" id="btn-reload"></button>
+        <button class="btn ghost sm" id="btn-disconnect"></button>
+      </div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div id="reteach"></div>
+
+    <div class="band"><div class="kicker" id="k-mastery"></div><h2 id="h-mastery"></h2></div>
+    <div class="grid2">
+      <div class="card" id="mastery"></div>
+      <div class="card" id="mistakes"></div>
+    </div>
+
+    <div class="band"><div class="kicker" id="k-levels"></div><h2 id="h-levels"></h2></div>
+    <div class="card scroll" id="levels"></div>
+
+    <div class="band"><div class="kicker" id="k-support"></div><h2 id="h-support"></h2></div>
+    <div class="grid2" id="support"></div>
+
+    <div class="band"><div class="kicker" id="k-students"></div><h2 id="h-students"></h2></div>
+    <p class="muted" id="p-students"></p>
+    <div class="card scroll" id="students"></div>
+    <div id="student"></div>
+
+    <div class="band"><div class="kicker" id="k-prepost"></div><h2 id="h-prepost"></h2></div>
+    <div class="card" id="prepost"></div>
+  </section>
+
+  <p class="muted" id="privacy" style="margin-top:40px;"></p>
+</div>
+
+<script>
+/* ============================================================
+   GRAPH QUEST — teacher dashboard
+   Reads the Attempts sheet (one row per attempt) either through the Apps
+   Script with the teacher key, or from a CSV downloaded from the Sheet.
+   Everything is computed here, in the browser; nothing is sent anywhere.
+   ============================================================ */
+const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbywcNzXKYHWLkl6ELysdanTtDapPZguX8m_j5IHFQGMCA5yYEvoz9UjDCeweInCquV_/exec';
+const LANG_KEY = 'graphtheory-lang', CONN_KEY = 'graphquest.teacher';
+
+let LANG = 'en';
+try { const s = localStorage.getItem(LANG_KEY); if (s === 'bm' || s === 'en') LANG = s; } catch (e) {}
+const T = (en, bm) => LANG === 'bm' ? bm : en;
+const tt = p => T(p[0], p[1]);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- what the game contains ---------- */
+const WORLDS = {
+  2: { name: ['Graph Detective', 'Detektif Graf'], levels: [['Count the corridors', 'Kira koridor'], ['Follow the suspect', 'Jejak suspek'], ['Loops and twin corridors', 'Gelung dan koridor berkembar'], ['Three witnesses', 'Tiga saksi'], ['Timed case', 'Kes berpemasa']] },
+  3: { name: ['Shortest Path Race', 'Perlumbaan Laluan Terpendek'], levels: [['4 towns', '4 pekan'], ['6 towns', '6 pekan'], ['Road closed!', 'Jalan ditutup!'], ['Fastest, not shortest', 'Paling pantas, bukan terpendek'], ['Random challenge', 'Cabaran rawak']] }
+};
+const RANKS = [['Novice', 'Pemula'], ['Graph Explorer', 'Penjelajah Graf'], ['Path Finder', 'Pencari Laluan'], ['Network Builder', 'Pembina Rangkaian'], ['Graph Master', 'Pakar Graf'], ['Graph Legend', 'Lagenda Graf']];
+
+/* Each mistake tag: what it means, and a one-line idea for tomorrow's lesson. */
+const TAGS = {
+  fewest_edges_not_shortest: { l: ['Chose fewest roads, not shortest distance', 'Pilih jalan paling sedikit, bukan jarak terpendek'],
+    tip: ['Put two routes side by side on the board — one with fewer roads, one with a smaller total. Add both up aloud.', 'Letak dua laluan bersebelahan di papan — satu dengan jalan lebih sedikit, satu dengan jumlah lebih kecil. Jumlahkan kedua-duanya dengan kuat.'] },
+  chose_distance_not_time: { l: ['Used km when the mission was time', 'Guna km sedangkan misinya masa'],
+    tip: ['Same map, two questions: "shortest?" then "fastest?". Show that the weight you add depends on the question.', 'Peta yang sama, dua soalan: "terpendek?" kemudian "paling pantas?". Tunjukkan pemberat yang dijumlahkan bergantung pada soalan.'] },
+  valid_not_optimal: { l: ['Valid route, not the shortest', 'Laluan sah, bukan terpendek'],
+    tip: ['Ask students to list every route and its total before choosing — then compare totals, not single roads.', 'Minta murid senaraikan setiap laluan dan jumlahnya sebelum memilih — bandingkan jumlah, bukan satu-satu jalan.'] },
+  miscounted_degree: { l: ['Miscounted a degree', 'Salah kira darjah'],
+    tip: ['Have students tick each edge as they count it at a vertex, so no edge is missed or counted twice.', 'Minta murid tandakan setiap sisi semasa mengira di sesuatu bucu, supaya tiada sisi tertinggal atau dikira dua kali.'] },
+  loop_counted_once: { l: ['Counted a loop as 1, not 2', 'Kira gelung sebagai 1, bukan 2'],
+    tip: ['Draw a loop and mark both of its ends touching the vertex. Two ends, so it adds 2 to the degree.', 'Lukis gelung dan tandakan kedua-dua hujungnya yang menyentuh bucu. Dua hujung, jadi ia menambah 2 pada darjah.'] },
+  multiple_edge_counted_once: { l: ['Counted multiple edges as one', 'Kira sisi berbilang sebagai satu'],
+    tip: ['Show two separate corridors between the same two rooms: each is its own edge and each adds 1.', 'Tunjukkan dua koridor berasingan antara dua bilik yang sama: setiap satu ialah sisi tersendiri dan menambah 1.'] },
+  wrong_vertex_for_degree: { l: ['Picked a place with the wrong degree', 'Pilih tempat dengan darjah yang salah'],
+    tip: ['Before searching, write the degree next to every vertex. Then the question becomes a lookup.', 'Sebelum mencari, tulis darjah di sebelah setiap bucu. Kemudian soalan menjadi semakan mudah.'] },
+  missed_loop: { l: ['Could not find the loop', 'Tidak jumpa gelung'],
+    tip: ['Contrast a loop (one vertex) with an ordinary edge (two different vertices) on the same diagram.', 'Bandingkan gelung (satu bucu) dengan sisi biasa (dua bucu berbeza) dalam gambar rajah yang sama.'] },
+  missed_multiple_edge: { l: ['Could not find the multiple edges', 'Tidak jumpa sisi berbilang'],
+    tip: ['Ask: which pair of vertices is joined more than once? Then define a simple graph as one where the answer is "none".', 'Tanya: pasangan bucu manakah yang dihubungkan lebih daripada sekali? Kemudian takrifkan graf mudah sebagai graf yang jawapannya "tiada".'] },
+  clue_ignored: { l: ['Ignored one of the clues', 'Abaikan salah satu petunjuk'],
+    tip: ['Model it as elimination: cross out places that fail clue 1, then clue 2, then clue 3.', 'Tunjukkan sebagai penyingkiran: potong tempat yang gagal petunjuk 1, kemudian 2, kemudian 3.'] }
+};
+const tagLabel = t => TAGS[t] ? tt(TAGS[t].l) : t;
+
+/* ============================================================
+   Loading
+   ============================================================ */
+let ALL = [], PRE = null, source = null, loadedAt = null, current = null, openStudent = null;
+
+function conn() { try { return JSON.parse(localStorage.getItem(CONN_KEY)) || {}; } catch (e) { return {}; } }
+function saveConn(o) { try { localStorage.setItem(CONN_KEY, JSON.stringify(o)); } catch (e) {} }
+
+function showErr(msg) { $('c-err').innerHTML = msg ? '<div class="err">' + esc(msg) + '</div>' : ''; }
+
+async function loadFromScript() {
+  const url = $('in-url').value.trim(), key = $('in-key').value;
+  if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)) return showErr(T('That doesn’t look like an Apps Script /exec link.', 'Itu bukan pautan /exec Apps Script.'));
+  if (!key) { $('in-key').focus(); return showErr(T('Enter the teacher key you set in the Apps Script.', 'Masukkan kunci guru yang anda tetapkan dalam Apps Script.')); }
+  showErr('');
+  $('btn-load').disabled = true; $('btn-load').textContent = T('Loading…', 'Memuatkan…');
+  try {
+    const res = await fetch(url + '?action=rows&key=' + encodeURIComponent(key), { redirect: 'follow' });
+    const data = await res.json();
+    if (!data.ok) {
+      const m = data.code === 'NO_KEY' ? T('The Apps Script has no teacher key yet. Set TEACHER_KEY in the script and deploy a new version (see SETUP.md).', 'Apps Script belum ada kunci guru. Tetapkan TEACHER_KEY dalam skrip dan terbitkan versi baharu (lihat SETUP.md).')
+        : data.code === 'BAD_KEY' ? T('That teacher key is not right.', 'Kunci guru itu tidak betul.') : (data.error || 'Error');
+      throw new Error(m);
+    }
+    saveConn({ url, key });
+    useRows(data.rows, 'script');
+  } catch (err) {
+    showErr(err.message && err.message !== 'Failed to fetch' ? err.message
+      : T('Couldn’t reach the Apps Script. If you just added the teacher key, deploy a new version — the old one doesn’t know about the dashboard yet.', 'Tidak dapat menghubungi Apps Script. Jika anda baru menambah kunci guru, terbitkan versi baharu — versi lama belum mengenali papan pemuka.'));
+  } finally {
+    $('btn-load').disabled = false; $('btn-load').textContent = T('Load results', 'Muatkan keputusan');
+  }
+}
+
+/* A small CSV reader that copes with quoted fields and commas inside quotes. */
+function parseCSV(text) {
+  const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+      else f += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(f); f = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+    else f += ch;
+  }
+  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  const head = (rows.shift() || []).map(h => h.trim().toLowerCase());
+  return rows.filter(r => r.some(x => x !== '')).map(r => { const o = {}; head.forEach((h, i) => { o[h] = r[i]; }); return o; });
+}
+
+function readFile(file, then) {
+  const fr = new FileReader();
+  fr.onload = () => then(String(fr.result));
+  fr.readAsText(file);
+}
+
+/* Normalise one sheet row, whatever route it came by. */
+const bool = v => v === true || /^(true|yes|1)$/i.test(String(v).trim());
+function clean(r) {
+  return {
+    id: String(r.attempt_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(),
+    w: +r.world, lv: +r.level, correct: bool(r.correct), ok: bool(r.optimal), xp: +r.score_xp || 0,
+    hints: +r.hints_used || 0, learn: +r.learn_used || 0, t: +r.time_s || 0, tag: String(r.mistake_tag || '').trim()
+  };
+}
+
+function useRows(rows, src) {
+  const seen = new Set();
+  ALL = rows.map(clean).filter(r => r.stu && r.w && r.lv && !seen.has(r.id) && (seen.add(r.id), true));
+  ALL.forEach((r, i) => { r.n = i; });                  // sheet order breaks ties inside the same minute
+  source = src; loadedAt = new Date(); openStudent = null;
+  const classes = [...new Set(ALL.map(r => r.cls))].sort();
+  if (!classes.includes(current)) current = classes.length === 1 ? classes[0] : '';
+  $('sel-class').innerHTML = (classes.length > 1 ? '<option value="">' + T('All classes', 'Semua kelas') + '</option>' : '') +
+    classes.map(c => '<option value="' + esc(c) + '"' + (c === current ? ' selected' : '') + '>' + esc(c) + '</option>').join('');
+  $('connect').classList.add('hidden');
+  $('dash').classList.remove('hidden');
+  render();
+}
+
+/* ============================================================
+   Numbers
+   ============================================================ */
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const byTime = (a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : a.n - b.n);
+
+function stats(rows) {
+  const students = [...new Set(rows.map(r => r.stu))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  const S = {};
+  students.forEach(s => { S[s] = { code: s, best: {}, cleared: {}, wrong: 0, hints: 0, learn: 0, last: '', tries: 0, worlds: new Set() }; });
+  rows.forEach(r => {
+    const s = S[r.stu], k = r.w + '-' + r.lv;
+    s.best[k] = Math.max(s.best[k] || 0, r.xp);
+    if (r.ok) s.cleared[k] = true; else s.wrong++;
+    s.hints += r.hints ? 1 : 0; s.learn += r.learn ? 1 : 0; s.tries++;
+    s.worlds.add(r.w);
+    if (r.ts > s.last) s.last = r.ts;
+  });
+  students.forEach(c => {
+    const s = S[c];
+    s.xp = Object.values(s.best).reduce((a, b) => a + b, 0);
+    s.mastery = {};
+    Object.keys(WORLDS).forEach(w => {
+      if (!s.worlds.has(+w)) return;
+      let sum = 0; for (let l = 1; l <= 5; l++) sum += s.best[w + '-' + l] || 0;
+      s.mastery[w] = sum / 5;
+    });
+  });
+
+  // per level: who tried, who cleared, wrong answers, hints
+  const L = {};
+  rows.forEach(r => {
+    const k = r.w + '-' + r.lv;
+    const x = L[k] || (L[k] = { w: r.w, lv: r.lv, tried: new Set(), cleared: new Set(), right: 0, wrong: 0, hintRows: 0, tags: {}, stuWrong: {} });
+    x.tried.add(r.stu);
+    if (r.ok) { x.cleared.add(r.stu); x.right++; if (r.hints || r.learn) x.hintRows++; }
+    else { x.wrong++; x.stuWrong[r.stu] = (x.stuWrong[r.stu] || 0) + 1; }
+    if (r.tag) x.tags[r.tag] = (x.tags[r.tag] || 0) + 1;
+  });
+  Object.values(L).forEach(x => { x.errRate = x.wrong / (x.wrong + x.right || 1); });
+
+  // per world: mistakes as a share of all attempts
+  const W = {};
+  rows.forEach(r => {
+    const x = W[r.w] || (W[r.w] = { attempts: 0, tags: {} });
+    x.attempts++;
+    if (r.tag) x.tags[r.tag] = (x.tags[r.tag] || 0) + 1;
+  });
+  return { students, S, L, W };
+}
+
+const topTag = tags => Object.entries(tags).sort((a, b) => b[1] - a[1])[0];
+
+/* ============================================================
+   Rendering
+   ============================================================ */
+function renderStatic() {
+  document.documentElement.lang = LANG === 'bm' ? 'ms' : 'en';
+  $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
+  $('lnk-game').textContent = T('← The game', '← Permainan');
+  $('kicker').textContent = T('Graph Quest · Teacher dashboard', 'Graph Quest · Papan pemuka guru');
+  $('title').innerHTML = T('Which idea should I <span class="script">reteach</span> tomorrow?', 'Idea manakah yang perlu saya <span class="script">ajar semula</span> esok?');
+  $('lede').textContent = T('Built from every attempt your students submit: what they cleared, where they got stuck, and which mistake they made most.',
+    'Dibina daripada setiap cubaan yang dihantar oleh murid anda: apa yang mereka selesaikan, di mana mereka tersekat, dan kesilapan yang paling kerap.');
+  $('c-h1').textContent = T('Connect to your results Sheet', 'Sambung ke Sheet keputusan');
+  $('c-p1').textContent = T('Uses the same Apps Script as the game, with the teacher key you set in it. The key is remembered on this device only.',
+    'Guna Apps Script yang sama dengan permainan, bersama kunci guru yang anda tetapkan di dalamnya. Kunci diingat pada peranti ini sahaja.');
+  $('lbl-url').textContent = T('Apps Script link (/exec)', 'Pautan Apps Script (/exec)');
+  $('lbl-key').textContent = T('Teacher key', 'Kunci guru');
+  $('btn-load').textContent = T('Load results', 'Muatkan keputusan');
+  $('c-h2').textContent = T('Or open a CSV file', 'Atau buka fail CSV');
+  $('c-p2').textContent = T('In the Sheet: File → Download → CSV, on the Attempts tab. Nothing is uploaded — the file is read on this device.',
+    'Dalam Sheet: Fail → Muat turun → CSV, pada tab Attempts. Tiada apa dimuat naik — fail dibaca pada peranti ini.');
+  $('lbl-csv').textContent = T('Choose CSV file', 'Pilih fail CSV');
+  $('lbl-class').textContent = T('Class', 'Kelas');
+  $('btn-reload').textContent = T('Reload', 'Muat semula');
+  $('btn-disconnect').textContent = T('Change source', 'Tukar sumber');
+  $('privacy').textContent = T('Students appear only as class code + register number. The dashboard computes everything in your browser and sends nothing anywhere.',
+    'Murid dipaparkan hanya sebagai kod kelas + nombor giliran. Papan pemuka mengira semuanya dalam pelayar anda dan tidak menghantar apa-apa.');
+}
+
+function render() {
+  renderStatic();
+  if ($('dash').classList.contains('hidden')) return;
+  const rows = ALL.filter(r => !current || r.cls === current);
+  const X = stats(rows);
+  $('loaded-at').textContent = (source === 'csv' ? T('From CSV · ', 'Daripada CSV · ') : T('Loaded ', 'Dimuatkan ')) +
+    loadedAt.toLocaleTimeString(LANG === 'bm' ? 'ms-MY' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+  $('btn-reload').classList.toggle('hidden', source !== 'script');
+
+  if (!rows.length) {
+    $('kpis').innerHTML = ''; $('reteach').innerHTML = '<div class="card"><p style="margin:0;">' + T('No attempts yet. Once students press Submit results in the game, they appear here.', 'Belum ada cubaan. Setelah murid menekan Hantar keputusan dalam permainan, ia akan dipaparkan di sini.') + '</p></div>';
+    ['mastery', 'mistakes', 'levels', 'support', 'students', 'student', 'prepost'].forEach(id => { $(id).innerHTML = ''; });
+    return;
+  }
+
+  // ---- KPIs ----
+  const n = X.students.length;
+  const cleared = X.students.reduce((a, s) => a + Object.keys(X.S[s].cleared).length, 0);
+  const masteries = X.students.flatMap(s => Object.values(X.S[s].mastery));
+  const avgM = masteries.length ? Math.round(masteries.reduce((a, b) => a + b, 0) / masteries.length) : 0;
+  $('kpis').innerHTML =
+    '<div class="kpi"><b>' + n + '</b><span>' + T('students with results', 'murid yang ada keputusan') + '</span></div>' +
+    '<div class="kpi"><b>' + cleared + '</b><span>' + T('levels cleared in total', 'jumlah tahap diselesaikan') + '</span></div>' +
+    '<div class="kpi"><b>' + avgM + '%</b><span>' + T('average mastery', 'purata penguasaan') + '</span></div>' +
+    '<div class="kpi"><b>' + rows.length + '</b><span>' + T('attempts', 'cubaan') + '</span></div>';
+
+  renderReteach(X);
+  renderMastery(X);
+  renderMistakes(X);
+  renderLevels(X, n);
+  renderSupport(X);
+  renderStudents(X, rows);
+  renderPrePost(X);
+}
+
+/* The one answer the page exists for. */
+function renderReteach(X) {
+  const minTried = Math.min(3, X.students.length);
+  const cand = Object.values(X.L).filter(x => x.tried.size >= minTried && x.wrong > 0).sort((a, b) => b.errRate - a.errRate);
+  if (!cand.length) {
+    $('reteach').innerHTML = '<div class="reteach" style="background:var(--green-soft);"><h2>' + T('Nothing stands out yet', 'Belum ada yang menonjol') + '</h2><p style="margin:0;">' +
+      T('No level has enough wrong answers to point at. Check back after more students have played.', 'Tiada tahap yang cukup jawapan salah untuk ditunjukkan. Semak semula selepas lebih ramai murid bermain.') + '</p></div>';
+    return;
+  }
+  const top = cand[0], tag = topTag(top.tags), lvName = tt(WORLDS[top.w].levels[top.lv - 1]);
+  const stuck = [...top.tried].filter(s => !top.cleared.has(s));
+  const strugglers = Object.entries(top.stuWrong).sort((a, b) => b[1] - a[1]).map(e => e[0]);
+  const who = [...new Set(stuck.concat(strugglers))].slice(0, 8);
+  const tagShare = tag ? pct(tag[1], top.wrong) : 0;
+  let html = '<div class="reteach"><div class="kicker">' + T('Reteach tomorrow', 'Ajar semula esok') + '</div>' +
+    '<h2>' + T('World ', 'Dunia ') + top.w + ' · ' + T('Level ', 'Tahap ') + top.lv + ' — ' + esc(lvName) + '</h2>' +
+    '<p style="color:var(--ink);margin-bottom:6px;">' +
+    (stuck.length
+      ? T(pct(top.wrong, top.wrong + top.right) + '% of answers here were wrong, and ' + stuck.length + ' of ' + top.tried.size + ' students who tried haven’t cleared it yet.',
+        pct(top.wrong, top.wrong + top.right) + '% jawapan di sini salah, dan ' + stuck.length + ' daripada ' + top.tried.size + ' murid yang mencuba belum menyelesaikannya.')
+      : T('All ' + top.tried.size + ' students who tried got there in the end, but ' + pct(top.wrong, top.wrong + top.right) + '% of the answers along the way were wrong.',
+        'Kesemua ' + top.tried.size + ' murid yang mencuba akhirnya berjaya, tetapi ' + pct(top.wrong, top.wrong + top.right) + '% jawapan sepanjang jalan adalah salah.')) + '</p>' +
+    (tag ? '<p style="color:var(--ink);margin-bottom:0;">' + T('Most common mistake: ', 'Kesilapan paling kerap: ') + '<b>' + esc(tagLabel(tag[0])) + '</b> (' +
+      T(tagShare + '% of the wrong answers)', tagShare + '% daripada jawapan salah)') + '</p>' : '') +
+    (tag && TAGS[tag[0]] ? '<div class="tip">💡 ' + esc(tt(TAGS[tag[0]].tip)) + '</div>' : '') +
+    (who.length ? '<p style="margin:0;font-size:14px;">' + T('Check in with: ', 'Semak dengan: ') + who.map(s => '<b class="ink">' + esc(s) + '</b>').join(', ') + '</p>' : '') +
+    '</div>';
+  if (cand.length > 1) {
+    html += '<div class="also">' + cand.slice(1, 3).map(x => {
+      const t = topTag(x.tags);
+      return '<div class="flag"><b>' + T('Also: World ', 'Juga: Dunia ') + x.w + ' · ' + T('Level ', 'Tahap ') + x.lv + ' · ' + pct(x.wrong, x.wrong + x.right) + T('% wrong', '% salah') + '</b>' +
+        '<span>' + esc(tt(WORLDS[x.w].levels[x.lv - 1])) + (t ? ' — ' + esc(tagLabel(t[0])) : '') + '</span></div>';
+    }).join('') + '</div>';
+  }
+  $('reteach').innerHTML = html;
+}
+
+function renderMastery(X) {
+  $('k-mastery').textContent = T('Part one', 'Bahagian satu');
+  $('h-mastery').textContent = T('Mastery and mistakes by world', 'Penguasaan dan kesilapan mengikut dunia');
+  const rows = Object.keys(WORLDS).map(w => {
+    const ms = X.students.map(s => X.S[s].mastery[w]).filter(v => v != null);
+    const notStarted = X.students.length - ms.length;
+    if (!ms.length) return '<div class="m-row"><div class="m-top"><span><b>' + T('World ', 'Dunia ') + w + '</b> · ' + esc(tt(WORLDS[w].name)) + '</span><span class="muted">' + T('no attempts yet', 'belum ada cubaan') + '</span></div></div>';
+    const m = Math.round(ms.reduce((a, b) => a + b, 0) / ms.length);
+    return '<div class="m-row"><div class="m-top"><span><b>' + T('World ', 'Dunia ') + w + '</b> · ' + esc(tt(WORLDS[w].name)) + (m < 70 ? ' <span class="pill alert">&lt; 70%</span>' : '') + '</span><b>' + m + '%</b></div>' +
+      '<div class="m-bar"><i class="' + (m < 70 ? 'warn' : '') + '" style="width:' + m + '%"></i></div>' +
+      '<span class="muted">' + T(ms.length + ' students played' + (notStarted ? ' · ' + notStarted + ' not started' : ''), ms.length + ' murid bermain' + (notStarted ? ' · ' + notStarted + ' belum mula' : '')) + '</span></div>';
+  }).join('');
+  $('mastery').innerHTML = '<h3 style="margin-bottom:6px;">' + T('Class mastery', 'Penguasaan kelas') + '</h3>' + rows +
+    '<p class="muted" style="margin:10px 0 0;">' + T('Mastery = average of each student’s best score on the 5 levels, among students who played that world.', 'Penguasaan = purata markah terbaik setiap murid bagi 5 tahap, dalam kalangan murid yang bermain dunia itu.') + '</p>';
+}
+
+function renderMistakes(X) {
+  const blocks = Object.keys(WORLDS).map(w => {
+    const x = X.W[w];
+    if (!x) return '';
+    const list = Object.entries(x.tags).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    if (!list.length) return '<div class="m-row"><b>' + T('World ', 'Dunia ') + w + '</b> <span class="muted">— ' + T('no mistakes recorded', 'tiada kesilapan direkodkan') + '</span></div>';
+    return '<div class="m-row"><b>' + T('World ', 'Dunia ') + w + '</b>' + list.map(([t, c]) => {
+      const p = pct(c, x.attempts);
+      return '<div class="m-top" style="margin-top:6px;"><span>' + esc(tagLabel(t)) + '</span><b>' + p + '%</b></div><div class="m-bar"><i class="b" style="width:' + p + '%"></i></div>';
+    }).join('') + '</div>';
+  }).join('');
+  $('mistakes').innerHTML = '<h3 style="margin-bottom:6px;">' + T('Most common mistakes', 'Kesilapan paling kerap') + '</h3>' + (blocks || '<p class="muted">—</p>') +
+    '<p class="muted" style="margin:10px 0 0;">' + T('Share of all attempts in that world.', 'Peratus daripada semua cubaan dalam dunia itu.') + '</p>';
+}
+
+function renderLevels(X, n) {
+  $('k-levels').textContent = T('Part two', 'Bahagian dua');
+  $('h-levels').textContent = T('Level by level', 'Tahap demi tahap');
+  const rows = Object.keys(WORLDS).flatMap(w => WORLDS[w].levels.map((name, i) => {
+    const x = X.L[w + '-' + (i + 1)];
+    if (!x) return '<tr><td>' + w + '.' + (i + 1) + '</td><td>' + esc(tt(name)) + '</td><td class="num muted" colspan="4">' + T('not played', 'belum dimainkan') + '</td></tr>';
+    const cl = pct(x.cleared.size, n), t = topTag(x.tags);
+    return '<tr><td>' + w + '.' + (i + 1) + '</td><td>' + esc(tt(name)) + '</td>' +
+      '<td class="num' + (cl < 70 ? ' low' : '') + '">' + cl + '%</td>' +
+      '<td class="num">' + pct(x.wrong, x.wrong + x.right) + '%</td>' +
+      '<td class="num">' + pct(x.hintRows, x.right) + '%</td>' +
+      '<td>' + (t ? esc(tagLabel(t[0])) : '—') + '</td></tr>';
+  })).join('');
+  $('levels').innerHTML = '<table><tr><th>#</th><th>' + T('Level', 'Tahap') + '</th><th class="num">' + T('Cleared', 'Selesai') + '</th><th class="num">' + T('Wrong answers', 'Jawapan salah') +
+    '</th><th class="num">' + T('Cleared with help', 'Selesai dengan bantuan') + '</th><th>' + T('Top mistake', 'Kesilapan utama') + '</th></tr>' + rows + '</table>' +
+    '<p class="muted" style="margin:10px 0 0;">' + T('Cleared = share of the class who found the best answer. Cleared with help = used Hint or Learn on the way.', 'Selesai = peratus kelas yang menemui jawapan terbaik. Selesai dengan bantuan = guna Petunjuk atau Belajar.') + '</p>';
+}
+
+function renderSupport(X) {
+  $('k-support').textContent = T('Part three', 'Bahagian tiga');
+  $('h-support').textContent = T('Students needing support', 'Murid yang memerlukan sokongan');
+  $('support').innerHTML = Object.keys(WORLDS).map(w => {
+    const list = X.students.filter(s => X.S[s].mastery[w] != null).sort((a, b) => X.S[a].mastery[w] - X.S[b].mastery[w]).slice(0, 5);
+    const body = list.length ? list.map(s => {
+      const st = X.S[s], m = Math.round(st.mastery[w]);
+      return '<div class="flag' + (m < 40 ? ' hot' : '') + '" style="margin-top:8px;cursor:pointer;" data-stu="' + esc(s) + '"><b>' + esc(s) + ' &nbsp;<span class="pill ' + (m < 70 ? 'alert' : 'done') + '">' + m + '%</span></b>' +
+        '<span>' + T(st.wrong + ' wrong answer' + (st.wrong === 1 ? '' : 's') + ' · Hint/Learn in ' + (st.hints + st.learn) + ' attempt' + (st.hints + st.learn === 1 ? '' : 's'),
+          st.wrong + ' jawapan salah · Petunjuk/Belajar dalam ' + (st.hints + st.learn) + ' cubaan') + '</span></div>';
+    }).join('') : '<p class="muted">' + T('No one has played this world yet.', 'Belum ada yang bermain dunia ini.') + '</p>';
+    return '<div class="card"><h3>' + T('World ', 'Dunia ') + w + ' · ' + esc(tt(WORLDS[w].name)) + '</h3><p class="muted" style="margin:2px 0 0;">' + T('Lowest 5 by mastery', '5 terendah mengikut penguasaan') + '</p>' + body + '</div>';
+  }).join('');
+}
+
+function renderStudents(X, rows) {
+  $('k-students').textContent = T('Part four', 'Bahagian empat');
+  $('h-students').textContent = T('Every student', 'Setiap murid');
+  $('p-students').textContent = T('Tap a student for their attempt trail.', 'Ketik seorang murid untuk melihat jejak cubaannya.');
+  const body = X.students.map(s => {
+    const st = X.S[s];
+    const cell = w => st.mastery[w] == null ? '<td class="num muted">—</td>' : '<td class="num' + (st.mastery[w] < 70 ? ' low' : '') + '">' + Math.round(st.mastery[w]) + '%</td>';
+    return '<tr class="pick" data-stu="' + esc(s) + '"><td><b>' + esc(s) + '</b></td><td class="num">' + st.xp + '</td>' + cell(2) + cell(3) +
+      '<td class="num">' + Object.keys(st.cleared).length + '</td><td class="num">' + st.wrong + '</td><td class="num">' + (st.hints + st.learn) + '</td><td class="muted">' + esc(st.last.slice(0, 16).replace('T', ' ')) + '</td></tr>';
+  }).join('');
+  $('students').innerHTML = '<table><tr><th>' + T('Student', 'Murid') + '</th><th class="num">XP</th><th class="num">' + T('World 2', 'Dunia 2') + '</th><th class="num">' + T('World 3', 'Dunia 3') +
+    '</th><th class="num">' + T('Levels cleared', 'Tahap selesai') + '</th><th class="num">' + T('Wrong', 'Salah') + '</th><th class="num">' + T('Help used', 'Bantuan') + '</th><th>' + T('Last active', 'Aktif terakhir') + '</th></tr>' + body + '</table>';
+  renderStudent(X, rows);
+}
+
+function renderStudent(X, rows) {
+  if (!openStudent || !X.S[openStudent]) { $('student').innerHTML = ''; return; }
+  const st = X.S[openStudent], mine = rows.filter(r => r.stu === openStudent).sort(byTime);
+  const rank = tt(RANKS[Math.min(Math.floor(st.xp / 500), RANKS.length - 1)]);
+  const worlds = Object.keys(WORLDS).filter(w => st.mastery[w] != null).map(w => {
+    const lv = WORLDS[w].levels.map((name, i) => {
+      const a = mine.filter(r => r.w === +w && r.lv === i + 1);
+      return '<tr><td>' + w + '.' + (i + 1) + ' ' + esc(tt(name)) + '</td><td class="trail">' + (a.length ? a.slice(-10).map(r => r.ok ? '✓' : '✗').join(' → ') : '—') + '</td>' +
+        '<td class="num">' + (st.best[w + '-' + (i + 1)] || 0) + '</td><td>' + esc([...new Set(a.filter(r => r.tag).map(r => tagLabel(r.tag)))].join('; ')) + '</td></tr>';
+    }).join('');
+    return '<h3 style="margin:16px 0 4px;">' + T('World ', 'Dunia ') + w + ' · ' + esc(tt(WORLDS[w].name)) + ' — ' + Math.round(st.mastery[w]) + '%</h3>' +
+      '<table><tr><th>' + T('Level', 'Tahap') + '</th><th>' + T('Attempts, oldest first', 'Cubaan, terawal dahulu') + '</th><th class="num">' + T('Best', 'Terbaik') + '</th><th>' + T('Mistakes', 'Kesilapan') + '</th></tr>' + lv + '</table>';
+  }).join('');
+  $('student').innerHTML = '<div class="student"><div class="row spread"><h2 style="margin:0;">' + esc(openStudent) + '</h2><button class="btn ghost sm" id="btn-close-stu">' + T('Close', 'Tutup') + '</button></div>' +
+    '<div class="kpis"><div class="kpi"><b>' + st.xp + ' XP</b><span>' + esc(rank) + '</span></div>' +
+    '<div class="kpi"><b>' + Object.keys(st.cleared).length + '</b><span>' + T('levels cleared', 'tahap selesai') + '</span></div>' +
+    '<div class="kpi"><b>' + st.wrong + '</b><span>' + T('wrong answers', 'jawapan salah') + '</span></div>' +
+    '<div class="kpi"><b>' + (st.hints + st.learn) + '</b><span>' + T('attempts using Hint or Learn', 'cubaan guna Petunjuk atau Belajar') + '</span></div></div>' +
+    worlds + '<p class="muted" style="margin:12px 0 0;">' + T('XP here counts level scores only; the +20 Discover bonus stays on the student’s device.', 'XP di sini mengira markah tahap sahaja; bonus Temui +20 kekal pada peranti murid.') + '</p></div>';
+  $('btn-close-stu').addEventListener('click', () => { openStudent = null; $('student').innerHTML = ''; });
+  $('student').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ---------- pre-test / post-test (a separate CSV: student_code, pre, post) ---------- */
+function renderPrePost(X) {
+  $('k-prepost').textContent = T('Part five', 'Bahagian lima');
+  $('h-prepost').textContent = T('Pre-test and post-test', 'Ujian pra dan ujian pasca');
+  const loader = '<span class="btn ghost sm file"><span>' + T('Open scores CSV', 'Buka CSV markah') + '</span><input type="file" id="in-pre" accept=".csv,text/csv"></span>';
+  if (!PRE) {
+    $('prepost').innerHTML = '<p>' + T('Once both tests are marked, open a CSV with three columns — <b class="ink">student_code, pre, post</b> — and the class averages appear here next to game mastery.',
+      'Setelah kedua-dua ujian ditanda, buka CSV dengan tiga lajur — <b class="ink">student_code, pre, post</b> — dan purata kelas akan dipaparkan di sini bersama penguasaan permainan.') + '</p>' + loader;
+  } else {
+    const inClass = PRE.filter(p => !current || X.S[p.stu] || p.stu.indexOf(current.split('-')[0] + '-') === 0);
+    const both = inClass.filter(p => !isNaN(p.pre) && !isNaN(p.post));
+    const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+    const gains = both.map(p => p.post - p.pre), g = mean(gains);
+    const sd = gains.length > 1 ? Math.sqrt(gains.reduce((a, x) => a + (x - g) * (x - g), 0) / (gains.length - 1)) : 0;
+    const tStat = sd ? g / (sd / Math.sqrt(gains.length)) : 0;
+    const f1 = x => (Math.round(x * 10) / 10).toFixed(1);
+    $('prepost').innerHTML = '<div class="kpis">' +
+      '<div class="kpi"><b>' + f1(mean(both.map(p => p.pre))) + '</b><span>' + T('pre-test mean', 'min ujian pra') + '</span></div>' +
+      '<div class="kpi"><b>' + f1(mean(both.map(p => p.post))) + '</b><span>' + T('post-test mean', 'min ujian pasca') + '</span></div>' +
+      '<div class="kpi"><b>' + (g >= 0 ? '+' : '') + f1(g) + '</b><span>' + T('mean gain', 'min peningkatan') + '</span></div>' +
+      '<div class="kpi"><b>' + both.length + '</b><span>' + T('students with both tests', 'murid dengan kedua-dua ujian') + '</span></div></div>' +
+      '<p>' + T(pct(gains.filter(x => x > 0).length, gains.length) + '% of students improved. Paired t = ' + tStat.toFixed(2) + ', df = ' + Math.max(gains.length - 1, 0) + ' — confirm the p-value in SPSS or Excel, and use Wilcoxon if the class is small.',
+        pct(gains.filter(x => x > 0).length, gains.length) + '% murid meningkat. t berpasangan = ' + tStat.toFixed(2) + ', df = ' + Math.max(gains.length - 1, 0) + ' — sahkan nilai-p dalam SPSS atau Excel, dan guna Wilcoxon jika kelas kecil.') + '</p>' +
+      '<div class="scroll"><table><tr><th>' + T('Student', 'Murid') + '</th><th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Gain', 'Peningkatan') +
+      '</th><th class="num">' + T('World 2', 'Dunia 2') + '</th><th class="num">' + T('World 3', 'Dunia 3') + '</th></tr>' +
+      both.map(p => {
+        const st = X.S[p.stu], m = w => st && st.mastery[w] != null ? Math.round(st.mastery[w]) + '%' : '—';
+        return '<tr><td>' + esc(p.stu) + '</td><td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td><td class="num">' + m(2) + '</td><td class="num">' + m(3) + '</td></tr>';
+      }).join('') + '</table></div><div style="margin-top:12px;">' + loader + '</div>';
+  }
+  $('in-pre').addEventListener('change', ev => {
+    const f = ev.target.files[0]; if (!f) return;
+    readFile(f, text => {
+      PRE = parseCSV(text).map(r => ({ stu: String(r.student_code || r.student || '').trim(), pre: parseFloat(r.pre), post: parseFloat(r.post) })).filter(p => p.stu);
+      render();
+    });
+  });
+}
+
+/* ============================================================
+   Wiring
+   ============================================================ */
+$('btn-lang').addEventListener('click', () => {
+  LANG = LANG === 'bm' ? 'en' : 'bm';
+  try { localStorage.setItem(LANG_KEY, LANG); } catch (e) {}
+  render();
+});
+$('btn-load').addEventListener('click', loadFromScript);
+$('in-key').addEventListener('keydown', e => { if (e.key === 'Enter') loadFromScript(); });
+$('in-csv').addEventListener('change', ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  readFile(f, text => {
+    const rows = parseCSV(text);
+    if (!rows.length || !('student_code' in rows[0])) return showErr(T('That file doesn’t look like the Attempts sheet — it needs a student_code column.', 'Fail itu bukan sheet Attempts — ia perlu lajur student_code.'));
+    showErr(''); useRows(rows, 'csv');
+  });
+  ev.target.value = '';
+});
+$('sel-class').addEventListener('change', e => { current = e.target.value; openStudent = null; render(); });
+$('btn-reload').addEventListener('click', () => { const c = conn(); $('in-url').value = c.url; $('in-key').value = c.key; loadFromScript(); });
+$('btn-disconnect').addEventListener('click', () => { $('dash').classList.add('hidden'); $('connect').classList.remove('hidden'); });
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-stu]');
+  if (!t) return;
+  openStudent = t.dataset.stu;
+  const rows = ALL.filter(r => !current || r.cls === current);
+  renderStudent(stats(rows), rows);
+});
+
+/* ---------- go ---------- */
+(function init() {
+  const c = conn();
+  $('in-url').value = c.url || DEFAULT_ENDPOINT;
+  if (c.key) $('in-key').value = c.key;
+  renderStatic();
+  if (c.url && c.key) loadFromScript();
+})();
+</script>
+</body>
+</html>

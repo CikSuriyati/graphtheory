@@ -1,11 +1,12 @@
 # GRAPH QUEST — setup
 
-Four files, in `graphquest/`:
+Five files, in `graphquest/`:
 
 | File | What it is |
 |---|---|
 | `index.html` | The game shell (entry, world map, My progress, Discover) and World 3 |
 | `world2.js` | World 2, Graph Detective |
+| `teacher.html` | The teacher dashboard (Stage 3) — see *Teacher dashboard* below |
 | `graph.js` | The graph engine: draws nothing, solves everything. Every puzzle is solved before it is shown |
 | `graphquest-apps-script.gs` | The backend that saves results to your Google Sheet |
 
@@ -154,6 +155,35 @@ Replaying keeps the **best** score. Mastery = the average of the best scores acr
 
 ---
 
+## Teacher dashboard
+
+`graphtheory.visuallymath.com/graphquest/teacher.html` (also linked as *For teachers* at the bottom of the game). It answers one question: **which idea should I reteach tomorrow, and to whom?**
+
+It shows, for the class you pick:
+
+- **Reteach tomorrow** — the level with the highest share of wrong answers, its most common mistake, a one-line teaching tip for that mistake, and the students to check in with
+- **Mastery per world**, flagged under 70%, and the **most common mistakes** as a share of that world's attempts
+- **Level by level** — how much of the class cleared each level, the wrong-answer rate, how many needed Hint or Learn, and the top mistake
+- **Students needing support** — the lowest 5 by mastery in each world
+- **Every student** — tap one for their attempt trail (✗ → ✗ → ✓) and mistakes, level by level
+- **Pre-test and post-test** — open a CSV with columns `student_code, pre, post` to see the means, the mean gain and a paired t next to game mastery
+
+Everything is computed in the teacher's browser. Nothing is sent anywhere.
+
+### Two ways to load results
+
+**A. Connect to the Sheet (recommended).** The dashboard reads the Attempts tab through the same Apps Script, but only with a teacher key. The Sheet stays private.
+
+1. In the Apps Script, change `var TEACHER_KEY = 'CHANGE_ME';` to your own long random phrase (e.g. four unrelated words). Keep it out of GitHub — only your Apps Script copy holds the real key.
+2. **Deploy → Manage deployments → pencil → Version: New version → Deploy.** The /exec link stays the same.
+3. Open the dashboard, paste the /exec link (already filled in) and your key, and press **Load results**. The key is remembered on that device only, and **Reload** fetches the latest rows.
+
+**B. Open a CSV file.** In the Sheet, on the Attempts tab: **File → Download → Comma-separated values (.csv)**. Then choose that file on the dashboard. This needs no setup, and the file never leaves the device.
+
+Don't use *File → Share → Publish to web* for this: it makes every row readable by anyone with the link.
+
+---
+
 ## The one thing that trips everyone up
 
 **After any edit to the Apps Script, redeploy as a new version.**
@@ -172,6 +202,10 @@ Replaying keeps the **best** score. Mastery = the average of the best scores acr
 
 **Rows missing** — Apps Script editor → **Executions** shows the real error.
 
+**Dashboard says "no teacher key yet"** — `TEACHER_KEY` is still `CHANGE_ME`, or you changed it but didn't deploy a new version.
+
+**Dashboard can't reach the Apps Script** — the deployed version predates the dashboard. Deploy a new version (step 2 above).
+
 **A student changed device** — progress doesn't move with them, but the Sheet still has everything they submitted.
 
 ---
@@ -179,6 +213,6 @@ Replaying keeps the **best** score. Mastery = the average of the best scores acr
 ## Next stages
 
 2. ~~World 2 Graph Detective, and a combined *My progress* across worlds~~ — done
-3. The teacher dashboard page, reading the published Sheet as CSV. The pre-test/post-test trial can start here
+3. ~~The teacher dashboard page~~ — done. The pre-test/post-test trial can start from here
 4. World 1 Graph Maze, World 4 Build the Network, Boss Level
 5. World 5 Euler Escape, World 6 Colour Master, team leaderboard

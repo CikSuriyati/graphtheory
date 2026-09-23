@@ -32,6 +32,11 @@
 
 var SHEET_NAME = 'Attempts';
 
+/* The teacher dashboard reads the sheet with ?action=rows&key=… — only with
+   this key. Change it to your own long random phrase before deploying, and
+   never commit your real key. Students never need it. */
+var TEACHER_KEY = 'CHANGE_ME';
+
 var FIELDS = [
   'attempt_id', 'timestamp', 'class_code', 'student_code', 'world', 'level',
   'correct', 'optimal', 'score_xp', 'hints_used', 'learn_used', 'time_s',
@@ -46,8 +51,25 @@ var MAX_ROWS_PER_POST = 500;
    ENTRY POINTS
    ================================================================== */
 
-function doGet() {
-  return json({ ok: true, message: 'GRAPH QUEST collector is running.' });
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.action !== 'rows') return json({ ok: true, message: 'GRAPH QUEST collector is running.' });
+
+  // ---- teacher dashboard: every attempt row, only with the teacher key ----
+  if (!TEACHER_KEY || TEACHER_KEY === 'CHANGE_ME') {
+    return json({ ok: false, code: 'NO_KEY', error: 'Set TEACHER_KEY in the Apps Script, then deploy a new version.' });
+  }
+  if (String(p.key || '') !== TEACHER_KEY) return json({ ok: false, code: 'BAD_KEY', error: 'That teacher key is not right.' });
+
+  var sheet = getSheet(), last = sheet.getLastRow();
+  if (last < 2) return json({ ok: true, rows: [] });
+  var head = sheet.getRange(1, 1, 1, RECEIVED_COL).getValues()[0];
+  var rows = sheet.getRange(2, 1, last - 1, RECEIVED_COL).getValues().map(function (r) {
+    var o = {};
+    head.forEach(function (h, i) { o[h] = (r[i] instanceof Date) ? r[i].toISOString() : r[i]; });
+    return o;
+  });
+  return json({ ok: true, rows: rows });
 }
 
 function doPost(e) {

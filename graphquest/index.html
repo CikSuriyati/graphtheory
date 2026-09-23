@@ -1148,6 +1148,20 @@
     .bosscard.open { background: var(--yellow-soft); }
     .bosscard .steps { grid-template-columns: repeat(4, 1fr); }
 
+    /* ---- World 5, World 6, class board ---- */
+    .edge.used .road { stroke: var(--orange); stroke-width: 6; stroke-dasharray: 11 7; }
+    .lbl.used rect { fill: var(--orange-soft); }
+    .edge.clash .road { stroke: var(--terra); stroke-width: 6; }
+    .town.s1 .dot { fill: #ee6c34; } .town.s2 .dot { fill: #7ca3f9; } .town.s3 .dot { fill: #a2dd70; } .town.s4 .dot { fill: #ffd54a; }
+    .palette { display: flex; gap: 8px; flex-wrap: wrap; }
+    .slot { appearance: none; font: inherit; border: 2px solid var(--ink); border-radius: 12px; padding: 6px 12px; cursor: pointer; display: grid; text-align: left; line-height: 1.2; }
+    .slot b { font-size: 16px; } .slot span { font-size: 11.5px; }
+    .slot.s1 { background: #ee6c34; } .slot.s2 { background: #7ca3f9; } .slot.s3 { background: #a2dd70; } .slot.s4 { background: #ffd54a; }
+    .slot.on { box-shadow: 0 4px 0 var(--ink); transform: translateY(-3px); outline: 3px solid var(--ink); outline-offset: 2px; }
+    .grid2b { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .lrow.me { background: var(--yellow-soft); border-radius: 8px; padding-left: 6px; padding-right: 6px; }
+    @media (max-width: 600px) { .grid2b { grid-template-columns: 1fr; } }
+
     /* ---- Pre-test / post-test / survey ---- */
     .testcard { background: var(--green-soft); grid-column: 1 / -1; }
     .trow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-weight: 700; font-size: 14.5px; }
@@ -1492,6 +1506,8 @@
   <script src="world1.js"></script>
   <script src="world2.js"></script>
   <script src="world4.js"></script>
+  <script src="world5.js"></script>
+  <script src="world6.js"></script>
   <script src="boss.js"></script>
   <script src="tests.js"></script>
   <script>
@@ -1618,6 +1634,10 @@
     if (window.W1) WORLD[1] = W1;
     if (window.W2) WORLD[2] = W2;
     if (window.W4) WORLD[4] = W4;
+    if (window.W5) WORLD[5] = W5;
+    if (window.W6) WORLD[6] = W6;
+    const BONUS_AFTER = 10;                          // bonus worlds open after this many core levels
+    const coreCleared = () => [1, 2, 3, 4].reduce((a, w) => a + [1, 2, 3, 4, 5].filter(l => st.done[w + '-' + l]).length, 0);
     if (window.BOSS) WORLD[7] = BOSS;               // the Boss Level is stored as world 7
     const levelsOf = w => WORLD[w].levels;
 
@@ -1725,6 +1745,10 @@
         if (!WORLD[w.n]) {
           return '<div class="world locked">' + head +
             '<span class="corner pill lock">' + T('Coming soon', 'Akan datang') + '</span></div>';
+        }
+        if (w.bonus && coreCleared() < BONUS_AFTER) {
+          return '<div class="world locked">' + head +
+            '<span class="corner pill lock">' + T('Clear ' + BONUS_AFTER + ' core levels · ', 'Selesaikan ' + BONUS_AFTER + ' tahap teras · ') + coreCleared() + ' / ' + BONUS_AFTER + '</span></div>';
         }
         const LV = levelsOf(w.n), k = i => lvKey(w.n, i);
         const doneN = LV.filter((_, i) => st.done[k(i)]).length;
@@ -2302,6 +2326,8 @@
         (WORLD[7] && Object.keys(st.best).some(k => k.indexOf('7-') === 0) ? worldCard({ n: 7, name: ['Boss Level', 'Tahap Bos'] }) : '') +
         '<div class="sec-title">' + T('Badges', 'Lencana') + '</div>' +
         '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span></div>').join('') + '</div>' +
+        '<div class="sec-title">' + T('Class board · this week', 'Papan kelas · minggu ini') + '</div>' +
+        '<div id="board"><p class="muted">' + T('Loading…', 'Memuatkan…') + '</p></div>' +
         '<div class="sec-title">' + T('Send to my teacher', 'Hantar kepada guru') + '</div>' +
         '<p>' + (unsent
           ? T(unsent + ' result' + (unsent > 1 ? 's' : '') + ' not sent yet.', unsent + ' keputusan belum dihantar.')
@@ -2311,6 +2337,40 @@
         '<div class="muted" id="submit-msg" style="margin-top:12px;"></div>';
       $('btn-submit').addEventListener('click', sendResults);
       $('btn-prog-map').addEventListener('click', () => { renderMap(); show('map'); });
+      loadBoard();
+    }
+
+    /* ---------- class board: teams first, then students (this week) ---------- */
+    let boardCache = null;
+    async function loadBoard() {
+      const el = $('board'); if (!el) return;
+      if (ENDPOINT.indexOf('PASTE_') === 0) { el.innerHTML = '<p class="muted">' + T('The class board appears once your teacher connects results.', 'Papan kelas dipaparkan setelah guru anda menyambungkan keputusan.') + '</p>'; return; }
+      if (boardCache && boardCache.cls === st.classCode && Date.now() - boardCache.at < 60000) return drawBoard(boardCache.data);
+      try {
+        const res = await fetch(ENDPOINT + '?action=board&class=' + encodeURIComponent(st.classCode), { redirect: 'follow' });
+        const data = await res.json();
+        if (!data.ok || !data.teams) throw new Error('old');
+        boardCache = { cls: st.classCode, at: Date.now(), data };
+        drawBoard(data);
+      } catch (e) {
+        if ($('board')) $('board').innerHTML = '<p class="muted">' + T('The class board isn’t available right now — it needs a connection and the latest results script.', 'Papan kelas tidak tersedia sekarang — ia memerlukan sambungan dan skrip keputusan terkini.') + '</p>';
+      }
+    }
+    function drawBoard(d) {
+      const el = $('board'); if (!el) return;
+      const me = studentCode(), mine = d.students.find(x => x.code === me), myTeam = mine ? mine.team : null;
+      const team = d.teams.find(t => t.team === myTeam);
+      if (team && team.members.length > 1 && team.members.every(m => m.xp > 0)) giveBadges(['team_player']);
+      const tRows = d.teams.slice(0, 8).map((t, k) => '<div class="lrow' + (t.team === myTeam ? ' me' : '') + '"><span><b>' + (k + 1) + '</b> · ' + t.team +
+        ' <span class="muted">(' + t.members.map(m => m.code === me ? '<b class="ink">' + m.code + '</b>' : m.code).join(', ') + ')</span></span><b>' + t.xp + '</b></div>').join('');
+      const rank = d.students.findIndex(x => x.code === me);
+      const sRows = d.students.slice(0, 10).map((x, k) => '<div class="lrow' + (x.code === me ? ' me' : '') + '"><span><b>' + (k + 1) + '</b> · ' + x.code + '</span><b>' + x.xp + '</b></div>').join('') +
+        (rank >= 10 ? '<div class="lrow me"><span><b>' + (rank + 1) + '</b> · ' + me + '</span><b>' + d.students[rank].xp + '</b></div>' : '');
+      el.innerHTML = '<div class="grid2b"><div class="card"><h3 style="margin:0 0 4px;">' + T('Teams', 'Pasukan') + '</h3><p class="muted" style="margin:0 0 6px;">' +
+        T('Average XP per member — help your teammates.', 'Purata XP setiap ahli — bantu rakan sepasukan anda.') + '</p>' + (tRows || '<p class="muted">—</p>') + '</div>' +
+        '<div class="card"><h3 style="margin:0 0 6px;">' + T('Players', 'Pemain') + '</h3>' + (sRows || '<p class="muted">—</p>') + '</div></div>' +
+        '<p class="muted" style="margin-top:10px;">' + T('Counts results sent this week (from Monday). Press Submit results below to update yours. Team Player badge: every member of your team clears a level this week.',
+          'Mengira keputusan yang dihantar minggu ini (dari Isnin). Tekan Hantar keputusan di bawah untuk mengemas kini markah anda. Lencana Pemain Pasukan: setiap ahli pasukan anda menyelesaikan satu tahap minggu ini.') + '</p>';
     }
 
     /* One POST carries attempt rows and test rows. Tests are only marked
@@ -2343,6 +2403,7 @@
         st.sent = st.attempts.length;
         if (data.testsReceived != null) st.testsSent = st.tests.length;
         save();
+        boardCache = null;
         renderProgress();
         $('submit-msg').textContent = T('Sent! Your results are with your teacher.', 'Berjaya! Keputusan anda telah sampai kepada guru anda.');
       } catch (err) {

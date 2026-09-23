@@ -52,6 +52,12 @@ var TEST_FIELDS = [
 ];
 var TEST_RECEIVED_COL = TEST_FIELDS.length + 1;
 
+/* Class leaderboard teams. Leave the Teams tab empty and students are grouped
+   in fours by register number (1–4 = Team 1, 5–8 = Team 2, …). To choose teams
+   yourself, add rows: student_code (e.g. 4S1-17) | team (any name). */
+var TEAMS_SHEET = 'Teams';
+var TEAM_SIZE = 4;
+
 var MAX_ROWS_PER_POST = 500;
 
 
@@ -61,6 +67,7 @@ var MAX_ROWS_PER_POST = 500;
 
 function doGet(e) {
   var p = (e && e.parameter) || {};
+  if (p.action === 'board') return json(board(String(p['class'] || '').toUpperCase()));
   if (p.action !== 'rows') return json({ ok: true, message: 'GRAPH QUEST collector is running.' });
 
   // ---- teacher dashboard: every attempt row, only with the teacher key ----
@@ -70,6 +77,68 @@ function doGet(e) {
   if (String(p.key || '') !== TEACHER_KEY) return json({ ok: false, code: 'BAD_KEY', error: 'That teacher key is not right.' });
 
   return json({ ok: true, rows: readTab(getSheet(), RECEIVED_COL), tests: readTab(getTestsSheet(), TEST_RECEIVED_COL) });
+}
+
+/* ==================================================================
+   CLASS BOARD — this week's XP, per student and per team, one class only.
+   Weekly XP = for each level, the best score received since Monday 00:00.
+   Only codes and XP leave the sheet; no key needed (the class code scopes it).
+   ================================================================== */
+
+function board(cls) {
+  if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(cls)) return { ok: false, error: 'Unknown class code.' };
+  var since = weekStart();
+  var rows = readTab(getSheet(), RECEIVED_COL).filter(function (r) { return String(r.class_code) === cls; });
+  var best = {}, everyone = {};
+  rows.forEach(function (r) {
+    var s = String(r.student_code);
+    everyone[s] = true;
+    if (!(new Date(r.received) >= since)) return;
+    var k = r.world + '-' + r.level, b = best[s] || (best[s] = {});
+    b[k] = Math.max(b[k] || 0, Number(r.score_xp) || 0);
+  });
+  var teamOf = teamMap();
+  var students = Object.keys(everyone).map(function (s) {
+    var xp = 0, b = best[s] || {};
+    Object.keys(b).forEach(function (k) { xp += b[k]; });
+    var reg = Number(s.split('-').pop()) || 0;
+    return { code: s, xp: xp, team: teamOf[s] || ('Team ' + Math.ceil(reg / TEAM_SIZE)) };
+  }).sort(function (a, b) { return b.xp - a.xp; });
+  var teams = {};
+  students.forEach(function (s) {
+    var t = teams[s.team] || (teams[s.team] = { team: s.team, total: 0, members: [] });
+    t.total += s.xp; t.members.push({ code: s.code, xp: s.xp });
+  });
+  var list = Object.keys(teams).map(function (k) {
+    var t = teams[k]; t.xp = Math.round(t.total / t.members.length); return t;   // average, so team size doesn't matter
+  }).sort(function (a, b) { return b.xp - a.xp; });
+  return { ok: true, week_start: since.toISOString(), students: students, teams: list };
+}
+
+function weekStart() {
+  var d = new Date(), day = (d.getDay() + 6) % 7;            // Monday = 0
+  d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - day);
+  return d;
+}
+
+function teamMap() {
+  var out = {};
+  readTab(getTeamsSheet(), 2).forEach(function (r) {
+    var s = String(r.student_code || '').trim().toUpperCase(), t = String(r.team || '').trim();
+    if (s && t) out[s] = t;
+  });
+  return out;
+}
+
+function getTeamsSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(TEAMS_SHEET) || ss.insertSheet(TEAMS_SHEET);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['student_code', 'team']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 2).setFontWeight('bold');
+  }
+  return sh;
 }
 
 function readTab(sheet, cols) {
@@ -213,9 +282,10 @@ function getSheet() {
   return ss.getSheetByName(SHEET_NAME) || setupSheet();
 }
 
-/** Run this once from the editor to create both tabs and their header rows. */
+/** Run this once from the editor to create the Attempts, Tests and Teams tabs. */
 function setupSheet() {
   getTestsSheet();
+  getTeamsSheet();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
   if (sh.getLastRow() === 0) {

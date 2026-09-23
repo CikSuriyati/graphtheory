@@ -1,6 +1,6 @@
 # GRAPH QUEST — setup
 
-Ten files, in `graphquest/`, plus a review sheet:
+Twelve files, in `graphquest/`, plus a review sheet:
 
 | File | What it is |
 |---|---|
@@ -12,6 +12,8 @@ Ten files, in `graphquest/`, plus a review sheet:
 | `world1.js` | World 1, Graph Maze |
 | `world4.js` | World 4, Build the Network |
 | `boss.js` | The Boss Level |
+| `world5.js` | World 5 (bonus), Euler Escape |
+| `world6.js` | World 6 (bonus), Colour Master |
 | `TEST-FORMS.md` | Both test forms written out with their answers, for review |
 | `graph.js` | The graph engine: draws nothing, solves everything. Every puzzle is solved before it is shown |
 | `graphquest-apps-script.gs` | The backend that saves results to your Google Sheet |
@@ -22,9 +24,56 @@ Takes about 10 minutes.
 
 ---
 
-## What's built — Stages 1 to 4
+## Updating the Apps Script — one time, for everything
 
-All four core worlds and the Boss Level are playable. The bonus Worlds 5 (Euler Escape) and 6 (Colour Master) show on the map as *Coming soon*.
+The game already works without this, and results wait safely on each device. Do it once to switch on everything: results, the in-game tests, the dashboard, Boss rows and the class board.
+
+1. Open your results Sheet → **Extensions → Apps Script**.
+2. Select everything in `Code.gs`, delete it, and paste the whole of `graphquest-apps-script.gs`.
+3. Change `var TEACHER_KEY = 'CHANGE_ME';` to your own phrase, e.g. four random words. Don't put the real key back into GitHub.
+4. **Save**, choose **setupSheet** in the function menu, press **Run** and allow access. This adds the **Tests** and **Teams** tabs; your Attempts rows stay as they are.
+5. Choose **testCollector** and **Run**. The log should say *All tests passed*.
+6. **Deploy → Manage deployments → pencil ✎ → Version: New version → Deploy.** Keep the same deployment, so the /exec link, and the link already in the game, stay the same.
+
+Check it: open the teacher dashboard, enter your key, and press **Load results**. Then on a student device, press **Submit results** once. Anything queued (tests, Boss rows) goes through, and the class board appears on *My progress*.
+
+---
+
+## What's built — Stages 1 to 5
+
+All six worlds and the Boss Level are playable. The two bonus worlds open once a student has cleared **10 core levels**.
+
+### World 5 · Euler Escape (bonus, Stage 5)
+
+"You are trapped in the city. Cross every bridge exactly once to escape." Before each city the student **predicts** whether it can be done. The prediction earns the reasoning XP, and 5 right predictions earn the *Euler Explorer* badge. Used bridges turn dashed and numbered, and crossing one again is blocked.
+
+| Level | What happens | What it teaches |
+|---|---|---|
+| 1 · Easy escape | Start anywhere; starting at an even place gets you stuck | Where you start matters |
+| 2 · Start at the Tower | A fixed start | Start at one odd vertex, end at the other |
+| 3 · The impossible city | Press *It can't be done*, then **prove it** by tapping every place with an odd number of bridges | 4 odd vertices → no Euler trail |
+| 4 · Return home | End where you started | Euler circuit (all degrees even) |
+| 5 · Random city | Possible or impossible, generated | Mixed |
+
+**Discover:** count the odd places: 0 or 2 means you can escape, more means you can't. Then: Euler trail, Euler circuit, odd vertex.
+
+### World 6 · Colour Master (bonus, Stage 5)
+
+The SPM trial exam timetable. Subjects that share students clash (an edge) and can't share a slot (a colour). Every slot has a **colour, a number and a shape** (1 ●, 2 ▲, 3 ■, 4 ◆), so colour-blind students can play fully.
+
+| Level | Goal | What it teaches |
+|---|---|---|
+| 1 · A valid timetable | No clashes (up to 4 slots) | An edge means "different colours" |
+| 2 · Three slots only | Fit in 3 | A triangle needs 3 |
+| 3 · Fewest slots | The minimum (3) | Lower bound from the largest all-clashing group |
+| 4 · The science stream | The minimum (4, because Physics, Chemistry, Biology and Add Maths all clash) | Chromatic number |
+| 5 · Random timetable | Generated, minimum | Mixed |
+
+**Learn** shows "busiest first" colouring. **Discover:** subjects that all clash each need their own slot, so the fewest slots is at least the size of the biggest such group. Then: graph colouring, chromatic number. Three timetables at the minimum earn the *Exam Planner* badge.
+
+### Class board (Stage 5)
+
+On *My progress*: **teams first**, then players, for the student's own class and **this week only** (from Monday). It counts the best score per level from results submitted this week. Team XP is the average per member, so team size doesn't matter. Teams are groups of 4 by register number (1–4, 5–8, …) unless you fill the **Teams** tab with `student_code | team` rows. *Team Player* badge: every member of the team clears a level in the same week. Only student codes and XP are shown, the same as in the Sheet.
 
 ### World 1 · Graph Maze (Stage 4)
 
@@ -188,6 +237,13 @@ Progress lives on the student's device, so the game works offline in class. When
 | 4 | `over_budget` | Over the Level 3 budget |
 | 4 | `not_minimum` | A tree, but not the cheapest (banks 30 XP, like a valid-but-longer route in World 3) |
 | Boss | `not_fastest` | Mission 2: reached the Clinic, but not by the fastest route |
+| 5 | `wrong_prediction` | Predicted wrongly whether the city can be escaped |
+| 5 | `stuck_trail` | Got stuck with bridges left |
+| 5 | `wrong_odd_tap` | In the proof, tapped a place with an even number of bridges |
+| 5 | `said_impossible_but_possible` | Pressed *It can't be done* on a city that can be escaped |
+| 6 | `clash` | Published with two clashing subjects in one slot |
+| 6 | `too_many_slots` | Level 2: more than 3 slots |
+| 6 | `not_fewest` | Valid, but more slots than needed (banks 30 XP) |
 
 In World 2 every wrong answer is its own row (`correct` false, 0 XP). Solving the case adds one row with the level's score.
 
@@ -292,4 +348,4 @@ The Tests tab has one row per test: `test_id, timestamp, class_code, student_cod
 2. ~~World 2 Graph Detective, and a combined *My progress* across worlds~~ — done
 3. ~~The teacher dashboard page~~ — done. The pre-test/post-test trial can start from here
 4. ~~World 1 Graph Maze, World 4 Build the Network, Boss Level~~ — done
-5. World 5 Euler Escape, World 6 Colour Master, team leaderboard
+5. ~~World 5 Euler Escape, World 6 Colour Master, team leaderboard~~ — done. Every stage in the plan is built.

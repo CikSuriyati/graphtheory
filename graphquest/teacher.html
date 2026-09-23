@@ -210,7 +210,9 @@ const WORLDS = {
   1: { name: ['Graph Maze', 'Labirin Graf'], levels: [['Find a way out', 'Cari jalan keluar'], ['Never twice', 'Jangan dua kali'], ['Checkpoints', 'Pusat pemeriksaan'], ['One-way trails', 'Denai sehala'], ['Any way out?', 'Ada jalan keluar?']] },
   2: { name: ['Graph Detective', 'Detektif Graf'], levels: [['Count the corridors', 'Kira koridor'], ['Follow the suspect', 'Jejak suspek'], ['Loops and twin corridors', 'Gelung dan koridor berkembar'], ['Three witnesses', 'Tiga saksi'], ['Timed case', 'Kes berpemasa']] },
   3: { name: ['Shortest Path Race', 'Perlumbaan Laluan Terpendek'], levels: [['4 towns', '4 pekan'], ['6 towns', '6 pekan'], ['Road closed!', 'Jalan ditutup!'], ['Fastest, not shortest', 'Paling pantas, bukan terpendek'], ['Random challenge', 'Cabaran rawak']] },
-  4: { name: ['Build the Network', 'Bina Rangkaian'], levels: [['Connect every kampung', 'Sambung setiap kampung'], ['No wasted cable', 'Tiada kabel membazir'], ['On a budget', 'Dalam bajet'], ['Cheapest possible', 'Paling murah'], ['Random challenge', 'Cabaran rawak']] }
+  4: { name: ['Build the Network', 'Bina Rangkaian'], levels: [['Connect every kampung', 'Sambung setiap kampung'], ['No wasted cable', 'Tiada kabel membazir'], ['On a budget', 'Dalam bajet'], ['Cheapest possible', 'Paling murah'], ['Random challenge', 'Cabaran rawak']] },
+  5: { name: ['Euler Escape (bonus)', 'Lolos Euler (bonus)'], levels: [['Easy escape', 'Lolos mudah'], ['Start at the Tower', 'Mula di Menara'], ['The impossible city', 'Bandar mustahil'], ['Return home', 'Pulang ke rumah'], ['Random city', 'Bandar rawak']] },
+  6: { name: ['Colour Master (bonus)', 'Pakar Warna (bonus)'], levels: [['A valid timetable', 'Jadual yang sah'], ['Three slots only', 'Tiga slot sahaja'], ['Fewest slots', 'Slot paling sedikit'], ['The science stream', 'Aliran sains'], ['Random timetable', 'Jadual rawak']] }
 };
 const WKEYS = Object.keys(WORLDS);
 const BOSS_MISSIONS = [
@@ -256,6 +258,20 @@ const TAGS = {
     tip: ['Model Kruskal’s method: list edges cheapest first, take each unless it closes a cycle.', 'Tunjukkan kaedah Kruskal: senaraikan sisi paling murah dahulu, ambil setiap satu kecuali ia menutup kitaran.'] },
   not_fastest: { l: ['A route, but not the fastest', 'Laluan, tetapi bukan paling pantas'],
     tip: ['Total each route before choosing; the most direct-looking one is often not the fastest.', 'Jumlahkan setiap laluan sebelum memilih; yang nampak paling terus selalunya bukan paling pantas.'] },
+  wrong_prediction: { l: ['Predicted wrongly whether an Euler trail exists', 'Salah meramal sama ada surih Euler wujud'],
+    tip: ['Before trying, count the odd vertices: 0 or 2 means yes, more means no.', 'Sebelum mencuba, kira bucu ganjil: 0 atau 2 bermakna ya, lebih bermakna tidak.'] },
+  stuck_trail: { l: ['Got stuck with bridges left', 'Tersekat dengan jambatan berbaki'],
+    tip: ['When exactly two vertices are odd, the trail must start at one and end at the other.', 'Apabila tepat dua bucu ganjil, surih mesti bermula di satu dan berakhir di satu lagi.'] },
+  wrong_odd_tap: { l: ['Called an even vertex odd', 'Menyebut bucu genap sebagai ganjil'],
+    tip: ['Tick each edge at a vertex as you count; write the degree beside it before judging odd or even.', 'Tanda setiap sisi di bucu semasa mengira; tulis darjah di sebelahnya sebelum menilai ganjil atau genap.'] },
+  said_impossible_but_possible: { l: ['Said "impossible" when an Euler trail existed', 'Kata "mustahil" sedangkan surih Euler wujud'],
+    tip: ['Show that a failed attempt proves nothing — the start vertex matters. Count odd vertices instead.', 'Tunjukkan cubaan gagal tidak membuktikan apa-apa — bucu mula penting. Kira bucu ganjil.'] },
+  clash: { l: ['Put two clashing subjects in one slot', 'Letak dua subjek bertembung dalam satu slot'],
+    tip: ['An edge means "different colours". Check each edge once the colouring is done.', 'Sisi bermaksud "warna berbeza". Semak setiap sisi selepas mewarna.'] },
+  too_many_slots: { l: ['Used more slots than allowed', 'Guna lebih slot daripada dibenarkan'],
+    tip: ['Colour the vertex with the highest degree first, then reuse the lowest colour that fits.', 'Warnakan bucu berdarjah tertinggi dahulu, kemudian guna semula warna terendah yang sesuai.'] },
+  not_fewest: { l: ['Valid colouring, but not the fewest colours', 'Pewarnaan sah, tetapi bukan warna paling sedikit'],
+    tip: ['Find the largest group that all clash: that is the lower bound. Then try to meet it.', 'Cari kumpulan terbesar yang semuanya bertembung: itulah batas bawah. Kemudian cuba capainya.'] },
   clue_ignored: { l: ['Ignored one of the clues', 'Abaikan salah satu petunjuk'],
     tip: ['Model it as elimination: cross out places that fail clue 1, then clue 2, then clue 3.', 'Tunjukkan sebagai penyingkiran: potong tempat yang gagal petunjuk 1, kemudian 2, kemudian 3.'] }
 };

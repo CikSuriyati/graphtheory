@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="copyright" content="© 2025–2026 GraphTheory. Licensed CC BY-NC-ND 4.0.">
+  <title>GRAPH QUEST — Turn every graph into a challenge</title>
+  <meta name="description"
+    content="A graph theory game for SPM Form 4: Network in Graph Theory. Build routes, find shortest paths and discover the rules yourself. English and Bahasa Melayu.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..900&family=Caveat:wght@600;700&family=DM+Sans:opsz,wght@9..40,400..700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf7f7;
+      --card: #ffffff;
+      --ink: #17130c;
+      --ink-soft: #57514a;
+      --ink-faint: #8d867e;
+      --line: #eae4e1;
+      --orange: #ee6c34;
+      --orange-soft: #fdeee7;
+      --blue: #7ca3f9;
+      --blue-soft: #eaf0fe;
+      --green: #a2dd70;
+      --green-soft: #eef8e6;
+      --yellow: #ffd54a;
+      --yellow-soft: #fff7e0;
+      --terra: #df876e;
+      --terra-soft: #fdeae5;
+      --r-card: 24px;
+      --r-btn: 12px;
+      --maxw: 860px;
+      --shadow: 0 2px 0 rgba(23, 19, 12, .04), 0 12px 32px -18px rgba(23, 19, 12, .28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.6 "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 18px 20px 90px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-card);
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin: 0 0 12px;
+    }
+
+    h1 {
+      font-size: 38px;
+    }
+
+    h2 {
+      font-size: 25px;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .script {
+      font-family: "Caveat", cursive;
+      font-weight: 700;
+      color: var(--orange);
+      font-size: 1.28em;
+      line-height: .9;
+      display: inline-block;
+      transform: rotate(-2deg);
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--ink-soft);
+    }
+
+    .muted {
+      color: var(--ink-faint);
+      font-size: 13.5px;
+    }
+
+    .kicker {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    b.ink {
+      color: var(--ink);
+    }
+
+    /* ---- top bar ---- */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      font-family: "Fraunces", serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: -.01em;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand i {
+      font-style: normal;
+      color: var(--orange);
+    }
+
+    .toplinks {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tlink {
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink-soft);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .tlink:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    /* ---- buttons ---- */
+    .btn {
+      appearance: none;
+      border: 2px solid var(--ink);
+      border-radius: var(--r-btn);
+      padding: 12px 22px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--orange);
+      color: var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      transition: transform .08s, box-shadow .08s, background .15s;
+    }
+
+    .btn:hover {
+      background: #f4854f;
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 var(--ink);
+    }
+
+    .btn[disabled] {
+      background: #e8e3df;
+      color: #7a736c;
+      border-color: #cfc8c3;
+      box-shadow: 0 3px 0 #cfc8c3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.ghost {
+      background: #fff;
+    }
+
+    .btn.ghost:hover {
+      background: #fdf6f2;
+    }
+
+    .btn.sm {
+      padding: 8px 14px;
+      font-size: 13.5px;
+      border-radius: 10px;
+    }
+
+    .btn.pulse {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 0 var(--ink);
+      }
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .spread {
+      justify-content: space-between;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    input[type=text] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--line);
+      border-radius: var(--r-btn);
+      font: inherit;
+      font-size: 16px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input[type=text]:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    input[type=text]::placeholder {
+      color: #b9b2ab;
+    }
+
+    input.bad {
+      border-color: var(--terra);
+    }
+
+    label.fld {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 7px;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+
+    /* ---- sticker chips ---- */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin: 18px 0 4px;
+    }
+
+    .chip {
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 2px solid var(--ink);
+      background: var(--yellow-soft);
+    }
+
+    .chip:nth-child(2) {
+      background: var(--blue-soft);
+      transform: rotate(-1.5deg);
+    }
+
+    .chip:nth-child(3) {
+      background: var(--green-soft);
+      transform: rotate(1.2deg);
+    }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 99px;
+      border: 1.5px solid var(--ink);
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .pill.done {
+      background: var(--green);
+    }
+
+    .pill.part {
+      background: var(--yellow);
+    }
+
+    .pill.new {
+      background: #fff;
+    }
+
+    .pill.lock {
+      background: #efeae7;
+      color: var(--ink-faint);
+      border-color: #d8d2ce;
+    }
+
+    .pill.alert {
+      background: var(--terra);
+      color: #fff;
+    }
+
+    .doodle {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* ---- player strip ---- */
+    .player {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: stretch;
+      margin: 6px 0 22px;
+    }
+
+    .kpi {
+      flex: 1;
+      min-width: 120px;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 10px 13px;
+      background: var(--blue-soft);
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    .kpi b {
+      display: block;
+      font-family: "Fraunces", serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .kpi span {
+      font-size: 11.5px;
+      color: var(--ink-faint);
+    }
+
+    .kpi:nth-child(2) {
+      background: var(--yellow-soft);
+    }
+
+    .kpi:nth-child(3) {
+      background: var(--green-soft);
+    }
+
+    /* ---- world map ---- */
+    .worlds {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 16px;
+    }
+
+    .world {
+      position: relative;
+      border: 2px solid var(--ink);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      background: #fff;
+      box-shadow: 0 4px 0 var(--ink);
+    }
+
+    .world.locked {
+      border-color: #d8d2ce;
+      box-shadow: 0 4px 0 #d8d2ce;
+      background: #fcfaf9;
+    }
+
+    .world.locked h3,
+    .world.locked .topic {
+      color: var(--ink-faint);
+    }
+
+    .world .n {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 2px solid var(--ink);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+      transform: rotate(-3deg);
+    }
+
+    .world.locked .n {
+      border-color: #d8d2ce;
+      background: #efeae7 !important;
+      color: var(--ink-faint);
+    }
+
+    .world h3 {
+      margin: 0 0 3px;
+    }
+
+    .world .topic {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin-bottom: 12px;
+    }
+
+    .world .corner {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    .world.open {
+      background: var(--orange-soft);
+    }
+
+    .steps {
+      display: flex;
+      gap: 6px;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px 2px;
+      border-radius: 10px;
+      border: 2px solid var(--line);
+      background: #fff;
+      color: var(--ink-faint);
+      line-height: 1.2;
+      cursor: pointer;
+    }
+
+    .step b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .step.done {
+      background: var(--green);
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    .step.now {
+      background: var(--orange);
+      border-color: var(--ink);
+      color: var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    .step[disabled] {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    /* ---- level ---- */
+    .lvl-head {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
+      padding: 10px 0 12px;
+      margin-bottom: 12px;
+    }
+
+    .lvl-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-soft);
+    }
+
+    .lvl-meta .clock {
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-faint);
+      white-space: nowrap;
+    }
+
+    .lvl-meta .btn {
+      white-space: nowrap;
+    }
+
+    .mission {
+      margin-bottom: 14px;
+    }
+
+    .term {
+      display: inline-block;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 3px 11px;
+      border-radius: 99px;
+      border: 2px solid var(--ink);
+      background: var(--yellow-soft);
+      margin: 2px 4px 2px 0;
+    }
+
+    .term i {
+      font-style: normal;
+      color: var(--ink-faint);
+      font-weight: 500;
+    }
+
+    .banner {
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 11px 14px;
+      margin: 0 0 12px;
+      background: var(--terra-soft);
+      font-size: 14.5px;
+      font-weight: 600;
+      animation: drop .35s cubic-bezier(.2, .7, .3, 1.4);
+    }
+
+    @keyframes drop {
+      from {
+        transform: translateY(-8px);
+        opacity: 0;
+      }
+    }
+
+    .board {
+      border: 2px solid var(--ink);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 0 var(--ink);
+      background: #fffdfb radial-gradient(#e9e2de 1.2px, transparent 1.3px) 0 0/22px 22px;
+    }
+
+    .board svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* svg parts */
+    .edge .hit {
+      stroke: transparent;
+      stroke-width: 40;
+      stroke-linecap: round;
+      cursor: pointer;
+    }
+
+    .edge .road {
+      stroke: var(--ink);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      transition: stroke .12s;
+    }
+
+    .edge:hover .road {
+      stroke: var(--orange);
+    }
+
+    .edge .route-o {
+      stroke: var(--ink);
+      stroke-width: 13;
+      stroke-linecap: round;
+    }
+
+    .edge .route {
+      stroke: var(--orange);
+      stroke-width: 8;
+      stroke-linecap: round;
+    }
+
+    .edge.closed .road {
+      stroke: var(--terra);
+      stroke-dasharray: 9 9;
+    }
+
+    .edge.closed .hit {
+      cursor: not-allowed;
+    }
+
+    .overlay {
+      stroke: var(--blue);
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-dasharray: 1 14;
+      fill: none;
+      pointer-events: none;
+    }
+
+    .lbl rect {
+      fill: #fff;
+      stroke: var(--ink);
+      stroke-width: 2;
+    }
+
+    .lbl.on rect {
+      fill: var(--yellow);
+    }
+
+    .lbl.closed rect {
+      fill: var(--terra-soft);
+      stroke: var(--terra);
+    }
+
+    .lbl text {
+      font: 700 13px "DM Sans", sans-serif;
+      fill: var(--ink);
+    }
+
+    .lbl text .dim {
+      fill: var(--ink-faint);
+      font-weight: 500;
+    }
+
+    .lbl {
+      cursor: pointer;
+    }
+
+    .town {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .town .shadow {
+      fill: var(--ink);
+    }
+
+    .town .dot {
+      fill: #fff;
+      stroke: var(--ink);
+      stroke-width: 2.5;
+      transition: fill .15s;
+    }
+
+    .town.visited .dot {
+      fill: var(--yellow);
+    }
+
+    .town.start .dot {
+      fill: var(--green);
+    }
+
+    .town.end .dot {
+      fill: var(--terra);
+    }
+
+    .town:focus-visible .dot {
+      stroke: var(--orange);
+      stroke-width: 4;
+    }
+
+    .town .name {
+      font: 700 13px "DM Sans", sans-serif;
+      fill: var(--ink);
+      paint-order: stroke;
+      stroke: #fffdfb;
+      stroke-width: 5px;
+      stroke-linejoin: round;
+    }
+
+    .town .tag {
+      font: 700 9.5px "DM Sans", sans-serif;
+      fill: var(--ink);
+      letter-spacing: .06em;
+    }
+
+    .ring {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 3;
+      animation: ring 1.4s ease-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    @keyframes ring {
+      from {
+        transform: scale(1);
+        opacity: .9;
+      }
+
+      to {
+        transform: scale(1.7);
+        opacity: 0;
+      }
+    }
+
+    .star {
+      fill: none;
+      stroke: var(--yellow);
+      stroke-width: 5;
+      stroke-dasharray: 4 5;
+    }
+
+    .lorry {
+      font-size: 24px;
+      pointer-events: none;
+    }
+
+    .shake {
+      animation: shake .38s;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    @keyframes shake {
+
+      20%,
+      60% {
+        transform: translateX(-5px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(5px);
+      }
+    }
+
+    .readout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin: 16px 2px 4px;
+    }
+
+    .readout .trail {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+
+    .readout .total {
+      font-family: "Fraunces", serif;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .readout .total small {
+      font-family: "DM Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-faint);
+    }
+
+    .say {
+      min-height: 24px;
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin: 2px 2px 12px;
+    }
+
+    .say.warn {
+      color: #a4462a;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .controls .grow {
+      flex: 1;
+    }
+
+    .note {
+      border: 2px solid var(--ink);
+      border-radius: 16px;
+      padding: 17px 19px;
+      margin: 16px 0 0;
+      background: var(--blue-soft);
+    }
+
+    .note.ok {
+      background: var(--green-soft);
+    }
+
+    .note.warn {
+      background: var(--yellow-soft);
+    }
+
+    .note.hot {
+      background: var(--terra-soft);
+    }
+
+    .note h3 {
+      margin-bottom: 6px;
+      font-size: 17px;
+    }
+
+    .note p:last-child {
+      margin-bottom: 0;
+    }
+
+    .opts {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .opt {
+      appearance: none;
+      text-align: left;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 15px;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 3px 0 var(--ink);
+      transition: transform .08s, box-shadow .08s;
+    }
+
+    .opt:hover:not([disabled]) {
+      background: var(--orange-soft);
+    }
+
+    .opt:active:not([disabled]) {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 var(--ink);
+    }
+
+    .opt[disabled] {
+      cursor: default;
+      opacity: .55;
+    }
+
+    .opt.right {
+      background: var(--green);
+      opacity: 1;
+    }
+
+    .opt.wrong {
+      background: var(--terra-soft);
+      opacity: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 4px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-weight: 700;
+    }
+
+    td.num,
+    th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    tr.best td {
+      background: var(--green-soft);
+      font-weight: 700;
+    }
+
+    .xp-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14.5px;
+    }
+
+    .xp-row:last-child {
+      border-bottom: 0;
+    }
+
+    .xp-row b {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .xp-row.zero {
+      color: var(--ink-faint);
+    }
+
+    .xp-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 2px dashed var(--line);
+    }
+
+    .xp-total b {
+      font-family: "Fraunces", serif;
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    /* ---- discover ---- */
+    .badge {
+      display: inline-block;
+      background: var(--green);
+      border: 2px solid var(--ink);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+      transform: rotate(-2deg);
+    }
+
+    .terms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .tcard {
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 13px 15px;
+      background: #fff;
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    .tcard b {
+      display: block;
+      font-family: "Fraunces", serif;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+
+    .tcard i {
+      display: block;
+      font-style: normal;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .tcard span {
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+
+    .tcard:nth-child(2) {
+      background: var(--yellow-soft);
+    }
+
+    .tcard:nth-child(3) {
+      background: var(--green-soft);
+    }
+
+    /* ---- progress ---- */
+    .m-bar {
+      height: 16px;
+      border: 2px solid var(--ink);
+      border-radius: 99px;
+      background: #fff;
+      overflow: hidden;
+      margin: 6px 0 3px;
+    }
+
+    .m-bar i {
+      display: block;
+      height: 100%;
+      background: var(--orange);
+    }
+
+    .m-bar i.warn {
+      background: var(--terra);
+    }
+
+    .lrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .lrow:last-child {
+      border-bottom: 0;
+    }
+
+    .lrow .trail {
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-soft);
+      letter-spacing: .04em;
+    }
+
+    .badges {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .bdg {
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 11px 13px;
+      background: var(--yellow-soft);
+      font-size: 13px;
+    }
+
+    .bdg b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .bdg span {
+      color: var(--ink-soft);
+    }
+
+    .bdg.off {
+      border-color: #d8d2ce;
+      background: #fcfaf9;
+      color: var(--ink-faint);
+    }
+
+    .bdg.off b,
+    .bdg.off span {
+      color: var(--ink-faint);
+    }
+
+    .sec-title {
+      font-family: "Fraunces", serif;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 32px 0 6px;
+      padding-bottom: 10px;
+      border-bottom: 2px dashed var(--line);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) rotate(-1.5deg);
+      z-index: 50;
+      background: var(--yellow);
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 11px 18px;
+      font-weight: 700;
+      box-shadow: 0 4px 0 var(--ink);
+      max-width: calc(100% - 32px);
+      animation: drop .35s cubic-bezier(.2, .7, .3, 1.4);
+    }
+
+    @media (max-width:600px) {
+      .wrap {
+        padding: 12px 14px 64px;
+      }
+
+      .card {
+        padding: 22px 17px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 21px;
+      }
+
+      .fields {
+        grid-template-columns: 1fr;
+      }
+
+      .readout .total {
+        font-size: 25px;
+      }
+
+      .controls .btn.sm {
+        padding: 8px 11px;
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <a class="brand" href="./">GRAPH <i>QUEST</i></a>
+      <div class="toplinks">
+        <a class="tlink" href="../" id="lnk-tool">← GraphTheory</a>
+        <button class="tlink" id="btn-lang">BM</button>
+      </div>
+    </div>
+
+    <!-- ============ ENTRY ============ -->
+    <section id="screen-entry" class="card hidden" style="position:relative;overflow:hidden;">
+      <svg class="doodle" style="top:18px;right:20px;" width="92" height="70" viewBox="0 0 92 70" fill="none"
+        aria-hidden="true">
+        <path d="M14 52 L44 18 L78 44" stroke="#17130c" stroke-width="3" stroke-linecap="round" />
+        <path d="M14 52 L78 44" stroke="#ee6c34" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 8" />
+        <circle cx="14" cy="52" r="8" fill="#a2dd70" stroke="#17130c" stroke-width="2.5" />
+        <circle cx="44" cy="18" r="8" fill="#fff" stroke="#17130c" stroke-width="2.5" />
+        <circle cx="78" cy="44" r="8" fill="#df876e" stroke="#17130c" stroke-width="2.5" />
+      </svg>
+      <div class="kicker" id="entry-kicker"></div>
+      <h1 id="entry-title"></h1>
+      <p id="entry-lede" style="font-size:17px;"></p>
+      <div class="chips">
+        <span class="chip" id="chip-1"></span><span class="chip" id="chip-2"></span><span class="chip"
+          id="chip-3"></span>
+      </div>
+      <div class="fields">
+        <div>
+          <label class="fld" for="in-class" id="lbl-class"></label>
+          <input type="text" id="in-class" placeholder="4S1-2026" autocomplete="off" spellcheck="false" maxlength="20">
+        </div>
+        <div>
+          <label class="fld" for="in-reg" id="lbl-reg"></label>
+          <input type="text" id="in-reg" inputmode="numeric" placeholder="17" autocomplete="off" maxlength="3">
+        </div>
+      </div>
+      <p class="muted" id="entry-privacy" style="margin-bottom:22px;"></p>
+      <button class="btn" id="btn-enter"></button>
+    </section>
+
+    <!-- ============ MAP ============ -->
+    <section id="screen-map" class="hidden">
+      <div class="kicker" id="map-kicker"></div>
+      <h1 id="map-title"></h1>
+      <div class="player" id="player"></div>
+      <div class="worlds" id="worlds"></div>
+      <div class="row" style="margin-top:24px;">
+        <button class="btn ghost sm" id="btn-progress"></button>
+        <button class="btn ghost sm" id="btn-switch"></button>
+      </div>
+    </section>
+
+    <!-- ============ LEVEL ============ -->
+    <section id="screen-level" class="hidden">
+      <div class="lvl-head">
+        <div class="lvl-meta">
+          <button class="btn ghost sm" id="btn-map"></button>
+          <span id="lvl-where"></span>
+          <span class="clock" id="lvl-clock"></span>
+        </div>
+        <div class="steps" id="lvl-steps"></div>
+      </div>
+
+      <div class="mission">
+        <h2 id="lvl-title"></h2>
+        <p id="lvl-story" style="margin-bottom:8px;"></p>
+        <div id="lvl-terms"></div>
+      </div>
+
+      <div id="lvl-banner"></div>
+      <div class="board"><svg id="svg" viewBox="0 0 640 400" role="group"></svg></div>
+
+      <div class="readout">
+        <div class="trail" id="lvl-trail"></div>
+        <div class="total" id="lvl-total"></div>
+      </div>
+      <div class="say" id="say" role="status" aria-live="polite"></div>
+
+      <div class="controls" id="controls">
+        <button class="btn ghost sm" id="btn-undo"></button>
+        <button class="btn ghost sm" id="btn-reset"></button>
+        <button class="btn ghost sm" id="btn-hint"></button>
+        <button class="btn ghost sm" id="btn-learn"></button>
+        <span class="grow"></span>
+        <button class="btn" id="btn-send" disabled></button>
+      </div>
+
+      <div id="aid"></div>
+      <div id="panel"></div>
+    </section>
+
+    <!-- ============ DISCOVER ============ -->
+    <section id="screen-discover" class="card hidden"></section>
+
+    <!-- ============ PROGRESS ============ -->
+    <section id="screen-progress" class="hidden"></section>
+
+  </div>
+
+  <script src="graph.js"></script>
+  <script>
+    /* ============================================================
+       1. CONFIG  —  paste your Apps Script Web App URL here
+       ============================================================ */
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbywcNzXKYHWLkl6ELysdanTtDapPZguX8m_j5IHFQGMCA5yYEvoz9UjDCeweInCquV_/exec';
+
+    const E = GraphEngine;
+    const STORE = 'graphquest.v1';
+    const LANG_KEY = 'graphtheory-lang';          // shared with the GraphTheory tool
+
+    /* ============================================================
+       2. LANGUAGE
+       Every string exists in both. Graph terms follow the
+       GraphTheory tool: bucu, sisi, darjah, pemberat, laluan terpendek.
+       ============================================================ */
+    let LANG = 'en';
+    try { const s = localStorage.getItem(LANG_KEY); if (s === 'bm' || s === 'en') LANG = s; } catch (e) { }
+    const T = (en, bm) => LANG === 'bm' ? bm : en;
+
+    /* ============================================================
+       3. CONTENT — World 3, Shortest Path Race
+       Every level was run through the solver: one best route each.
+       ============================================================ */
+    const n = (id, name, x, y) => ({ id, name, x, y });
+    const ed = (a, b, w, m) => m == null ? { a, b, w } : { a, b, w, m };
+
+    const LEVELS = [
+      {
+        title: ['4 towns', '4 pekan'], target: 45,
+        story: ['Flood in Temerloh! A relief lorry must carry supplies to the relief centre (PPS) at Chenor. Every road shows its distance — its <b class="ink">weight</b>. Tap roads to build the shortest route.',
+          'Banjir di Temerloh! Sebuah lori bantuan mesti membawa bekalan ke Pusat Pemindahan Sementara (PPS) di Chenor. Setiap jalan menunjukkan jaraknya — iaitu <b class="ink">pemberat</b>nya. Ketik jalan untuk membina laluan terpendek.'],
+        terms: true,
+        g: {
+          nodes: [n('S', 'Temerloh', 80, 200), n('A', 'Mentakab', 300, 90), n('B', 'Kuala Krau', 300, 310), n('T', 'PPS Chenor', 550, 200)],
+          edges: [ed('S', 'A', 8), ed('S', 'B', 14), ed('A', 'T', 22), ed('B', 'T', 9), ed('A', 'B', 7)]
+        }
+      },
+
+      {
+        title: ['6 towns', '6 pekan'], target: 75,
+        story: ['The water is rising towards Jerantut. Six towns, many roads. Find the shortest road distance to the PPS.',
+          'Air semakin naik ke arah Jerantut. Enam pekan, banyak jalan. Cari jarak jalan terpendek ke PPS.'],
+        g: {
+          nodes: [n('S', 'Temerloh', 70, 210), n('M', 'Mentakab', 220, 90), n('K', 'Kuala Krau', 220, 330),
+          n('L', 'Lanchang', 390, 110), n('D', 'Kerdau', 390, 300), n('T', 'PPS Jerantut', 560, 200)],
+          edges: [ed('S', 'M', 6), ed('S', 'K', 12), ed('M', 'L', 10), ed('K', 'D', 7), ed('L', 'T', 15),
+          ed('D', 'T', 11), ed('L', 'D', 5), ed('S', 'L', 29)]
+        }
+      },
+
+      {
+        title: ['Road closed!', 'Jalan ditutup!'], target: 90, close: 6,
+        story: ['Heading for the PPS at Maran. Listen for the news — roads can flood while the lorry is on its way.',
+          'Menuju ke PPS di Maran. Dengar berita — jalan boleh dinaiki air semasa lori dalam perjalanan.'],
+        g: {
+          nodes: [n('S', 'Temerloh', 70, 200), n('A', 'Sanggang', 210, 70), n('B', 'Kuala Krau', 210, 330),
+          n('C', 'Chenor', 360, 200), n('D', 'Kerdau', 480, 80), n('T', 'PPS Maran', 590, 270)],
+          edges: [ed('S', 'A', 9), ed('S', 'B', 11), ed('A', 'C', 8), ed('B', 'C', 7), ed('A', 'D', 20),
+          ed('C', 'D', 9), ed('C', 'T', 14), ed('D', 'T', 12), ed('B', 'T', 26)]
+        }
+      },
+
+      {
+        title: ['Fastest, not shortest', 'Paling pantas, bukan terpendek'], target: 90, key: 'm',
+        story: ['The PPS at Triang needs medicine urgently. Each road now shows <b class="ink">km and minutes</b>. The highway is longer but faster. This time find the <b class="ink">fastest</b> route — add up the minutes.',
+          'PPS di Triang memerlukan ubat dengan segera. Setiap jalan kini menunjukkan <b class="ink">km dan minit</b>. Lebuh raya lebih jauh tetapi lebih laju. Kali ini cari laluan <b class="ink">paling pantas</b> — jumlahkan minit.'],
+        g: {
+          nodes: [n('S', 'Temerloh', 70, 200), n('A', 'Mentakab', 220, 80), n('B', 'Lanchang', 220, 320),
+          n('C', 'Kerdau', 400, 80), n('D', 'Bera', 400, 320), n('T', 'PPS Triang', 570, 200)],
+          edges: [ed('S', 'A', 10, 15), ed('A', 'C', 18, 30), ed('C', 'T', 14, 22), ed('S', 'B', 16, 14),
+          ed('B', 'D', 22, 16), ed('D', 'T', 15, 13), ed('A', 'B', 12, 14), ed('C', 'D', 10, 12)]
+        }
+      },
+
+      {
+        title: ['Random challenge', 'Cabaran rawak'], target: 120, random: true,
+        story: ['A new map every time you play. Shortest route to the PPS — no two games the same.',
+          'Peta baharu setiap kali anda bermain. Laluan terpendek ke PPS — tiada dua permainan yang sama.']
+      }
+    ];
+
+    const TOWN_POOL = ['Mentakab', 'Lanchang', 'Kerdau', 'Kuala Krau', 'Sanggang', 'Chenor', 'Bera', 'Triang', 'Jengka', 'Kemayan', 'Karak', 'Mengkarak', 'Jenderak', 'Paya Pulai'];
+    const DEST_POOL = ['Maran', 'Jerantut', 'Chenor', 'Triang', 'Bera'];
+
+    const WORLDS = [
+      { n: 1, c: '--blue', name: ['Graph Maze', 'Labirin Graf'], topic: ['Paths and connectivity', 'Lorong dan keterkaitan'] },
+      { n: 2, c: '--yellow', name: ['Graph Detective', 'Detektif Graf'], topic: ['Degree and types of graph', 'Darjah dan jenis graf'] },
+      { n: 3, c: '--orange', name: ['Shortest Path Race', 'Perlumbaan Laluan Terpendek'], topic: ['Weighted graphs', 'Graf berpemberat'], open: true },
+      { n: 4, c: '--green', name: ['Build the Network', 'Bina Rangkaian'], topic: ['Trees and minimum total weight', 'Pokok dan jumlah pemberat minimum'] },
+      { n: 5, c: '--terra', name: ['Euler Escape', 'Lolos Euler'], topic: ['Bonus · Euler trails', 'Bonus · Surih Euler'], bonus: true },
+      { n: 6, c: '--blue', name: ['Colour Master', 'Pakar Warna'], topic: ['Bonus · Graph colouring', 'Bonus · Pewarnaan graf'], bonus: true }
+    ];
+
+    const RANKS = [['Novice', 'Pemula'], ['Graph Explorer', 'Penjelajah Graf'], ['Path Finder', 'Pencari Laluan'],
+    ['Network Builder', 'Pembina Rangkaian'], ['Graph Master', 'Pakar Graf'], ['Graph Legend', 'Lagenda Graf']];
+
+    const BADGES = [
+      { k: 'first_connection', name: ['First Connection', 'Sambungan Pertama'], how: ['Finish your first level', 'Tamatkan tahap pertama anda'] },
+      { k: 'sharp_detective', name: ['Sharp Detective', 'Detektif Tajam'], how: ['5 cases without hints · World 2', '5 kes tanpa petunjuk · Dunia 2'] },
+      { k: 'road_master', name: ['Road Master', 'Raja Jalan'], how: ['5 best routes in a row', '5 laluan terbaik berturut-turut'] },
+      { k: 'budget_engineer', name: ['Budget Engineer', 'Jurutera Bajet'], how: ['3 networks at minimum cost · World 4', '3 rangkaian kos minimum · Dunia 4'] },
+      { k: 'euler_explorer', name: ['Euler Explorer', 'Penjelajah Euler'], how: ['Predict 5 escapes · World 5', 'Ramal 5 lolos · Dunia 5'] },
+      { k: 'exam_planner', name: ['Exam Planner', 'Perancang Peperiksaan'], how: ['3 timetables, fewest slots · World 6', '3 jadual, slot paling sedikit · Dunia 6'] },
+      { k: 'graph_legend', name: ['Graph Legend', 'Lagenda Graf'], how: ['Clear the Boss Level', 'Tamatkan Tahap Bos'] },
+      { k: 'team_player', name: ['Team Player', 'Pemain Pasukan'], how: ['Finish a class team challenge', 'Tamatkan cabaran pasukan kelas'] }
+    ];
+    const tt = pair => T(pair[0], pair[1]);
+
+    /* ============================================================
+       4. SAVED PROGRESS  (this device only)
+       ============================================================ */
+    function blank() { return { classCode: '', reg: '', best: {}, done: {}, streak: 0, badges: [], discovered: {}, attempts: [], sent: 0 }; }
+    let st = blank();
+    try { const raw = localStorage.getItem(STORE); if (raw) st = Object.assign(blank(), JSON.parse(raw)); } catch (e) { }
+    function save() { try { localStorage.setItem(STORE, JSON.stringify(st)); } catch (e) { } }
+
+    const studentCode = () => st.classCode.split('-')[0] + '-' + st.reg;
+    const lvKey = i => '3-' + (i + 1);
+    function totalXP() {
+      let x = Object.values(st.best).reduce((a, b) => a + b, 0);
+      if (st.discovered[3]) x += 20;
+      return x;
+    }
+    const rankOf = xp => Math.min(Math.floor(xp / 500), RANKS.length - 1);
+    const mastery = () => LEVELS.reduce((a, _, i) => a + (st.best[lvKey(i)] || 0), 0) / LEVELS.length;
+    const unlocked = i => i === 0 || !!st.done[lvKey(i - 1)];
+
+    /* ============================================================
+       5. SCREENS
+       ============================================================ */
+    const $ = id => document.getElementById(id);
+    const SCREENS = ['entry', 'map', 'level', 'discover', 'progress'];
+    let current = 'entry';
+    function show(name) {
+      current = name;
+      SCREENS.forEach(s => $('screen-' + s).classList.toggle('hidden', s !== name));
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast'; t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2800);
+    }
+
+    /* ---------- language toggle ---------- */
+    function applyLang() {
+      document.documentElement.lang = LANG === 'bm' ? 'ms' : 'en';
+      $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
+      $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
+      $('lnk-tool').textContent = '← GraphTheory';
+      ({ entry: renderEntry, map: renderMap, level: renderLevelAll, discover: renderDiscover, progress: renderProgress })[current]();
+    }
+    $('btn-lang').addEventListener('click', () => {
+      LANG = LANG === 'bm' ? 'en' : 'bm';
+      try { localStorage.setItem(LANG_KEY, LANG); } catch (e) { }
+      applyLang();
+    });
+
+    /* ============================================================
+       6. ENTRY
+       ============================================================ */
+    function renderEntry() {
+      $('entry-kicker').textContent = T('SPM Form 4 · Network in Graph Theory', 'SPM Tingkatan 4 · Rangkaian dalam Teori Graf');
+      $('entry-title').innerHTML = T('Turn every graph into a <span class="script">challenge</span>',
+        'Jadikan setiap graf satu <span class="script">cabaran</span>');
+      $('entry-lede').textContent = T('Trace routes, build networks and solve cases on real graphs — with instant feedback on every move. Find the rule yourself before the textbook names it.',
+        'Jejak laluan, bina rangkaian dan selesaikan kes pada graf sebenar — dengan maklum balas segera bagi setiap langkah. Temui sendiri peraturannya sebelum buku teks menamakannya.');
+      $('chip-1').textContent = T('6 worlds', '6 dunia');
+      $('chip-2').textContent = T('5 levels each', '5 tahap setiap satu');
+      $('chip-3').textContent = T('English & BM', 'BM & English');
+      $('lbl-class').textContent = T('Class code', 'Kod kelas');
+      $('lbl-reg').textContent = T('Register number', 'Nombor giliran');
+      $('entry-privacy').textContent = T('Your teacher gives you the class code. No names or passwords — your progress is saved on this device.',
+        'Guru anda akan memberi kod kelas. Tiada nama atau kata laluan — kemajuan anda disimpan pada peranti ini.');
+      $('btn-enter').textContent = T("Let's go", 'Jom mula');
+      $('in-class').value = st.classCode; $('in-reg').value = st.reg;
+    }
+    $('btn-enter').addEventListener('click', () => {
+      const cc = $('in-class').value.trim().toUpperCase().replace(/\s+/g, '');
+      const rg = $('in-reg').value.trim();
+      const okC = /^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(cc);
+      const okR = /^\d{1,3}$/.test(rg) && +rg >= 1;
+      $('in-class').classList.toggle('bad', !okC);
+      $('in-reg').classList.toggle('bad', !okR);
+      if (!okC) return $('in-class').focus();
+      if (!okR) return $('in-reg').focus();
+      if (st.classCode && (st.classCode !== cc || st.reg !== String(+rg))) {
+        if (!confirm(T('This device has progress for ' + studentCode() + '. Start fresh as ' + cc.split('-')[0] + '-' + (+rg) + '?',
+          'Peranti ini ada kemajuan untuk ' + studentCode() + '. Mula baharu sebagai ' + cc.split('-')[0] + '-' + (+rg) + '?'))) return;
+        st = blank();
+      }
+      st.classCode = cc; st.reg = String(+rg); save();
+      renderMap(); show('map');
+    });
+    ['in-class', 'in-reg'].forEach(id => {
+      $(id).addEventListener('input', e => e.target.classList.remove('bad'));
+      $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-enter').click(); });
+    });
+
+    /* ============================================================
+       7. WORLD MAP
+       ============================================================ */
+    function renderMap() {
+      const xp = totalXP(), r = rankOf(xp);
+      $('map-kicker').textContent = T('Graph Quest · ', 'Graph Quest · ') + studentCode();
+      $('map-title').innerHTML = T('Pick a <span class="script">world</span>', 'Pilih satu <span class="script">dunia</span>');
+      $('player').innerHTML =
+        '<div class="kpi"><b>' + xp + ' XP</b><span>' + T('total', 'jumlah') + '</span></div>' +
+        '<div class="kpi"><b>' + tt(RANKS[r]) + '</b><span>' +
+        (r < RANKS.length - 1 ? T((500 - xp % 500) + ' XP to next rank', (500 - xp % 500) + ' XP ke pangkat seterusnya') : T('top rank', 'pangkat tertinggi')) + '</span></div>' +
+        '<div class="kpi"><b>' + st.badges.length + ' / ' + BADGES.length + '</b><span>' + T('badges', 'lencana') + '</span></div>';
+
+      $('worlds').innerHTML = WORLDS.map(w => {
+        const head = '<div class="n" style="background:var(' + w.c + ')">' + w.n + '</div>' +
+          '<h3>' + tt(w.name) + '</h3><div class="topic">' + tt(w.topic) + '</div>';
+        if (!w.open) {
+          return '<div class="world locked">' + head +
+            '<span class="corner pill lock">' + T('Coming soon', 'Akan datang') + '</span></div>';
+        }
+        const doneN = LEVELS.filter((_, i) => st.done[lvKey(i)]).length;
+        const next = LEVELS.findIndex((_, i) => !st.done[lvKey(i)]);
+        const steps = LEVELS.map((_, i) => {
+          const cls = st.done[lvKey(i)] ? 'done' : (i === next ? 'now' : '');
+          const dis = unlocked(i) ? '' : ' disabled';
+          return '<button class="step ' + cls + '" data-level="' + i + '"' + dis + ' aria-label="' + T('Level ', 'Tahap ') + (i + 1) + '">' +
+            '<b>' + (st.done[lvKey(i)] ? '✓' : i + 1) + '</b>' + (st.best[lvKey(i)] ? st.best[lvKey(i)] : '·') + '</button>';
+        }).join('');
+        const pill = doneN === LEVELS.length ? '<span class="corner pill done">' + T('Cleared', 'Selesai') + '</span>'
+          : '<span class="corner pill part">' + doneN + ' / ' + LEVELS.length + '</span>';
+        const disc = doneN === LEVELS.length
+          ? '<button class="btn sm' + (st.discovered[3] ? ' ghost' : ' pulse') + '" data-discover="3" style="margin-top:12px;">' +
+          (st.discovered[3] ? T('Discover ✓', 'Temui ✓') : T('Discover the rule', 'Temui peraturannya')) + '</button>' : '';
+        return '<div class="world open">' + head + pill + '<div class="steps">' + steps + '</div>' + disc + '</div>';
+      }).join('');
+
+      $('btn-progress').textContent = T('My progress', 'Kemajuan saya');
+      $('btn-switch').textContent = T('Not ' + studentCode() + '? Change', 'Bukan ' + studentCode() + '? Tukar');
+    }
+    $('worlds').addEventListener('click', e => {
+      const b = e.target.closest('[data-level]');
+      if (b && !b.disabled) return startLevel(+b.dataset.level);
+      if (e.target.closest('[data-discover]')) { renderDiscover(); show('discover'); }
+    });
+    $('btn-progress').addEventListener('click', () => { renderProgress(); show('progress'); });
+    $('btn-switch').addEventListener('click', () => { renderEntry(); show('entry'); });
+
+    /* ============================================================
+       8. LEVEL — state
+       ============================================================ */
+    let run = null, clockTimer = null;
+
+    function shuffled(arr, R) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    function startLevel(i) {
+      const L = LEVELS[i];
+      let g;
+      if (L.random) {
+        const seed = (Date.now() ^ (Math.random() * 1e9)) >>> 0, R = E.rng(seed);
+        const names = ['Temerloh'].concat(shuffled(TOWN_POOL, R).slice(0, 5), ['PPS ' + DEST_POOL[Math.floor(R() * DEST_POOL.length)]]);
+        g = E.generate(seed, { n: 7, names });
+      } else {
+        g = JSON.parse(JSON.stringify(L.g));
+      }
+      run = {
+        i, L, g, s: 'S', t: 'T', key: L.key || 'w', closed: new Set(), closeFired: false,
+        route: { nodes: ['S'], edges: [] }, t0: Date.now(), hints: 0, learn: 0,
+        locked: false, overlay: null, hintNode: null, phase: 'play', lastCheck: null
+      };
+      $('aid').innerHTML = ''; $('panel').innerHTML = '';
+      show('level'); renderLevelAll();     // show first: the map measures its width
+      clearInterval(clockTimer);
+      clockTimer = setInterval(tickClock, 1000);
+    }
+
+    const node = id => run.g.nodes.find(v => v.id === id);
+    const endOf = () => run.route.nodes[run.route.nodes.length - 1];
+    const secs = () => Math.round((Date.now() - run.t0) / 1000);
+    const unit = () => run.key === 'm' ? 'min' : 'km';
+    function tickClock() {
+      if (current !== 'level' || !run) return;
+      if (run.phase === 'play') $('lvl-clock').textContent = '⏱ ' + secs() + ' / ' + run.L.target + ' s';
+    }
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (current === 'level' && run && ($('svg').parentElement.clientWidth < 560) !== portrait) drawGraph();
+      }, 150);
+    });
+
+    /* ============================================================
+       9. LEVEL — drawing
+       ============================================================ */
+    function renderLevelAll() {
+      const i = run.i, L = run.L;
+      $('btn-map').textContent = T('← Map', '← Peta');
+      $('lvl-where').textContent = T('World 3 · Level ', 'Dunia 3 · Tahap ') + (i + 1) + T(' of ', ' daripada ') + LEVELS.length;
+      $('lvl-steps').innerHTML = LEVELS.map((_, k) => {
+        const cls = k === i ? 'now' : (st.done[lvKey(k)] ? 'done' : '');
+        return '<div class="step ' + cls + '" style="cursor:default"><b>' + (st.done[lvKey(k)] && k !== i ? '✓' : k + 1) + '</b></div>';
+      }).join('');
+      $('lvl-title').innerHTML = T('Level ', 'Tahap ') + (i + 1) + ' · <span class="script">' + tt(L.title) + '</span>';
+      $('lvl-story').innerHTML = tt(L.story);
+      $('lvl-terms').innerHTML = L.terms
+        ? '<span class="term">' + T('weight', 'pemberat') + ' <i>· ' + T('pemberat', 'weight') + '</i></span>' +
+        '<span class="term">' + T('vertex', 'bucu') + ' <i>· ' + T('bucu', 'vertex') + '</i></span>' +
+        '<span class="term">' + T('edge', 'sisi') + ' <i>· ' + T('sisi', 'edge') + '</i></span>'
+        : '';
+      $('btn-undo').textContent = T('Undo', 'Buat asal');
+      $('btn-reset').textContent = T('Start again', 'Mula semula');
+      $('btn-hint').textContent = T('Hint', 'Petunjuk');
+      $('btn-learn').textContent = T('Learn', 'Belajar');
+      $('btn-send').textContent = T('Send the lorry', 'Hantar lori');
+      $('svg').setAttribute('aria-label', T('Map of towns and roads', 'Peta pekan dan jalan'));
+      renderBanner(); drawGraph(); renderReadout(); renderAid(); renderPanel(); tickClock();
+    }
+
+    function labelFor(e) {
+      if (run.key === 'm') return { w: 92, html: '<tspan class="dim">' + e.w + ' km · </tspan>' + e.m + ' min' };
+      return { w: 50, html: e.w + ' km' };
+    }
+
+    /* On a phone the map turns on its side (start at the top, PPS at the bottom)
+       so towns and roads stay big enough to tap. */
+    let portrait = false;
+    const P = v => portrait ? { id: v.id, name: v.name, x: v.y, y: v.x } : v;
+
+    function drawGraph() {
+      const g = run.g, r = run.route, on = new Set(r.edges), visited = new Set(r.nodes), end = endOf();
+      const focused = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.node : null;
+      portrait = $('svg').parentElement.clientWidth < 560;
+      $('svg').setAttribute('viewBox', portrait ? '0 0 400 640' : '0 0 640 400');
+      let roads = '', over = '', labels = '', towns = '';
+
+      g.edges.forEach((e, i) => {
+        const A = P(node(e.a)), B = P(node(e.b)), closed = run.closed.has(i);
+        const xy = 'x1="' + A.x + '" y1="' + A.y + '" x2="' + B.x + '" y2="' + B.y + '"';
+        roads += '<g class="edge' + (closed ? ' closed' : '') + '" data-edge="' + i + '" id="e' + i + '">' +
+          '<line class="hit" ' + xy + '/><line class="road" ' + xy + '/>' +
+          (on.has(i) ? '<line class="route-o" ' + xy + '/><line class="route" ' + xy + '/>' : '') + '</g>';
+        const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, lb = labelFor(e);
+        const w = closed ? 70 : lb.w;
+        labels += '<g class="lbl' + (on.has(i) ? ' on' : '') + (closed ? ' closed' : '') + '" data-edge="' + i + '" id="l' + i + '">' +
+          '<rect x="' + (mx - w / 2) + '" y="' + (my - 13) + '" width="' + w + '" height="26" rx="9"/>' +
+          '<text x="' + mx + '" y="' + (my + 4.5) + '" text-anchor="middle">' + (closed ? T('✗ closed', '✗ ditutup') : lb.html) + '</text></g>';
+      });
+
+      if (run.overlay) run.overlay.edges.forEach(i => {
+        const A = P(node(g.edges[i].a)), B = P(node(g.edges[i].b));
+        over += '<line class="overlay" x1="' + A.x + '" y1="' + A.y + '" x2="' + B.x + '" y2="' + B.y + '"/>';
+      });
+
+      g.nodes.map(P).forEach(v => {
+        const cls = v.id === run.s ? 'start' : v.id === run.t ? 'end' : visited.has(v.id) ? 'visited' : '';
+        const tag = v.id === run.s ? T('START', 'MULA') : v.id === run.t ? 'PPS' : '';
+        towns += '<g class="town ' + cls + '" data-node="' + v.id + '" id="n' + v.id + '" tabindex="0" role="button" aria-label="' + v.name + '">' +
+          (run.hintNode === v.id ? '<circle class="star" cx="' + v.x + '" cy="' + v.y + '" r="30"/>' : '') +
+          (v.id === end && run.phase === 'play' ? '<circle class="ring" cx="' + v.x + '" cy="' + v.y + '" r="20"/>' : '') +
+          '<circle class="hitn" cx="' + v.x + '" cy="' + v.y + '" r="34" fill="transparent"/>' +
+          '<circle class="shadow" cx="' + v.x + '" cy="' + (v.y + 3) + '" r="19"/>' +
+          '<circle class="dot" cx="' + v.x + '" cy="' + v.y + '" r="19"/>' +
+          (tag ? '<text class="tag" x="' + v.x + '" y="' + (v.y + 3.5) + '" text-anchor="middle">' + (tag === 'PPS' ? 'PPS' : '▶') + '</text>' : '') +
+          '<text class="name" x="' + v.x + '" y="' + (v.y + 39) + '" text-anchor="middle">' + v.name + '</text></g>';
+      });
+
+      const E0 = P(node(end));
+      const lorry = '<text class="lorry" x="' + E0.x + '" y="' + (E0.y - 25) + '" text-anchor="middle">🚚</text>';
+      $('svg').innerHTML = roads + over + labels + towns + lorry;
+      if (focused && $('n' + focused)) $('n' + focused).focus();
+    }
+
+    function renderReadout() {
+      const r = run.route;
+      $('lvl-trail').textContent = r.nodes.map(id => node(id).name).join(' → ');
+      const km = E.total(run.g, r.edges, 'w');
+      $('lvl-total').innerHTML = run.key === 'm'
+        ? E.total(run.g, r.edges, 'm') + '<small> min · ' + km + ' km</small>'
+        : km + '<small> km</small>';
+      const arrived = endOf() === run.t;
+      $('btn-send').disabled = !arrived || run.phase !== 'play';
+      $('btn-send').classList.toggle('pulse', arrived && run.phase === 'play');
+      $('btn-undo').disabled = !r.edges.length || run.phase !== 'play';
+      $('btn-reset').disabled = !r.edges.length || run.phase !== 'play';
+      $('btn-hint').disabled = run.phase !== 'play';
+      $('btn-learn').disabled = run.phase !== 'play';
+    }
+
+    function renderBanner() {
+      if (!run.closeFired) { $('lvl-banner').innerHTML = ''; return; }
+      const e = run.g.edges[run.L.close];
+      $('lvl-banner').innerHTML = '<div class="banner">📻 ' + T(
+        'News flash: the ' + node(e.a).name + ' – ' + node(e.b).name + ' road is flooded and closed! Find another way.',
+        'Berita terkini: jalan ' + node(e.a).name + ' – ' + node(e.b).name + ' dinaiki air dan ditutup! Cari jalan lain.') + '</div>';
+    }
+
+    function say(msg, warn) { $('say').textContent = msg || ''; $('say').classList.toggle('warn', !!warn); }
+    function shake(id) {
+      const el = $(id); if (!el) return;
+      el.classList.remove('shake'); void el.getBBox(); el.classList.add('shake');
+      el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+    }
+
+    /* ============================================================
+       10. LEVEL — play
+       ============================================================ */
+    function fireClosure() {
+      if (run.L.close == null || run.closeFired) return;
+      run.closeFired = true;
+      run.closed.add(run.L.close);
+      const k = run.route.edges.indexOf(run.L.close);
+      if (k >= 0) { run.route.edges.length = k; run.route.nodes.length = k + 1; }
+      renderBanner();
+    }
+
+    function tapEdge(i) {
+      if (run.phase !== 'play') return;
+      const e = run.g.edges[i], r = run.route, end = endOf();
+      if (r.edges.length && r.edges[r.edges.length - 1] === i) return undo();
+      if (run.closed.has(i)) { shake('e' + i); return say(T('This road is closed — banjir. Find another way.', 'Jalan ini ditutup — banjir. Cari jalan lain.'), true); }
+      if (end === run.t) return say(T('The lorry is at the PPS. Send it, or undo a road.', 'Lori sudah tiba di PPS. Hantar, atau buat asal satu jalan.'));
+      if (e.a !== end && e.b !== end) {
+        shake('e' + i); shake('l' + i);
+        return say(T("That road doesn't start from " + node(end).name + ', where the lorry is now.',
+          'Jalan itu tidak bermula dari ' + node(end).name + ', tempat lori berada sekarang.'), true);
+      }
+      const to = e.a === end ? e.b : e.a;
+      if (r.nodes.includes(to)) {
+        shake('n' + to);
+        return say(T('The lorry has already been to ' + node(to).name + '. A route never needs to pass a town twice.',
+          'Lori sudah melalui ' + node(to).name + '. Laluan tidak perlu melalui pekan yang sama dua kali.'), true);
+      }
+      r.nodes.push(to); r.edges.push(i);
+      fireClosure();
+      afterMove();
+    }
+
+    function tapNode(id) {
+      if (run.phase !== 'play') return;
+      const end = endOf();
+      if (id === end) { if (run.route.edges.length) undo(); return; }
+      const idx = run.g.edges.findIndex((e, i) => ((e.a === end && e.b === id) || (e.b === end && e.a === id)) && !run.closed.has(i));
+      if (idx >= 0) return tapEdge(idx);
+      const closedIdx = run.g.edges.findIndex((e, i) => ((e.a === end && e.b === id) || (e.b === end && e.a === id)));
+      if (closedIdx >= 0) return tapEdge(closedIdx);
+      shake('n' + id);
+      say(T('No road joins ' + node(end).name + ' and ' + node(id).name + ' directly.',
+        'Tiada jalan yang terus menghubungkan ' + node(end).name + ' dan ' + node(id).name + '.'), true);
+    }
+
+    function afterMove() {
+      const end = endOf();
+      drawGraph(); renderReadout();
+      if (end === run.t) return say(T('Arrived! Happy with this route? Send the lorry.', 'Sudah tiba! Puas hati dengan laluan ini? Hantar lori.'));
+      const open = E.neighbours(run.g, end, run.closed).filter(nb => !run.route.nodes.includes(nb.to));
+      if (!open.length) { shake('n' + end); return say(T('Dead end — every road from here goes somewhere you have been. Undo a road.', 'Jalan mati — setiap jalan dari sini menuju ke tempat yang sudah dilalui. Buat asal satu jalan.'), true); }
+      say('');
+    }
+
+    function undo() {
+      if (!run.route.edges.length) return;
+      run.route.edges.pop(); run.route.nodes.pop();
+      drawGraph(); renderReadout(); say('');
+    }
+
+    $('svg').addEventListener('click', e => {
+      const t = e.target.closest('[data-edge],[data-node]');
+      if (!t) return;
+      if (t.dataset.node) tapNode(t.dataset.node); else tapEdge(+t.dataset.edge);
+    });
+    $('svg').addEventListener('keydown', e => {
+      const t = e.target.closest('[data-node]');
+      if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); tapNode(t.dataset.node); }
+    });
+    $('btn-undo').addEventListener('click', undo);
+    $('btn-reset').addEventListener('click', () => {
+      run.route = { nodes: [run.s], edges: [] };
+      drawGraph(); renderReadout(); say('');
+    });
+    $('btn-map').addEventListener('click', () => { clearInterval(clockTimer); renderMap(); show('map'); });
+
+    /* ---------- hint & learn ---------- */
+    $('btn-hint').addEventListener('click', () => {
+      fireClosure();
+      if (!run.hints) run.hints = 1;
+      const best = E.solve(run.g, run.s, run.t, run.key, run.closed).best;
+      const mids = best.nodes.slice(1, -1);
+      run.hintNode = mids[Math.floor((mids.length - 1) / 2)];
+      run.aid = 'hint';
+      drawGraph(); renderReadout(); renderAid();
+    });
+    $('btn-learn').addEventListener('click', () => {
+      fireClosure();
+      run.learn = 1;
+      run.aid = 'learn';
+      run.overlay = { edges: E.solve(run.g, run.s, run.t, run.key, run.closed).best.edges };
+      drawGraph(); renderReadout(); renderAid();
+    });
+
+    function routeName(r) { return r.nodes.map(id => node(id).name.replace(/^PPS /, 'PPS ')).join(' → '); }
+
+    function renderAid() {
+      if (!run.aid) { $('aid').innerHTML = ''; return; }
+      if (run.aid === 'hint') {
+        const nm = node(run.hintNode).name;
+        $('aid').innerHTML = '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span></h3><p>' +
+          (run.key === 'm'
+            ? T('Look at the minutes, not the km. The fastest route passes through <b class="ink">' + nm + '</b> (the dashed ring).',
+              'Lihat minit, bukan km. Laluan paling pantas melalui <b class="ink">' + nm + '</b> (bulatan bertitik).')
+            : T('The shortest route passes through <b class="ink">' + nm + '</b> (the dashed ring). Before you choose each road, ask: what is the total so far?',
+              'Laluan terpendek melalui <b class="ink">' + nm + '</b> (bulatan bertitik). Sebelum memilih setiap jalan, tanya: berapakah jumlah setakat ini?')) +
+          '</p></div>';
+        return;
+      }
+      const sol = E.solve(run.g, run.s, run.t, run.key, run.closed);
+      const rows = sol.routes.slice(0, 6).map((r, k) =>
+        '<tr class="' + (k === 0 ? 'best' : '') + '"><td>' + routeName(r) + (k === 0 ? ' ✓' : '') + '</td><td class="num">' + r.edges.length + '</td>' +
+        '<td class="num">' + r.km + ' km</td>' + (run.key === 'm' ? '<td class="num">' + r.min + ' min</td>' : '') + '</tr>').join('');
+      $('aid').innerHTML = '<div class="note"><h3>' + T('Learn: add up every route', 'Belajar: jumlahkan setiap laluan') +
+        ' <span class="pill alert">−10 XP</span></h3><p>' +
+        (run.key === 'm'
+          ? T('Each route’s time is the sum of the minutes on its roads. The smallest total is the fastest route — dotted in blue on the map.',
+            'Masa setiap laluan ialah hasil tambah minit pada jalannya. Jumlah terkecil ialah laluan paling pantas — bertitik biru pada peta.')
+          : T('Each route’s length is the sum of the weights on its roads. The smallest total is the <b class="ink">shortest path</b> — dotted in blue on the map.',
+            'Panjang setiap laluan ialah hasil tambah pemberat pada jalannya. Jumlah terkecil ialah <b class="ink">laluan terpendek</b> — bertitik biru pada peta.')) +
+        '</p><table><tr><th>' + T('Route', 'Laluan') + '</th><th class="num">' + T('Roads', 'Jalan') + '</th><th class="num">km</th>' +
+        (run.key === 'm' ? '<th class="num">min</th>' : '') + '</tr>' + rows + '</table>' +
+        (sol.routes.length > 6 ? '<p class="muted" style="margin:6px 0 0;">' + T('+ ' + (sol.routes.length - 6) + ' longer routes not shown', '+ ' + (sol.routes.length - 6) + ' laluan lebih panjang tidak ditunjukkan') + '</p>' : '') +
+        '</div>';
+    }
+
+    /* ============================================================
+       11. SUBMIT → feedback → quick check → XP
+       ============================================================ */
+    function logAttempt(a) {
+      const d = new Date(), p = x => String(x).padStart(2, '0');
+      st.attempts.push(Object.assign({
+        attempt_id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+        timestamp: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()),
+        class_code: st.classCode, student_code: studentCode(), world: 3, level: run.i + 1,
+        hints_used: run.hints, learn_used: run.learn, time_s: secs(), boss_tool_choice: ''
+      }, a));
+    }
+
+    $('btn-send').addEventListener('click', () => {
+      const res = E.checkRoute(run.g, run.s, run.t, run.key, run.closed, run.route.edges);
+      if (!res.valid) return;
+      run.aid = null; renderAid();
+      const best = res.sol.best, u = unit();
+
+      if (!res.optimal) {
+        st.streak = 0;
+        st.best[lvKey(run.i)] = Math.max(st.best[lvKey(run.i)] || 0, 30);
+        logAttempt({ correct: true, optimal: false, score_xp: 30, mistake_tag: res.tag });
+        save();
+        const extra = {
+          fewest_edges_not_shortest: T('You picked a route with the fewest roads. Fewer roads doesn’t always mean fewer km.',
+            'Anda memilih laluan dengan jalan paling sedikit. Jalan yang sedikit tidak semestinya km yang sedikit.'),
+          chose_distance_not_time: T('This is the shortest route in km — but the mission is about time. Check the minutes.',
+            'Ini laluan terpendek dalam km — tetapi misinya tentang masa. Semak minit.'),
+          valid_not_optimal: T('Somewhere a road that looked short led to a long total. Compare the totals, not single roads.',
+            'Ada jalan yang nampak pendek tetapi jumlahnya panjang. Bandingkan jumlah, bukan satu-satu jalan.')
+        }[res.tag];
+        $('panel').innerHTML = '<div class="note warn"><h3>' +
+          T('Valid route, but not the ' + (u === 'min' ? 'fastest' : 'shortest'), 'Laluan sah, tetapi bukan yang ' + (u === 'min' ? 'paling pantas' : 'terpendek')) +
+          '</h3><p>' + T('Your route: <b class="ink">' + res.cost + ' ' + u + '</b> — best possible: <b class="ink">' + best.cost + ' ' + u + '</b>. ',
+            'Laluan anda: <b class="ink">' + res.cost + ' ' + u + '</b> — terbaik: <b class="ink">' + best.cost + ' ' + u + '</b>. ') + extra + '</p>' +
+          '<div class="row"><button class="btn sm" id="btn-again">' + T('Try again', 'Cuba lagi') + '</button>' +
+          '<span class="muted">' + T('+30 XP banked. Mistakes cost nothing — your best score counts.', '+30 XP disimpan. Kesilapan tidak merugikan — markah terbaik anda yang dikira.') + '</span></div></div>';
+        $('btn-again').addEventListener('click', () => {
+          $('panel').innerHTML = '';
+          run.route = { nodes: [run.s], edges: [] };
+          drawGraph(); renderReadout(); say('');
+        });
+        $('panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      run.phase = 'check'; run.solveTime = secs(); run.lastCheck = res;
+      drawGraph(); renderReadout(); say('');
+      renderPanel();
+      $('panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    /* The quick check asks about the idea, not the answer — it earns the reasoning XP. */
+    function quickCheck() {
+      const sol = E.solve(run.g, run.s, run.t, run.key, run.closed), best = sol.best;
+      if (run.key === 'm') {
+        const km = E.solve(run.g, run.s, run.t, 'w', run.closed).best;
+        return {
+          cmp: km, answer: E.sameRoute(km.edges, best.edges) ? 'same' : 'longer',
+          q: T('The route with the shortest <b class="ink">distance</b> is ' + km.km + ' km. Compared with your route, how long does it take?',
+            'Laluan dengan <b class="ink">jarak</b> terpendek ialah ' + km.km + ' km. Berbanding laluan anda, berapa lama masanya?'),
+          opts: [['longer', T('It takes longer', 'Ia mengambil masa lebih lama')], ['same', T('It is my route', 'Itulah laluan saya')], ['shorter', T('It is faster', 'Ia lebih pantas')]],
+          explain: ok => T((ok ? 'Right — ' : 'Look at the blue dots: ') + 'the shortest route takes ' + km.min + ' min, your route ' + best.min + ' min. Shortest in km is not always fastest.',
+            (ok ? 'Betul — ' : 'Lihat titik biru: ') + 'laluan terpendek mengambil ' + km.min + ' minit, laluan anda ' + best.min + ' minit. Terpendek dalam km tidak semestinya paling pantas.')
+        };
+      }
+      const f = sol.fewest, same = E.sameRoute(f.edges, best.edges);
+      return {
+        cmp: f, answer: same ? 'same' : 'longer',
+        q: T('Now think about the route with the <b class="ink">fewest roads</b> (' + sol.minHops + ' roads). Compared with your route, its distance is…',
+          'Sekarang fikirkan laluan dengan <b class="ink">jalan paling sedikit</b> (' + sol.minHops + ' jalan). Berbanding laluan anda, jaraknya…'),
+        opts: [['longer', T('Longer than mine', 'Lebih jauh daripada laluan saya')], ['same', T('Exactly my route', 'Sama dengan laluan saya')], ['shorter', T('Shorter than mine', 'Lebih dekat daripada laluan saya')]],
+        explain: ok => same
+          ? T((ok ? 'Right — ' : 'Not quite — ') + 'here the route with the fewest roads is also the shortest. That won’t always happen. Watch for it in the next levels.',
+            (ok ? 'Betul — ' : 'Belum tepat — ') + 'di sini laluan dengan jalan paling sedikit juga yang terpendek. Ini tidak selalu berlaku. Perhatikan pada tahap seterusnya.')
+          : T((ok ? 'Right — ' : 'Look at the blue dots: ') + 'the ' + f.edges.length + '-road route is ' + f.km + ' km, but yours is ' + best.km + ' km. Fewer roads, more km.',
+            (ok ? 'Betul — ' : 'Lihat titik biru: ') + 'laluan ' + f.edges.length + ' jalan ialah ' + f.km + ' km, tetapi laluan anda ' + best.km + ' km. Jalan lebih sedikit, km lebih banyak.')
+      };
+    }
+
+    function renderPanel() {
+      if (run.phase === 'play') { $('panel').innerHTML = ''; return; }
+      const res = run.lastCheck, u = unit();
+      const head = '<div class="note ok"><h3>' + T('Best possible route! ', 'Laluan terbaik! ') + res.cost + ' ' + u + '</h3><p>' +
+        T('No route is ' + (u === 'min' ? 'faster' : 'shorter') + '. The engine checked all ' + res.sol.routes.length + ' routes.',
+          'Tiada laluan yang lebih ' + (u === 'min' ? 'pantas' : 'pendek') + '. Enjin telah menyemak kesemua ' + res.sol.routes.length + ' laluan.') + '</p></div>';
+
+      if (run.phase === 'check') {
+        const qc = quickCheck();
+        $('panel').innerHTML = head + '<div class="note"><h3>' + T('Quick check', 'Semakan pantas') + ' <span class="pill new">+20 XP</span></h3><p>' + qc.q + '</p>' +
+          '<div class="opts">' + qc.opts.map(o => '<button class="opt" data-opt="' + o[0] + '">' + o[1] + '</button>').join('') + '</div><div id="qc-out"></div></div>';
+        $('panel').querySelectorAll('[data-opt]').forEach(b => b.addEventListener('click', () => answerCheck(b.dataset.opt)));
+        return;
+      }
+      // phase 'xp'
+      $('panel').innerHTML = head + xpCard();
+      wireXpButtons();
+    }
+
+    function answerCheck(pick) {
+      const qc = quickCheck(), ok = pick === qc.answer;
+      run.reasoning = ok;
+      run.overlay = { edges: qc.cmp.edges };
+      drawGraph();
+      $('panel').querySelectorAll('[data-opt]').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.opt === qc.answer) b.classList.add('right');
+        else if (b.dataset.opt === pick) b.classList.add('wrong');
+      });
+      $('qc-out').innerHTML = '<p style="margin:12px 0 12px;">' + qc.explain(ok) + '</p>' +
+        '<button class="btn sm" id="btn-score">' + T('See my XP', 'Lihat XP saya') + '</button>';
+      $('btn-score').addEventListener('click', award);
+    }
+
+    function award() {
+      const L = run.L, key = lvKey(run.i);
+      const parts = [
+        ['correct', T('Best route', 'Laluan terbaik'), 60],
+        ['reasoning', T('Quick check', 'Semakan pantas'), run.reasoning ? 20 : 0],
+        ['nohint', T('No hint or Learn', 'Tanpa petunjuk atau Belajar'), (run.hints || run.learn) ? 0 : 10],
+        ['speed', T('Speed · under ', 'Kelajuan · bawah ') + L.target + ' s (' + run.solveTime + ' s)', run.solveTime <= L.target ? 10 : 0]
+      ];
+      if (run.learn) parts.push(['learn', T('Used Learn', 'Guna Belajar'), -10]);
+      const score = parts.reduce((a, p) => a + p[2], 0);
+      const prev = st.best[key] || 0;
+      st.best[key] = Math.max(prev, score);
+      const firstClear = !st.done[key];
+      st.done[key] = true;
+      st.streak = (st.streak || 0) + 1;
+      logAttempt({ correct: true, optimal: true, score_xp: score, mistake_tag: '', time_s: run.solveTime });
+
+      const newBadges = [];
+      const give = k => { if (!st.badges.includes(k)) { st.badges.push(k); newBadges.push(k); } };
+      give('first_connection');
+      if (st.streak >= 5) give('road_master');
+      save();
+
+      run.xp = { parts, score, prev, firstClear };
+      run.phase = 'xp';
+      clearInterval(clockTimer);
+      $('lvl-clock').textContent = run.solveTime + ' s';
+      renderPanel();
+      newBadges.forEach((k, j) => setTimeout(() => toast('🏅 ' + T('Badge: ', 'Lencana: ') + tt(BADGES.find(b => b.k === k).name)), j * 900));
+    }
+
+    function xpCard() {
+      const x = run.xp, last = run.i === LEVELS.length - 1;
+      const rows = x.parts.map(p => '<div class="xp-row' + (p[2] === 0 ? ' zero' : '') + '"><span>' + p[1] + '</span><b>' + (p[2] > 0 ? '+' : '') + p[2] + '</b></div>').join('');
+      let next;
+      if (last && !st.discovered[3]) next = '<button class="btn" data-go="discover">' + T('Discover the rule →', 'Temui peraturannya →') + '</button>';
+      else if (last) next = '<button class="btn" data-go="map">' + T('Back to map', 'Kembali ke peta') + '</button>';
+      else next = '<button class="btn" data-go="next">' + T('Next level →', 'Tahap seterusnya →') + '</button>';
+      return '<div class="note" style="background:#fff;"><h3>' + T('Level ', 'Tahap ') + (run.i + 1) + T(' cleared', ' selesai') + '</h3>' + rows +
+        '<div class="xp-total"><span class="muted">' +
+        (x.score > x.prev ? T('New best for this level', 'Markah terbaik baharu untuk tahap ini') : T('Your best stays ', 'Markah terbaik kekal ') + x.prev) +
+        '</span><b>' + x.score + ' XP</b></div>' +
+        '<div class="row" style="margin-top:14px;">' + next +
+        '<button class="btn ghost sm" data-go="replay">' + T('Replay', 'Main semula') + '</button></div></div>';
+    }
+    function wireXpButtons() {
+      $('panel').querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+        const go = b.dataset.go;
+        if (go === 'next') startLevel(run.i + 1);
+        else if (go === 'replay') startLevel(run.i);
+        else if (go === 'discover') { renderDiscover(); show('discover'); }
+        else { renderMap(); show('map'); }
+      }));
+    }
+
+    /* ============================================================
+       12. DISCOVER — the student states the rule, then gets the term
+       ============================================================ */
+    let discoverPick = null;
+    function renderDiscover() {
+      const opts = [
+        ['a', T('The route with the fewest roads is always the shortest.', 'Laluan dengan jalan paling sedikit sentiasa yang terpendek.')],
+        ['b', T('Fewest roads is not always shortest distance — you have to add up the weights.', 'Jalan paling sedikit tidak semestinya jarak terpendek — anda perlu menjumlahkan pemberat.')],
+        ['c', T('The shortest road leaving the start is always on the best route.', 'Jalan terpendek yang keluar dari titik mula sentiasa berada pada laluan terbaik.')]
+      ];
+      const answered = discoverPick !== null || st.discovered[3];
+      const pick = discoverPick || (st.discovered[3] ? 'b' : null);
+      let html = '<div class="badge">' + T('World 3 · Discover', 'Dunia 3 · Temui') + '</div>' +
+        '<h1>' + T('What did you <span class="script">notice?</span>', 'Apa yang anda <span class="script">perasan?</span>') + '</h1>' +
+        '<p>' + T('Think back over the five levels. Which statement is always true?', 'Fikirkan semula lima tahap tadi. Pernyataan manakah yang sentiasa benar?') + '</p>' +
+        '<div class="opts">' + opts.map(o => '<button class="opt' + (answered ? (o[0] === 'b' ? ' right' : o[0] === pick ? ' wrong' : '') : '') + '" data-pick="' + o[0] + '"' + (answered ? ' disabled' : '') + '>' + o[1] + '</button>').join('') + '</div>';
+
+      if (answered) {
+        const why = pick === 'b' ? T('Exactly. You found it before anyone told you.', 'Tepat sekali. Anda menemuinya sebelum sesiapa memberitahu.')
+          : pick === 'a' ? T('Remember Level 2: the 2-road route was 44 km, but the best was 30 km with 3 roads.', 'Ingat Tahap 2: laluan 2 jalan ialah 44 km, tetapi yang terbaik 30 km dengan 3 jalan.')
+            : T('Remember Level 1: the shortest road out of Temerloh (8 km) was not on the best route.', 'Ingat Tahap 1: jalan terpendek keluar dari Temerloh (8 km) bukan pada laluan terbaik.');
+        const term = (a, b, d1, d2) => '<div class="tcard"><b>' + T(a, b) + '</b><i>' + T(b, a) + '</i><span>' + T(d1, d2) + '</span></div>';
+        html += '<p style="margin-top:16px;"><b class="ink">' + why + '</b></p>' +
+          '<div class="sec-title" style="margin-top:22px;">' + T('Now it has a name', 'Kini ia ada nama') + '</div>' +
+          '<div class="terms">' +
+          term('Weight', 'Pemberat', 'The value on an edge — a distance, a time or a cost.', 'Nilai pada sisi — jarak, masa atau kos.') +
+          term('Weighted graph', 'Graf berpemberat', 'A graph whose edges carry weights, like your road map.', 'Graf yang sisinya membawa pemberat, seperti peta jalan anda.') +
+          term('Shortest path', 'Laluan terpendek', 'The path between two vertices with the smallest total weight.', 'Lorong antara dua bucu dengan jumlah pemberat paling kecil.') +
+          '</div>' +
+          '<div class="row" style="margin-top:24px;"><button class="btn" id="btn-disc-map">' + T('Back to map', 'Kembali ke peta') + '</button>' +
+          '<span class="muted">' + (st.discovered[3] ? T('+20 XP for discovering', '+20 XP kerana menemui') : '') + '</span></div>';
+      }
+      $('screen-discover').innerHTML = html;
+      $('screen-discover').querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
+        discoverPick = b.dataset.pick;
+        if (discoverPick === 'b' && !st.discovered[3]) { st.discovered[3] = true; save(); }
+        renderDiscover();
+        if (discoverPick !== 'b') setTimeout(() => { discoverPick = null; renderDiscover(); }, 4200);
+      }));
+      const back = $('btn-disc-map');
+      if (back) back.addEventListener('click', () => { discoverPick = null; renderMap(); show('map'); });
+    }
+
+    /* ============================================================
+       13. MY PROGRESS  +  submit results to the teacher's Sheet
+       ============================================================ */
+    function renderProgress() {
+      const xp = totalXP(), r = rankOf(xp), m = Math.round(mastery());
+      const trail = i => {
+        const a = st.attempts.filter(x => x.world === 3 && x.level === i + 1).slice(-8);
+        return a.length ? a.map(x => x.optimal ? '✓' : '✗').join(' → ') : '—';
+      };
+      const unsent = st.attempts.length - st.sent;
+      $('screen-progress').innerHTML =
+        '<div class="kicker">' + studentCode() + ' · ' + st.classCode + '</div>' +
+        '<h1>' + T('My <span class="script">progress</span>', 'Kemajuan <span class="script">saya</span>') + '</h1>' +
+        '<div class="player">' +
+        '<div class="kpi"><b>' + xp + ' XP</b><span>' + tt(RANKS[r]) + '</span></div>' +
+        '<div class="kpi"><b>' + st.attempts.reduce((a, x) => a + x.hints_used + x.learn_used, 0) + '</b><span>' + T('hints & Learn used', 'petunjuk & Belajar digunakan') + '</span></div>' +
+        '<div class="kpi"><b>' + st.attempts.length + '</b><span>' + T('attempts', 'cubaan') + '</span></div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<div class="row spread"><h3 style="margin:0;">' + T('World 3 · Shortest Path Race', 'Dunia 3 · Perlumbaan Laluan Terpendek') + '</h3>' +
+        '<span class="pill ' + (m >= 70 ? 'done' : 'alert') + '">' + T('mastery ', 'penguasaan ') + m + '%</span></div>' +
+        '<div class="m-bar"><i class="' + (m < 70 ? 'warn' : '') + '" style="width:' + m + '%"></i></div>' +
+        '<p class="muted" style="margin:0 0 8px;">' + T('Mastery = average of your best score on each of the 5 levels.', 'Penguasaan = purata markah terbaik anda bagi setiap 5 tahap.') + '</p>' +
+        LEVELS.map((L, i) => '<div class="lrow"><span><b>' + (i + 1) + '</b> · ' + tt(L.title) + '</span><span class="trail">' + trail(i) + '</span>' +
+          '<b>' + (st.best[lvKey(i)] || 0) + '</b></div>').join('') +
+        '</div>' +
+        '<div class="sec-title">' + T('Badges', 'Lencana') + '</div>' +
+        '<div class="badges">' + BADGES.map(b => '<div class="bdg' + (st.badges.includes(b.k) ? '' : ' off') + '"><b>' + (st.badges.includes(b.k) ? '🏅 ' : '') + tt(b.name) + '</b><span>' + tt(b.how) + '</span></div>').join('') + '</div>' +
+        '<div class="sec-title">' + T('Send to my teacher', 'Hantar kepada guru') + '</div>' +
+        '<p>' + (unsent
+          ? T(unsent + ' attempt' + (unsent > 1 ? 's' : '') + ' not sent yet.', unsent + ' cubaan belum dihantar.')
+          : T('Everything has been sent.', 'Semuanya telah dihantar.')) + '</p>' +
+        '<div class="row"><button class="btn" id="btn-submit"' + (unsent ? '' : ' disabled') + '>' + T('Submit results', 'Hantar keputusan') + '</button>' +
+        '<button class="btn ghost" id="btn-prog-map">' + T('Back to map', 'Kembali ke peta') + '</button></div>' +
+        '<div class="muted" id="submit-msg" style="margin-top:12px;"></div>';
+      $('btn-submit').addEventListener('click', sendResults);
+      $('btn-prog-map').addEventListener('click', () => { renderMap(); show('map'); });
+    }
+
+    async function sendResults() {
+      const rows = st.attempts.slice(st.sent), msg = $('submit-msg');
+      if (!rows.length) return;
+      if (ENDPOINT.indexOf('PASTE_') === 0) {
+        msg.textContent = T('Results aren’t connected yet — your teacher needs to add the results link. Your progress is safe on this device.',
+          'Keputusan belum disambungkan — guru anda perlu menambah pautan keputusan. Kemajuan anda selamat pada peranti ini.');
+        return;
+      }
+      $('btn-submit').disabled = true;
+      msg.textContent = T('Sending…', 'Menghantar…');
+      try {
+        // text/plain avoids a CORS preflight that Apps Script cannot answer
+        const res = await fetch(ENDPOINT, {
+          method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ rows }), redirect: 'follow'
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'rejected');
+        st.sent = st.attempts.length; save();
+        renderProgress();
+        $('submit-msg').textContent = T('Sent! ' + rows.length + ' attempts are with your teacher.', 'Berjaya! ' + rows.length + ' cubaan telah sampai kepada guru anda.');
+      } catch (err) {
+        $('btn-submit').disabled = false;
+        msg.textContent = T('That didn’t go through — check your connection and try again. Nothing is lost.',
+          'Tidak berjaya — semak sambungan anda dan cuba lagi. Tiada apa yang hilang.');
+      }
+    }
+
+    /* ---------- go ---------- */
+    if (st.classCode) { current = 'map'; }
+    applyLang();
+    show(current);
+  </script>
+</body>
+
+</html>

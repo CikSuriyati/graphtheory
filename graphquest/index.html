@@ -1123,67 +1123,380 @@
     }
 
     /* ---- World 1, World 4, Boss (play.js) ---- */
-    .edge.off .road { stroke: #cdc5c0; stroke-dasharray: 7 7; }
-    .edge.off:hover .road { stroke: var(--orange); }
-    .lbl.off rect { fill: #faf7f5; stroke: #cdc5c0; }
-    .lbl.off text { fill: var(--ink-soft); }
-    .lbl.on rect { fill: var(--yellow); }
-    .edge.bad .route { stroke: var(--terra); }
-    .lbl.bad rect { fill: var(--terra-soft); stroke: var(--terra); }
-    .edge.ovl .road { stroke: var(--blue); stroke-width: 7; stroke-dasharray: 1 13; }
-    .arrow { fill: var(--ink); pointer-events: none; }
-    .edge.on .arrow { fill: var(--ink); }
-    .town.flag .dot { fill: var(--yellow); }
-    .town.picked .dot { fill: var(--orange); }
-    .town.hintn .dot { stroke: var(--yellow); stroke-width: 6; }
-    .town .tag { font-size: 12px; }
-    .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
-    .tool { appearance: none; text-align: left; font: inherit; border: 2px solid var(--ink); border-radius: 14px; background: #fff; padding: 11px 13px;
-      box-shadow: 0 3px 0 var(--ink); cursor: pointer; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; }
-    .tool:hover { background: var(--orange-soft); }
-    .tool:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
-    .tool .ti { font-size: 24px; grid-row: span 2; }
-    .tool b { font-size: 14.5px; color: var(--ink); }
-    .tool span:last-child { font-size: 12.5px; color: var(--ink-soft); }
-    .bosscard.open { background: var(--yellow-soft); }
-    .bosscard .steps { grid-template-columns: repeat(4, 1fr); }
+    .edge.off .road {
+      stroke: #cdc5c0;
+      stroke-dasharray: 7 7;
+    }
+
+    .edge.off:hover .road {
+      stroke: var(--orange);
+    }
+
+    .lbl.off rect {
+      fill: #faf7f5;
+      stroke: #cdc5c0;
+    }
+
+    .lbl.off text {
+      fill: var(--ink-soft);
+    }
+
+    .lbl.on rect {
+      fill: var(--yellow);
+    }
+
+    .edge.bad .route {
+      stroke: var(--terra);
+    }
+
+    .lbl.bad rect {
+      fill: var(--terra-soft);
+      stroke: var(--terra);
+    }
+
+    .edge.ovl .road {
+      stroke: var(--blue);
+      stroke-width: 7;
+      stroke-dasharray: 1 13;
+    }
+
+    .arrow {
+      fill: var(--ink);
+      pointer-events: none;
+    }
+
+    .edge.on .arrow {
+      fill: var(--ink);
+    }
+
+    .town.flag .dot {
+      fill: var(--yellow);
+    }
+
+    .town.picked .dot {
+      fill: var(--orange);
+    }
+
+    .town.hintn .dot {
+      stroke: var(--yellow);
+      stroke-width: 6;
+    }
+
+    .town .tag {
+      font-size: 12px;
+    }
+
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .tool {
+      appearance: none;
+      text-align: left;
+      font: inherit;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      background: #fff;
+      padding: 11px 13px;
+      box-shadow: 0 3px 0 var(--ink);
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 10px;
+      align-items: center;
+    }
+
+    .tool:hover {
+      background: var(--orange-soft);
+    }
+
+    .tool:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 var(--ink);
+    }
+
+    .tool .ti {
+      font-size: 24px;
+      grid-row: span 2;
+    }
+
+    .tool b {
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .tool span:last-child {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .bosscard.open {
+      background: var(--yellow-soft);
+    }
+
+    .bosscard .steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
 
     /* ---- World 5, World 6, class board ---- */
-    .edge.used .road { stroke: var(--orange); stroke-width: 6; stroke-dasharray: 11 7; }
-    .lbl.used rect { fill: var(--orange-soft); }
-    .edge.clash .road { stroke: var(--terra); stroke-width: 6; }
-    .town.s1 .dot { fill: #ee6c34; } .town.s2 .dot { fill: #7ca3f9; } .town.s3 .dot { fill: #a2dd70; } .town.s4 .dot { fill: #ffd54a; }
-    .palette { display: flex; gap: 8px; flex-wrap: wrap; }
-    .slot { appearance: none; font: inherit; border: 2px solid var(--ink); border-radius: 12px; padding: 6px 12px; cursor: pointer; display: grid; text-align: left; line-height: 1.2; }
-    .slot b { font-size: 16px; } .slot span { font-size: 11.5px; }
-    .slot.s1 { background: #ee6c34; } .slot.s2 { background: #7ca3f9; } .slot.s3 { background: #a2dd70; } .slot.s4 { background: #ffd54a; }
-    .slot.on { box-shadow: 0 4px 0 var(--ink); transform: translateY(-3px); outline: 3px solid var(--ink); outline-offset: 2px; }
-    .grid2b { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .lrow.me { background: var(--yellow-soft); border-radius: 8px; padding-left: 6px; padding-right: 6px; }
-    @media (max-width: 600px) { .grid2b { grid-template-columns: 1fr; } }
+    .edge.used .road {
+      stroke: var(--orange);
+      stroke-width: 6;
+      stroke-dasharray: 11 7;
+    }
+
+    .lbl.used rect {
+      fill: var(--orange-soft);
+    }
+
+    .edge.clash .road {
+      stroke: var(--terra);
+      stroke-width: 6;
+    }
+
+    .town.s1 .dot {
+      fill: #ee6c34;
+    }
+
+    .town.s2 .dot {
+      fill: #7ca3f9;
+    }
+
+    .town.s3 .dot {
+      fill: #a2dd70;
+    }
+
+    .town.s4 .dot {
+      fill: #ffd54a;
+    }
+
+    .palette {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .slot {
+      appearance: none;
+      font: inherit;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: grid;
+      text-align: left;
+      line-height: 1.2;
+    }
+
+    .slot b {
+      font-size: 16px;
+    }
+
+    .slot span {
+      font-size: 11.5px;
+    }
+
+    .slot.s1 {
+      background: #ee6c34;
+    }
+
+    .slot.s2 {
+      background: #7ca3f9;
+    }
+
+    .slot.s3 {
+      background: #a2dd70;
+    }
+
+    .slot.s4 {
+      background: #ffd54a;
+    }
+
+    .slot.on {
+      box-shadow: 0 4px 0 var(--ink);
+      transform: translateY(-3px);
+      outline: 3px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    .grid2b {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .lrow.me {
+      background: var(--yellow-soft);
+      border-radius: 8px;
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .grid2b {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* ---- Pre-test / post-test / survey ---- */
-    .testcard { background: var(--green-soft); grid-column: 1 / -1; }
-    .trow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-weight: 700; font-size: 14.5px; }
-    .tprog { position: sticky; top: 0; z-index: 20; background: var(--bg); padding: 12px 0 14px; font-size: 13.5px; color: var(--ink-soft); }
-    .tprog .progress { height: 12px; background: #fff; border: 2px solid var(--ink); border-radius: 99px; overflow: hidden; margin-top: 6px; }
-    .tprog .progress > i { display: block; height: 100%; background: var(--orange); transition: width .35s; }
-    .qn { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 9px; border: 2px solid var(--ink); background: var(--yellow);
-      font-weight: 700; display: grid; place-items: center; transform: rotate(-3deg); }
-    .tdiag { margin: 14px 0 4px; border: 2px solid var(--line); border-radius: 14px; background: #fffdfb; }
-    .tdiag svg { display: block; width: 100%; max-width: 460px; height: auto; margin: 0 auto; }
-    input.tnum { width: 110px; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; font: inherit; font-size: 22px; font-weight: 700; text-align: center; }
-    input.tnum:focus { outline: none; border-color: var(--orange); }
-    .opt.chosen { background: var(--orange); }
-    .lk { padding: 12px 0; border-bottom: 1px solid var(--line); }
-    .lk p { margin: 0 0 8px; color: var(--ink); font-weight: 500; }
-    .lk-key { display: flex; justify-content: space-between; font-family: "Caveat", cursive; font-size: 18px; color: var(--ink-faint); border-bottom: 2px dashed var(--line); padding-bottom: 8px; }
-    .scale { display: flex; gap: 7px; }
-    .scale button { flex: 1; height: 46px; border: 2px solid var(--line); background: #fff; border-radius: 11px; font: inherit; font-size: 15px; font-weight: 700; color: var(--ink-faint); cursor: pointer; }
-    .scale button:hover { border-color: var(--orange); color: var(--orange); }
-    .scale button.on { background: var(--orange); border-color: var(--ink); color: var(--ink); box-shadow: 0 3px 0 var(--ink); }
-    textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; font: inherit; font-size: 15px; resize: vertical; }
-    textarea:focus { outline: none; border-color: var(--orange); }
+    .testcard {
+      background: var(--green-soft);
+      grid-column: 1 / -1;
+    }
+
+    .trow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-top: 1px solid var(--line);
+      font-weight: 700;
+      font-size: 14.5px;
+    }
+
+    .tprog {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
+      padding: 12px 0 14px;
+      font-size: 13.5px;
+      color: var(--ink-soft);
+    }
+
+    .tprog .progress {
+      height: 12px;
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .tprog .progress>i {
+      display: block;
+      height: 100%;
+      background: var(--orange);
+      transition: width .35s;
+    }
+
+    .qn {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: 2px solid var(--ink);
+      background: var(--yellow);
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      transform: rotate(-3deg);
+    }
+
+    .tdiag {
+      margin: 14px 0 4px;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: #fffdfb;
+    }
+
+    .tdiag svg {
+      display: block;
+      width: 100%;
+      max-width: 460px;
+      height: auto;
+      margin: 0 auto;
+    }
+
+    input.tnum {
+      width: 110px;
+      padding: 12px 14px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      font: inherit;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    input.tnum:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    .opt.chosen {
+      background: var(--orange);
+    }
+
+    .lk {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .lk p {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .lk-key {
+      display: flex;
+      justify-content: space-between;
+      font-family: "Caveat", cursive;
+      font-size: 18px;
+      color: var(--ink-faint);
+      border-bottom: 2px dashed var(--line);
+      padding-bottom: 8px;
+    }
+
+    .scale {
+      display: flex;
+      gap: 7px;
+    }
+
+    .scale button {
+      flex: 1;
+      height: 46px;
+      border: 2px solid var(--line);
+      background: #fff;
+      border-radius: 11px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-faint);
+      cursor: pointer;
+    }
+
+    .scale button:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .scale button.on {
+      background: var(--orange);
+      border-color: var(--ink);
+      color: var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      font: inherit;
+      font-size: 15px;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
 
     /* ---- World 2: Graph Detective ---- */
     .ask {
@@ -1514,7 +1827,7 @@
     /* ============================================================
        1. CONFIG  —  paste your Apps Script Web App URL here
        ============================================================ */
-    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzsdFweDlKcmaJKB0lfoAGZDmZRKl0jvB4JwNYCF0CaGHTC6_Lh8lzU5rKbHYCihw/exec';
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyFnia-RLg8WPjFM5ymNCpKdB8KXfhRuAJhHR1ZLEPPvBZapMygv_UjW1DvYHppjPF_/exec';
 
     const E = GraphEngine;
     const STORE = 'graphquest.v1';

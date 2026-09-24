@@ -1998,6 +1998,7 @@
     const SCREENS = ['entry', 'map', 'guide', 'level', 'case', 'play', 'discover', 'progress', 'test'];
     let current = 'entry';
     function show(name) {
+      if (name !== 'guide' && typeof stopTour === 'function') stopTour();
       current = name;
       SCREENS.forEach(s => $('screen-' + s).classList.toggle('hidden', s !== name));
       updateNavigation();
@@ -2068,7 +2069,8 @@
       $('btn-enter').textContent = T('Enter the quest →', 'Mulakan pengembaraan →');
       $('btn-entry-help').textContent = T('How to play', 'Cara bermain');
       $('entry-guide').innerHTML = [
-        T('Choose a world', 'Pilih dunia'), T('Solve five challenges', 'Selesaikan lima cabaran'), T('Earn XP & discover the rule', 'Kumpul XP & temui peraturan')
+        T('Take the short pre-test', 'Jawab ujian pra yang ringkas'), T('Play the 6 worlds', 'Main 6 dunia'),
+        T('Submit results on My progress', 'Hantar keputusan di Kemajuan saya'), T('Take the post-test — done!', 'Jawab ujian pasca — selesai!')
       ].map((text, i) => '<li><b>' + (i + 1) + '</b><span>' + text + '</span></li>').join('');
       $('join-title').textContent = T('Ready, explorer?', 'Sedia, penjelajah?');
       $('art-caption').textContent = T('Every connection is a new possibility.', 'Setiap sambungan membuka peluang baharu.');
@@ -2124,7 +2126,93 @@
       st.guideSeen = true; save();
       renderGuide(); show('guide');
     }
+    /* The quest path: the whole journey on one trail, with "you are here". */
+    const GUIDE_ICON = { 1: '🧭', 2: '🔍', 3: '🏁', 4: '🌐', 5: '🚪', 6: '🎨' };
+    const BADGE_ICON = { first_connection: '🔗', sharp_detective: '🕵️', road_master: '🛣️', budget_engineer: '💰', euler_explorer: '🗺️', exam_planner: '📅', graph_legend: '👑', team_player: '🤝' };
+    function questStops() {
+      const tests = st.tests || [], cleared = Object.keys(st.done).filter(k => st.done[k]).length;
+      const postDone = tests.some(r => r.test === 'post'), need = GQT.POST_AFTER_LEVELS;
+      const stops = [
+        { icon: '🚩', done: !!st.classCode, h: T('Start', 'Mula'),
+          say: T('Type the class code from your teacher and your register number.', 'Taip kod kelas daripada guru dan nombor giliran anda.') },
+        { icon: '📝', done: tests.some(r => r.test === 'pre') || cleared > 0, h: T('Pre-test', 'Ujian pra'),
+          say: T('Answer 10 quick questions on your own. It is not for your grade — it shows what you know before playing.', 'Jawab 10 soalan pantas sendiri. Tidak dikira untuk gred — ia menunjukkan apa yang anda tahu sebelum bermain.') },
+        { icon: '🎮', done: cleared >= need, h: T('Play the 6 worlds', 'Main 6 dunia'), worlds: true,
+          say: T('Four core worlds with 5 levels each, then two bonus worlds and the Boss Level. Clear at least ' + need + ' levels. Earn XP and badges as you go.', 'Empat dunia teras dengan 5 tahap setiap satu, kemudian dua dunia bonus dan Tahap Bos. Selesaikan sekurang-kurangnya ' + need + ' tahap. Kumpul XP dan lencana sepanjang perjalanan.') },
+        { icon: '📤', done: st.sent > 0, h: T('Submit at My progress', 'Hantar di Kemajuan saya'),
+          say: T('Open My progress at the top and press Submit results. Your work goes to your teacher.', 'Buka Kemajuan saya di atas dan tekan Hantar keputusan. Kerja anda dihantar kepada guru.') },
+        { icon: '✏️', done: postDone, h: T('Post-test', 'Ujian pasca'),
+          say: T('The post-test now appears at the top of the map. Answer 10 questions again, on your own.', 'Ujian pasca kini dipaparkan di bahagian atas peta. Jawab 10 soalan sekali lagi, sendiri.') },
+        { icon: '🏆', done: postDone, h: T('Finish!', 'Tamat!'),
+          say: T('See your score before and after. You can keep playing to earn more badges.', 'Lihat markah anda sebelum dan selepas. Anda boleh terus bermain untuk mengumpul lebih banyak lencana.') }
+      ];
+      const here = stops.findIndex(x => !x.done);
+      return { stops, here };
+    }
+    function questPathHtml() {
+      const { stops, here } = questStops();
+      const worlds = '<div class="qp-worlds">' + WORLDS.map(w => {
+        const n = (WORLD[w.n] ? levelsOf(w.n) : []).filter((L, i) => st.done[lvKey(w.n, i)]).length;
+        return '<span class="qp-world' + (w.bonus ? ' bonus' : '') + '" style="--world-color:var(' + w.c + ')" title="' + tt(w.topic) + '"><i aria-hidden="true">' + GUIDE_ICON[w.n] + '</i>' +
+          '<b>' + w.n + '</b> ' + tt(w.name) + (st.classCode ? ' <small>' + n + '/5</small>' : '') + '</span>';
+      }).join('') + '<span class="qp-world boss"><i aria-hidden="true">👾</i>' + T('Boss Level', 'Tahap Bos') + '</span></div>';
+      return '<ol class="quest-path" id="quest-path">' + stops.map((x, i) =>
+        '<li class="qp-stop' + (x.done ? ' done' : '') + (st.classCode && i === here ? ' here' : '') + '" data-i="' + i + '">' +
+        '<span class="qp-dot" aria-hidden="true">' + (x.done ? '✓' : x.icon) + '</span>' +
+        '<div class="qp-body"><div class="qp-step">' + T('Step ', 'Langkah ') + (i + 1) + (st.classCode && i === here ? ' · <b>' + T('You are here', 'Anda di sini') + '</b>' : '') + '</div>' +
+        '<h3>' + x.icon + ' ' + x.h + '</h3><p>' + x.say + '</p>' + (x.worlds ? worlds : '') + '</div></li>').join('') + '</ol>';
+    }
+    let tourTimer = null;
+    function stopTour() {
+      clearTimeout(tourTimer); tourTimer = null;
+      if (window.speechSynthesis) speechSynthesis.cancel();
+      document.querySelectorAll('.qp-stop.lit').forEach(el => el.classList.remove('lit'));
+      const b = $('guide-tour'); if (b) b.textContent = '▶ ' + T('Play the tour', 'Main lawatan');
+    }
+    function chime(i) {
+      try {
+        const A = window.AudioContext || window.webkitAudioContext; if (!A) return;
+        const ac = chime.ac || (chime.ac = new A()), o = ac.createOscillator(), g = ac.createGain();
+        o.frequency.value = [523, 587, 659, 698, 784, 1047][i] || 523; o.type = 'triangle';
+        g.gain.setValueAtTime(0.0001, ac.currentTime); g.gain.exponentialRampToValueAtTime(0.18, ac.currentTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.5);
+        o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.55);
+      } catch (e) { }
+    }
+    function playTour() {
+      if (tourTimer) return stopTour();
+      const { stops } = questStops(), els = document.querySelectorAll('.qp-stop');
+      $('guide-tour').textContent = '■ ' + T('Stop the tour', 'Henti lawatan');
+      const step = i => {
+        els.forEach(el => el.classList.remove('lit'));
+        if (i >= els.length) return stopTour();
+        const el = els[i]; el.classList.add('lit');
+        el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        let wait = 3200;
+        if (st.guideSound) {
+          chime(i);
+          if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(stops[i].h + '. ' + stops[i].say);
+            u.lang = LANG === 'bm' ? 'ms-MY' : 'en-GB'; u.rate = 0.95;
+            wait = 1000 + stops[i].say.length * 65;
+            speechSynthesis.speak(u);
+          }
+        }
+        tourTimer = setTimeout(() => step(i + 1), wait);
+      };
+      tourTimer = setTimeout(() => step(0), 10);
+    }
+    function badgeGalleryHtml() {
+      return '<div class="badge-gallery">' + BADGES.map(b => {
+        const got = st.badges.includes(b.k);
+        return '<div class="bg-item' + (got ? ' got' : '') + '"><span class="bg-icon" aria-hidden="true">' + BADGE_ICON[b.k] + '</span>' +
+          '<div><b>' + tt(b.name) + '</b><small>' + tt(b.how) + '</small>' + (got ? '<em>' + T('Earned!', 'Diperoleh!') + '</em>' : '') + '</div></div>';
+      }).join('') + '</div>';
+    }
+
     function renderGuide() {
+      stopTour();
       const card = (n, h, body) => '<div class="guide-card"><div class="qn">' + n + '</div><div><h3>' + h + '</h3>' + body + '</div></div>';
       const li = items => '<ul>' + items.map(x => '<li>' + x + '</li>').join('') + '</ul>';
       $('screen-guide').innerHTML =
@@ -2132,6 +2220,14 @@
         '<h1>' + T('How to <span class="script">play</span>', 'Cara <span class="script">bermain</span>') + '</h1>' +
         '<p class="guide-lede">' + T('Graph Quest turns the SPM Form 4 chapter <i>Network in Graph Theory</i> into six worlds of puzzles. Here is everything you need.',
           'Graph Quest menjadikan bab SPM Tingkatan 4 <i>Rangkaian dalam Teori Graf</i> kepada enam dunia teka-teki. Ini semua yang anda perlu tahu.') + '</p>' +
+        '<h2 class="guide-h2">' + T('Your quest, step by step', 'Pengembaraan anda, langkah demi langkah') + '</h2>' +
+        '<div class="row guide-tools"><button class="btn sm" id="guide-tour">▶ ' + T('Play the tour', 'Main lawatan') + '</button>' +
+        '<button class="btn sm ghost" id="guide-sound" aria-pressed="' + !!st.guideSound + '">' + (st.guideSound ? '🔊 ' + T('Sound on', 'Bunyi hidup') : '🔈 ' + T('Sound off', 'Bunyi mati')) + '</button></div>' +
+        questPathHtml() +
+        '<h2 class="guide-h2">' + T('Badges to collect', 'Lencana untuk dikumpul') + ' <small>' + st.badges.length + ' / ' + BADGES.length + '</small></h2>' +
+        '<p class="muted">' + T('A badge pops up the moment you earn it. All of them stay on My progress.', 'Lencana muncul sebaik sahaja anda memperolehnya. Semuanya kekal di Kemajuan saya.') + '</p>' +
+        badgeGalleryHtml() +
+        '<h2 class="guide-h2">' + T('The details', 'Butiran') + '</h2>' +
         '<div class="guide-grid">' +
         card(1, T('The map', 'Peta'), li([
           T('Four <b>core worlds</b>, 5 levels each. Play them in any order.', 'Empat <b>dunia teras</b>, 5 tahap setiap satu. Main mengikut apa-apa susunan.'),
@@ -2167,7 +2263,16 @@
         '<p class="muted" style="margin-top:18px;">' + T('Tip: the BM / EN button at the top switches language at any time.', 'Tip: butang BM / EN di atas menukar bahasa pada bila-bila masa.') + '</p>' +
         '<div class="row" style="margin-top:14px;"><button class="btn" id="guide-go">' +
         (!st.classCode ? T('← Back', '← Kembali') : guideFirst ? T('Start playing →', 'Mula bermain →') : T('Back', 'Kembali')) + '</button></div>';
+      $('guide-tour').addEventListener('click', playTour);
+      $('guide-sound').addEventListener('click', () => {
+        st.guideSound = !st.guideSound; save();
+        if (!st.guideSound && window.speechSynthesis) speechSynthesis.cancel();
+        const b = $('guide-sound'); b.setAttribute('aria-pressed', String(st.guideSound));
+        b.textContent = st.guideSound ? '🔊 ' + T('Sound on', 'Bunyi hidup') : '🔈 ' + T('Sound off', 'Bunyi mati');
+        if (st.guideSound) chime(5);
+      });
       $('guide-go').addEventListener('click', () => {
+        stopTour();
         if (!st.classCode) { renderEntry(); return show('entry'); }
         if (guideFirst || !['map', 'progress'].includes(guideBack)) { renderMap(); return show('map'); }
         if (guideBack === 'progress') { renderProgress(); return show('progress'); }

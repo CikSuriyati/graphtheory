@@ -203,3 +203,40 @@ section[id^="screen-"]:not(.hidden) { animation:screen-enter .22s ease-out; }
  #nav-help::before { content:"?"; font-size:15px; font-weight:800; }
  #entry-help-wrap, #btn-entry-help { margin:10px 0 0 !important; width:100%; }
 }
+
+/* ---- Quest path on How to play ---- */
+.guide-h2 { margin:30px 0 10px; font-size:24px; }
+.guide-h2 small { font:600 14px "DM Sans",sans-serif; color:var(--ink-faint); margin-left:6px; }
+.guide-tools { gap:10px; margin:0 0 14px; flex-wrap:wrap; }
+.quest-path { list-style:none; margin:0; padding:0; position:relative; display:grid; gap:14px; }
+.quest-path::before { content:""; position:absolute; left:23px; top:24px; bottom:24px; border-left:3px dashed var(--ink-faint); }
+.qp-stop { position:relative; display:grid; grid-template-columns:48px 1fr; gap:14px; align-items:start; }
+.qp-dot { position:relative; z-index:1; width:48px; height:48px; border-radius:50%; border:2.5px solid var(--ink); background:var(--card); display:grid; place-items:center; font-size:22px; box-shadow:0 3px 0 var(--ink); transition:transform .3s; }
+.qp-stop.done .qp-dot { background:var(--green); font-weight:800; font-size:20px; }
+.qp-stop.here .qp-dot { background:var(--yellow); animation:qp-bob 1.6s ease-in-out infinite; }
+.qp-body { background:var(--card); border:2px solid var(--ink); border-radius:18px; padding:14px 18px; box-shadow:0 3px 0 var(--ink); transition:transform .3s, box-shadow .3s, background .3s; }
+.qp-body h3 { margin:2px 0 6px; }
+.qp-body p { margin:0; font-size:14.5px; }
+.qp-step { font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); }
+.qp-step b { color:var(--orange); }
+.qp-stop.here .qp-body { border-color:var(--orange); box-shadow:0 3px 0 var(--orange); }
+.qp-stop.done .qp-body { background:var(--green-soft); }
+.qp-stop.lit .qp-body { transform:translateY(-3px); background:var(--yellow-soft); box-shadow:0 6px 0 var(--ink); }
+.qp-stop.lit .qp-dot { transform:scale(1.18) rotate(-6deg); }
+.qp-worlds { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.qp-world { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:999px; border:1.5px solid var(--ink); background:color-mix(in srgb, var(--world-color, var(--yellow)) 22%, var(--card)); font-size:13px; }
+.qp-world i { font-style:normal; }
+.qp-world small { color:var(--ink-faint); font-weight:700; }
+.qp-world.bonus { border-style:dashed; }
+.qp-world.boss { background:var(--ink); color:var(--card); }
+@keyframes qp-bob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+.badge-gallery { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.bg-item { display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:start; border:1.5px solid var(--line); border-radius:14px; padding:12px; background:var(--card); }
+.bg-item b { display:block; font-size:14px; line-height:1.25; }
+.bg-item small { display:block; font-size:12.5px; color:var(--ink-soft); line-height:1.35; margin-top:3px; }
+.bg-item em { display:inline-block; margin-top:5px; font-style:normal; font-size:11.5px; font-weight:700; color:var(--ink); background:var(--yellow); border-radius:6px; padding:1px 7px; }
+.bg-icon { font-size:26px; filter:grayscale(1); opacity:.55; }
+.bg-item.got { border:2px solid var(--ink); box-shadow:0 3px 0 var(--ink); }
+.bg-item.got .bg-icon { filter:none; opacity:1; }
+@media(max-width:700px) { .badge-gallery { grid-template-columns:repeat(2,minmax(0,1fr)); } .qp-body { padding:12px 14px; } }
+@media(max-width:380px) { .badge-gallery { grid-template-columns:1fr; } }

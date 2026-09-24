@@ -246,3 +246,5 @@ section[id^="screen-"]:not(.hidden) { animation:screen-enter .22s ease-out; }
 .test-banner.submit .kicker { color:#b4481a; }
 .submit-note { display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-top:14px; padding:12px 14px; border:2px dashed var(--orange); border-radius:14px; background:var(--orange-soft); }
 .submit-note p { margin:0; flex:1 1 220px; color:var(--ink); font-size:14.5px; }
+.post-warn { margin:16px 0 0; padding:14px 16px; border:2px solid var(--ink); border-radius:14px; background:var(--yellow-soft); color:var(--ink-soft); font-size:15px; }
+.post-warn b { color:var(--ink); }

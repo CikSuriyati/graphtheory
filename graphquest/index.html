@@ -2152,9 +2152,9 @@
         { icon: '🎮', done: cleared >= need, h: T('Play the 6 worlds', 'Main 6 dunia'), worlds: true,
           say: T('Four core worlds with 5 levels each, then two bonus worlds and the Boss Level. Clear at least ' + need + ' levels. Earn XP and badges as you go.', 'Empat dunia teras dengan 5 tahap setiap satu, kemudian dua dunia bonus dan Tahap Bos. Selesaikan sekurang-kurangnya ' + need + ' tahap. Kumpul XP dan lencana sepanjang perjalanan.') },
         { icon: '📤', done: st.sent > 0, h: T('Submit at My progress', 'Hantar di Kemajuan saya'),
-          say: T('Open My progress at the top and press Submit results. Your work goes to your teacher.', 'Buka Kemajuan saya di atas dan tekan Hantar keputusan. Kerja anda dihantar kepada guru.') },
+          say: T('Open My progress at the top and press Submit results. Your work goes to your teacher. This doesn’t end the game — you can keep playing and submit again.', 'Buka Kemajuan saya di atas dan tekan Hantar keputusan. Kerja anda dihantar kepada guru. Ini tidak menamatkan permainan — anda boleh terus bermain dan hantar lagi.') },
         { icon: '✏️', done: postDone, h: T('Post-test', 'Ujian pasca'),
-          say: T('The post-test now appears at the top of the map. Answer 10 questions again, on your own.', 'Ujian pasca kini dipaparkan di bahagian atas peta. Jawab 10 soalan sekali lagi, sendiri.') },
+          say: T('Take it only when you have finished playing — one try. It waits at the top of the map. Answer 10 questions again, on your own.', 'Jawab hanya apabila anda sudah selesai bermain — satu cubaan. Ia menunggu di bahagian atas peta. Jawab 10 soalan sekali lagi, sendiri.') },
         { icon: '🏆', done: postDone, h: T('Finish!', 'Tamat!'),
           say: T('See your score before and after. You can keep playing to earn more badges.', 'Lihat markah anda sebelum dan selepas. Anda boleh terus bermain untuk mengumpul lebih banyak lencana.') }
       ];
@@ -2254,12 +2254,12 @@
         ])) +
         card(5, T('The two tests', 'Dua ujian'), li([
           T('<b>Pre-test</b>: 10 questions before your first level. It isn’t marked for your grade.', '<b>Ujian pra</b>: 10 soalan sebelum tahap pertama. Tidak dikira untuk gred anda.'),
-          T('<b>Post-test</b>: opens after you clear 5 levels and press Submit results. It appears at the top of the map.', '<b>Ujian pasca</b>: dibuka selepas anda selesaikan 5 tahap dan tekan Hantar keputusan. Ia dipaparkan di bahagian atas peta.'),
+          T('<b>Post-test</b>: opens after you clear 5 levels and press Submit results. Take it only when you have <b>finished playing</b> — it waits at the top of the map.', '<b>Ujian pasca</b>: dibuka selepas anda selesaikan 5 tahap dan tekan Hantar keputusan. Jawab hanya apabila anda sudah <b>selesai bermain</b> — ia menunggu di bahagian atas peta.'),
           T('Answer on your own — one try, no hints. At the end you see <i>before → after</i>.', 'Jawab sendiri — satu cubaan, tiada petunjuk. Di akhir anda lihat <i>sebelum → selepas</i>.')
         ])) +
         card(6, T('Send results, climb the board', 'Hantar keputusan, naik papan'), li([
           T('Progress is saved <b>on this device</b> — use the same phone or laptop each time.', 'Kemajuan disimpan <b>pada peranti ini</b> — guna telefon atau komputer riba yang sama setiap kali.'),
-          T('On <b>My progress</b>, press <b>Submit results</b> to send your work to your teacher.', 'Di <b>Kemajuan saya</b>, tekan <b>Hantar keputusan</b> untuk menghantar kerja anda kepada guru.'),
+          T('On <b>My progress</b>, press <b>Submit results</b> to send your work to your teacher. Submit as often as you like — it never ends your game.', 'Di <b>Kemajuan saya</b>, tekan <b>Hantar keputusan</b> untuk menghantar kerja anda kepada guru. Hantar seberapa kerap yang anda mahu — ia tidak menamatkan permainan.'),
           T('The <b>class board</b> shows this week’s teams and players. Your team wins together — help each other.', '<b>Papan kelas</b> menunjukkan pasukan dan pemain minggu ini. Pasukan anda menang bersama — saling membantu.')
         ])) +
         '</div>' +
@@ -2369,7 +2369,7 @@
     const clearedCount = () => Object.keys(st.done).filter(k => st.done[k]).length;
     function submitWhy() {
       const post = (st.tests || []).some(r => r.test === 'post');
-      if (!post && !st.sent) return T('Send your results to your teacher — this also unlocks your post-test.', 'Hantar keputusan anda kepada guru — ini juga membuka ujian pasca anda.');
+      if (!post && !st.sent) return T('Send your results to your teacher. It doesn’t end your game — keep playing and submit again any time.', 'Hantar keputusan anda kepada guru. Ia tidak menamatkan permainan — teruskan bermain dan hantar lagi bila-bila masa.');
       if (coreCleared() === 20) return T('You cleared all 20 core levels! Send your results so your teacher sees them.', 'Anda selesaikan kesemua 20 tahap teras! Hantar keputusan supaya guru anda melihatnya.');
       return T('You have new results. Send them so your teacher sees your latest work.', 'Anda ada keputusan baharu. Hantar supaya guru anda melihat kerja terkini anda.');
     }
@@ -3043,7 +3043,9 @@
         save();
         boardCache = null;
         renderProgress();
-        $('submit-msg').textContent = T('Sent! Your results are with your teacher.', 'Berjaya! Keputusan anda telah sampai kepada guru anda.');
+        $('submit-msg').textContent = GQT.postOpen()
+          ? T('Sent! Your results are with your teacher. Keep playing if you like — when you have finished, take the post-test on the map.', 'Berjaya! Keputusan anda telah sampai kepada guru. Teruskan bermain jika mahu — apabila sudah selesai, jawab ujian pasca di peta.')
+          : T('Sent! Your results are with your teacher. Keep playing — you can submit again any time.', 'Berjaya! Keputusan anda telah sampai kepada guru. Teruskan bermain — anda boleh hantar lagi bila-bila masa.');
       } catch (err) {
         $('btn-submit').disabled = false;
         msg.textContent = T('That didn’t go through — check your connection and try again. Nothing is lost.',

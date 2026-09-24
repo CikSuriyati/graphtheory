@@ -190,9 +190,11 @@
         '<p style="font-size:16.5px;">' + (k === 'pre'
           ? T('10 quick questions about graphs, before you play. It is not marked for your grade — it shows what you know now, so we can see what the game teaches.', '10 soalan ringkas tentang graf, sebelum anda bermain. Ia tidak dikira untuk gred anda — ia menunjukkan apa yang anda tahu sekarang, supaya kita dapat lihat apa yang diajar oleh permainan ini.')
           : T('10 questions like the ones before you started. Answer on your own — no hints this time.', '10 soalan seperti sebelum anda mula. Jawab sendiri — tiada petunjuk kali ini.')) + '</p>' +
+        (k === 'post' ? '<div class="post-warn"><b>⚠️ ' + T('Only start when you have finished playing.', 'Mula hanya apabila anda sudah selesai bermain.') + '</b> ' +
+          T('You get one try, and your teacher uses it to see how much you learned from the whole game. Want to play more first? Press <i>Not yet</i> — the post-test will wait for you on the map.', 'Anda ada satu cubaan sahaja, dan guru anda menggunakannya untuk melihat berapa banyak yang anda pelajari daripada keseluruhan permainan. Mahu bermain lagi dahulu? Tekan <i>Belum lagi</i> — ujian pasca akan menunggu anda di peta.') + '</div>' : '') +
         '<div class="chips"><span class="chip">' + T('10 questions', '10 soalan') + '</span><span class="chip">' + T('about 5 minutes', 'kira-kira 5 minit') + '</span><span class="chip">' + T('one try only', 'satu cubaan sahaja') + '</span></div>' +
-        '<div class="row" style="margin-top:22px;"><button class="btn" id="t-go">' + T('Start', 'Mula') + '</button>' +
-        (k === 'pre' ? '<button class="btn ghost" id="t-skip">' + T('Skip', 'Langkau') + '</button>' : '<button class="btn ghost" id="t-later">' + T('Later', 'Nanti') + '</button>') + '</div>' +
+        '<div class="row" style="margin-top:22px;"><button class="btn" id="t-go">' + (k === 'post' ? T('I’m finished — start', 'Saya sudah selesai — mula') : T('Start', 'Mula')) + '</button>' +
+        (k === 'pre' ? '<button class="btn ghost" id="t-skip">' + T('Skip', 'Langkau') + '</button>' : '<button class="btn ghost" id="t-later">' + T('Not yet — keep playing', 'Belum lagi — terus bermain') + '</button>') + '</div>' +
         (k === 'pre' ? '<p class="muted" style="margin-top:14px;">' + T('Skip only if your teacher hasn’t asked you to do it. Once you clear a level, the pre-test closes.', 'Langkau hanya jika guru anda tidak meminta anda menjawabnya. Setelah anda menyelesaikan satu tahap, ujian pra ditutup.') + '</p>' : '') +
         '</div>';
       el.insertAdjacentHTML('afterbegin', '<button class="btn ghost sm test-map" id="t-map">' + T('← Map', '← Peta') + '</button>');
@@ -321,8 +323,8 @@
         '</p></div><button class="btn" data-test="pre">' + T('Start the pre-test →', 'Mula ujian pra →') + '</button></div>';
     }
     if (postOpen()) {
-      return '<div class="test-banner post"><div><div class="kicker">' + T('YOUR POST-TEST IS READY', 'UJIAN PASCA ANDA SEDIA') + '</div><h2>' + T('See how much you learned', 'Lihat berapa banyak yang anda pelajari') + '</h2><p>' +
-        T('10 questions like the ones you answered before you started. Answer on your own — no hints.', '10 soalan seperti yang anda jawab sebelum mula. Jawab sendiri — tiada petunjuk.') +
+      return '<div class="test-banner post"><div><div class="kicker">' + T('YOUR POST-TEST IS READY', 'UJIAN PASCA ANDA SEDIA') + '</div><h2>' + T('Finished playing? See how much you learned', 'Sudah selesai bermain? Lihat berapa banyak yang anda pelajari') + '</h2><p>' +
+        T('Take it when you have <b>finished playing</b> — you only get one try. Still want to play more worlds? Go ahead; it will stay here.', 'Jawab apabila anda sudah <b>selesai bermain</b> — anda hanya ada satu cubaan. Masih mahu main dunia lain? Teruskan; ia akan kekal di sini.') +
         '</p></div><button class="btn" data-test="post">' + T('Start the post-test →', 'Mula ujian pasca →') + '</button></div>';
     }
     return '';

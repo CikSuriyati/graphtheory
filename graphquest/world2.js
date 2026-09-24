@@ -356,7 +356,7 @@
     $('c-ask').querySelectorAll('[data-num]').forEach(b => b.addEventListener('click', () => answerCount(+b.dataset.num)));
   }
 
-  function say(msg, warn) { $('c-say').textContent = msg || ''; $('c-say').classList.toggle('warn', !!warn); }
+  function say(msg, warn) { if (warn && msg) SFX.play('wrong'); $('c-say').textContent = msg || ''; $('c-say').classList.toggle('warn', !!warn); }
   function shake(id) {
     const el = $(id); if (!el) return;
     el.classList.remove('shake'); void el.getBBox(); el.classList.add('shake');
@@ -379,6 +379,7 @@
 
   function right(msg) {
     c.k++; c.hint = null; c.hl = new Set(); c.dim = new Set();
+    SFX.play('right');
     say(msg);
     if (c.k === c.steps.length) { c.phase = 'check'; c.solveTime = secs2(); clearInterval(timer); $('c-clock').textContent = c.solveTime + ' s'; }
     draw(); renderAsk(); renderAid(); renderPanel();
@@ -637,7 +638,7 @@
       const v = inp.dataset.v, x = parseInt(inp.value, 10);
       if (isNaN(x)) return;
       dz.deg[v] = x;
-      if (x !== degree(g, v)) { inp.classList.add('bad'); return; }
+      if (x !== degree(g, v)) { inp.classList.add('bad'); SFX.play('wrong'); return; }
       renderDiscover();
       const nextBox = $('screen-discover').querySelector('input:not([readonly])');
       if (nextBox) nextBox.focus();
@@ -648,7 +649,7 @@
       if (isNaN(x)) return;
       dz.edges = x;
       if (x === g.edges.length) renderDiscover();
-      else if (ei.value.length >= String(g.edges.length).length) ei.classList.add('bad');
+      else if (ei.value.length >= String(g.edges.length).length) { ei.classList.add('bad'); SFX.play('wrong'); }
     });
     $('screen-discover').querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
       dz.pick = b.dataset.pick;

@@ -211,7 +211,7 @@
     $('svgp').innerHTML = roads + labels + towns + marker;
   }
 
-  function say(msg, warn) { $('p-say').textContent = msg || ''; $('p-say').classList.toggle('warn', !!warn); }
+  function say(msg, warn) { if (warn && msg) SFX.play('wrong'); $('p-say').textContent = msg || ''; $('p-say').classList.toggle('warn', !!warn); }
   function shake(id) {
     const el = $(id); if (!el) return;
     el.classList.remove('shake'); void el.getBBox(); el.classList.add('shake');
@@ -228,6 +228,7 @@
       '<div class="opts">' + qc.opts.map(o => '<button class="opt" data-opt="' + o[0] + '">' + o[1] + '</button>').join('') + '</div><div id="p-qc-out"></div></div>';
     $('p-panel').querySelectorAll('[data-opt]').forEach(b => b.addEventListener('click', () => {
       const ok = b.dataset.opt === qc.answer;
+      SFX.play(ok ? 'right' : 'wrong');
       $('p-panel').querySelectorAll('[data-opt]').forEach(x => {
         x.disabled = true;
         if (x.dataset.opt === qc.answer) x.classList.add('right'); else if (x === b) x.classList.add('wrong');
@@ -280,6 +281,7 @@
     $('screen-discover').querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
       dz.pick = b.dataset.pick;
       if (dz.pick === o.answer && !st.discovered[o.w]) { st.discovered[o.w] = true; save(); }
+      SFX.play(dz.pick === o.answer ? 'discover' : 'wrong');
       discover(dz.o);
       if (dz.pick !== o.answer) setTimeout(() => { dz.pick = null; discover(dz.o); }, 4200);
     }));

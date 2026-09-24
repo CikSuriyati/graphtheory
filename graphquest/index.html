@@ -1687,6 +1687,7 @@
         <button class="tlink hidden" id="nav-progress"></button>
         <a class="tlink" href="../" id="lnk-tool">← GraphTheory</a>
         <button class="tlink" id="nav-help"></button>
+        <button class="tlink" id="btn-sound"></button>
         <button class="tlink" id="btn-lang">BM</button>
       </div>
     </div>
@@ -1842,6 +1843,7 @@
   <script src="../counter.js" defer></script>
   <script src="graph.js"></script>
   <script src="adventure.js"></script>
+  <script src="sound.js"></script>
   <script src="play.js"></script>
   <script src="world1.js"></script>
   <script src="world2.js"></script>
@@ -1988,6 +1990,7 @@
       return x;
     }
     const rankOf = xp => Math.min(Math.floor(xp / 500), RANKS.length - 1);
+    if (st.rankSeen == null) st.rankSeen = rankOf(totalXP());
     const mastery = w => levelsOf(w).reduce((a, _, i) => a + (st.best[lvKey(w, i)] || 0), 0) / levelsOf(w).length;
     const unlocked = (w, i) => i === 0 || !!st.done[lvKey(w, i - 1)];
 
@@ -2039,9 +2042,18 @@
       $('btn-lang').textContent = LANG === 'bm' ? 'EN' : 'BM';
       $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
       $('lnk-tool').textContent = '← GraphTheory';
+      soundButton();
       updateNavigation();
       ({ entry: renderEntry, map: renderMap, level: renderLevelAll, case: () => W2.render(), play: () => PLAY.rerender(), discover: renderDiscover, progress: renderProgress, test: () => GQT.render(), guide: renderGuide })[current]();
     }
+    function soundButton() {
+      $('btn-sound').textContent = SFX.on ? '🔊' : '🔇';
+      $('btn-sound').setAttribute('aria-pressed', String(SFX.on));
+      $('btn-sound').setAttribute('aria-label', SFX.on ? T('Sound on — tap to mute', 'Bunyi hidup — ketik untuk senyap') : T('Sound off — tap to turn on', 'Bunyi mati — ketik untuk hidupkan'));
+      $('btn-sound').title = $('btn-sound').getAttribute('aria-label');
+    }
+    $('btn-sound').addEventListener('click', () => { SFX.toggle(); soundButton(); if (!SFX.on && window.speechSynthesis) speechSynthesis.cancel(); });
+
     $('btn-lang').addEventListener('click', () => {
       const entryValues = current === 'entry' ? [$('in-class').value, $('in-reg').value] : null;
       LANG = LANG === 'bm' ? 'en' : 'bm';
@@ -2169,16 +2181,6 @@
       document.querySelectorAll('.qp-stop.lit').forEach(el => el.classList.remove('lit'));
       const b = $('guide-tour'); if (b) b.textContent = '▶ ' + T('Play the tour', 'Main lawatan');
     }
-    function chime(i) {
-      try {
-        const A = window.AudioContext || window.webkitAudioContext; if (!A) return;
-        const ac = chime.ac || (chime.ac = new A()), o = ac.createOscillator(), g = ac.createGain();
-        o.frequency.value = [523, 587, 659, 698, 784, 1047][i] || 523; o.type = 'triangle';
-        g.gain.setValueAtTime(0.0001, ac.currentTime); g.gain.exponentialRampToValueAtTime(0.18, ac.currentTime + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.5);
-        o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.55);
-      } catch (e) { }
-    }
     function playTour() {
       if (tourTimer) return stopTour();
       const { stops } = questStops(), els = document.querySelectorAll('.qp-stop');
@@ -2189,8 +2191,8 @@
         const el = els[i]; el.classList.add('lit');
         el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         let wait = 3200;
-        if (st.guideSound) {
-          chime(i);
+        SFX.play('step', i);
+        if (st.guideSpeak && SFX.on) {
           if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
             speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(stops[i].h + '. ' + stops[i].say);
@@ -2203,6 +2205,7 @@
       };
       tourTimer = setTimeout(() => step(0), 10);
     }
+    const speakLabel = () => '🗣️ ' + (st.guideSpeak ? T('Read aloud: on', 'Baca kuat: hidup') : T('Read aloud: off', 'Baca kuat: mati'));
     function badgeGalleryHtml() {
       return '<div class="badge-gallery">' + BADGES.map(b => {
         const got = st.badges.includes(b.k);
@@ -2222,7 +2225,7 @@
           'Graph Quest menjadikan bab SPM Tingkatan 4 <i>Rangkaian dalam Teori Graf</i> kepada enam dunia teka-teki. Ini semua yang anda perlu tahu.') + '</p>' +
         '<h2 class="guide-h2">' + T('Your quest, step by step', 'Pengembaraan anda, langkah demi langkah') + '</h2>' +
         '<div class="row guide-tools"><button class="btn sm" id="guide-tour">▶ ' + T('Play the tour', 'Main lawatan') + '</button>' +
-        '<button class="btn sm ghost" id="guide-sound" aria-pressed="' + !!st.guideSound + '">' + (st.guideSound ? '🔊 ' + T('Sound on', 'Bunyi hidup') : '🔈 ' + T('Sound off', 'Bunyi mati')) + '</button></div>' +
+        '<button class="btn sm ghost" id="guide-speak" aria-pressed="' + !!st.guideSpeak + '">' + speakLabel() + '</button></div>' +
         questPathHtml() +
         '<h2 class="guide-h2">' + T('Badges to collect', 'Lencana untuk dikumpul') + ' <small>' + st.badges.length + ' / ' + BADGES.length + '</small></h2>' +
         '<p class="muted">' + T('A badge pops up the moment you earn it. All of them stay on My progress.', 'Lencana muncul sebaik sahaja anda memperolehnya. Semuanya kekal di Kemajuan saya.') + '</p>' +
@@ -2264,12 +2267,11 @@
         '<div class="row" style="margin-top:14px;"><button class="btn" id="guide-go">' +
         (!st.classCode ? T('← Back', '← Kembali') : guideFirst ? T('Start playing →', 'Mula bermain →') : T('Back', 'Kembali')) + '</button></div>';
       $('guide-tour').addEventListener('click', playTour);
-      $('guide-sound').addEventListener('click', () => {
-        st.guideSound = !st.guideSound; save();
-        if (!st.guideSound && window.speechSynthesis) speechSynthesis.cancel();
-        const b = $('guide-sound'); b.setAttribute('aria-pressed', String(st.guideSound));
-        b.textContent = st.guideSound ? '🔊 ' + T('Sound on', 'Bunyi hidup') : '🔈 ' + T('Sound off', 'Bunyi mati');
-        if (st.guideSound) chime(5);
+      $('guide-speak').addEventListener('click', () => {
+        st.guideSpeak = !st.guideSpeak; save();
+        if (!st.guideSpeak && window.speechSynthesis) speechSynthesis.cancel();
+        const b = $('guide-speak'); b.setAttribute('aria-pressed', String(st.guideSpeak));
+        b.textContent = speakLabel();
       });
       $('guide-go').addEventListener('click', () => {
         stopTour();
@@ -2294,7 +2296,7 @@
         (r < RANKS.length - 1 ? T((500 - xp % 500) + ' XP to next rank', (500 - xp % 500) + ' XP ke pangkat seterusnya') : T('top rank', 'pangkat tertinggi')) + '</span></div>' +
         '<div class="kpi"><b>' + st.badges.length + ' / ' + BADGES.length + '</b><span>' + T('badges', 'lencana') + '</span></div>';
 
-      $('test-banner').innerHTML = GQT.banner();
+      $('test-banner').innerHTML = GQT.banner() || submitBanner();
       $('worlds-title').textContent = T('Your adventure map', 'Peta pengembaraan anda');
       $('map-guide').textContent = T('Follow the trail, or choose any core world. Each location holds five challenges.', 'Ikuti jejak, atau pilih mana-mana dunia teras. Setiap lokasi mempunyai lima cabaran.');
       $('worlds-caption').textContent = T('Explore · Solve · Discover', 'Teroka · Selesaikan · Temui');
@@ -2355,7 +2357,37 @@
     $('test-banner').addEventListener('click', e => {
       const b = e.target.closest('[data-test]');
       if (b) GQT.start(b.dataset.test);
+      if (e.target.closest('[data-submit]')) submitNow();
     });
+
+    /* ---------- reminders to submit results ----------
+       Students only send their work from My progress, so remind them at the
+       moments that matter: the level that unlocks the post-test, the end of a
+       world, and all 20 core levels. The map keeps a banner while anything
+       from 5 cleared levels on is unsent. */
+    const unsentCount = () => st.attempts.length - st.sent + unsentTests().length;
+    const clearedCount = () => Object.keys(st.done).filter(k => st.done[k]).length;
+    function submitWhy() {
+      const post = (st.tests || []).some(r => r.test === 'post');
+      if (!post && !st.sent) return T('Send your results to your teacher — this also unlocks your post-test.', 'Hantar keputusan anda kepada guru — ini juga membuka ujian pasca anda.');
+      if (coreCleared() === 20) return T('You cleared all 20 core levels! Send your results so your teacher sees them.', 'Anda selesaikan kesemua 20 tahap teras! Hantar keputusan supaya guru anda melihatnya.');
+      return T('You have new results. Send them so your teacher sees your latest work.', 'Anda ada keputusan baharu. Hantar supaya guru anda melihat kerja terkini anda.');
+    }
+    function submitBanner() {
+      const n = unsentCount();
+      if (!n || clearedCount() < GQT.POST_AFTER_LEVELS) return '';
+      return '<div class="test-banner submit"><div><div class="kicker">' + T('DON’T FORGET', 'JANGAN LUPA') + '</div><h2>📤 ' +
+        T('Submit your results', 'Hantar keputusan anda') + '</h2><p>' + submitWhy() + ' <b>' +
+        T(n + (n === 1 ? ' result' : ' results') + ' waiting.', n + ' keputusan menunggu.') + '</b></p></div>' +
+        '<button class="btn pulse" data-submit>' + T('Submit now →', 'Hantar sekarang →') + '</button></div>';
+    }
+    function submitNote(w, i) {
+      if (!unsentCount()) return '';
+      const c = clearedCount(), last = i === levelsOf(w).length - 1;
+      if (!(c === GQT.POST_AFTER_LEVELS || last || coreCleared() === 20)) return '';
+      return '<div class="submit-note"><p>📤 ' + submitWhy() + '</p><button class="btn sm" data-go="submit">' + T('Submit now', 'Hantar sekarang') + '</button></div>';
+    }
+    function submitNow() { renderProgress(); show('progress'); sendResults(); }
     $('worlds').addEventListener('click', e => {
       const b = e.target.closest('[data-level]');
       if (b && !b.disabled) {
@@ -2522,7 +2554,7 @@
         'Berita terkini: jalan ' + node(e.a).name + ' – ' + node(e.b).name + ' dinaiki air dan ditutup! Cari jalan lain.') + '</div>';
     }
 
-    function say(msg, warn) { $('say').textContent = msg || ''; $('say').classList.toggle('warn', !!warn); }
+    function say(msg, warn) { if (warn && msg) SFX.play('wrong'); $('say').textContent = msg || ''; $('say').classList.toggle('warn', !!warn); }
     function shake(id) {
       const el = $(id); if (!el) return;
       el.classList.remove('shake'); void el.getBBox(); el.classList.add('shake');
@@ -2684,7 +2716,7 @@
       const fresh = keys.filter(k => !st.badges.includes(k));
       fresh.forEach(k => st.badges.push(k));
       save();
-      fresh.forEach((k, j) => setTimeout(() => toast('🏅 ' + T('Badge: ', 'Lencana: ') + tt(BADGES.find(b => b.k === k).name)), j * 900));
+      fresh.forEach((k, j) => setTimeout(() => { SFX.play('badge'); toast('🏅 ' + T('Badge: ', 'Lencana: ') + tt(BADGES.find(b => b.k === k).name)); }, 1000 + j * 900));
     }
 
     $('btn-send').addEventListener('click', () => {
@@ -2776,6 +2808,7 @@
 
     function answerCheck(pick) {
       const qc = quickCheck(), ok = pick === qc.answer;
+      SFX.play(ok ? 'right' : 'wrong');
       run.reasoning = ok;
       run.overlay = { edges: qc.cmp.edges };
       drawGraph();
@@ -2809,7 +2842,20 @@
     }
 
     /* The XP card and its buttons, shared by every world. */
+    /* A level's fanfare plays once, when its XP card first appears — plus a
+       bigger one and a toast when the new XP reaches the next rank. */
+    const celebrated = new WeakSet();
+    function celebrate(x) {
+      if (celebrated.has(x)) return;
+      celebrated.add(x);
+      const r = rankOf(totalXP());
+      if (r > (st.rankSeen || 0)) {
+        st.rankSeen = r; save();
+        SFX.play('rank'); toast('⭐ ' + T('New rank: ', 'Pangkat baharu: ') + tt(RANKS[r]));
+      } else SFX.play('win');
+    }
     function xpCardHtml(w, i, x) {
+      celebrate(x);
       const last = i === levelsOf(w).length - 1;
       const rows = x.parts.map(p => '<div class="xp-row' + (p[2] === 0 ? ' zero' : '') + '"><span>' + p[1] + '</span><b>' + (p[2] > 0 ? '+' : '') + p[2] + '</b></div>').join('');
       let next;
@@ -2821,6 +2867,7 @@
         '<div class="xp-total"><span class="muted">' +
         (x.score > x.prev ? T('New best for this level', 'Markah terbaik baharu untuk tahap ini') : T('Your best stays ', 'Markah terbaik kekal ') + x.prev) +
         '</span><b>' + x.score + ' XP</b></div>' +
+        submitNote(w, i) +
         '<div class="row" style="margin-top:14px;">' + next +
         '<button class="btn ghost sm" data-go="replay">' + T('Replay', 'Main semula') + '</button></div></div>';
     }
@@ -2830,6 +2877,7 @@
         if (go === 'next') WORLD[w].start(i + 1);
         else if (go === 'replay') WORLD[w].start(i);
         else if (go === 'discover') openDiscover(w);
+        else if (go === 'submit') submitNow();
         else { renderMap(); show('map'); }
       }));
     }
@@ -2872,6 +2920,7 @@
       $('screen-discover').querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
         discoverPick = b.dataset.pick;
         if (discoverPick === 'b' && !st.discovered[3]) { st.discovered[3] = true; save(); }
+        SFX.play(discoverPick === 'b' ? 'discover' : 'wrong');
         renderDiscover();
         if (discoverPick !== 'b') setTimeout(() => { discoverPick = null; renderDiscover(); }, 4200);
       }));

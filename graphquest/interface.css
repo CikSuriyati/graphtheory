@@ -248,3 +248,50 @@ section[id^="screen-"]:not(.hidden) { animation:screen-enter .22s ease-out; }
 .submit-note p { margin:0; flex:1 1 220px; color:var(--ink); font-size:14.5px; }
 .post-warn { margin:16px 0 0; padding:14px 16px; border:2px solid var(--ink); border-radius:14px; background:var(--yellow-soft); color:var(--ink-soft); font-size:15px; }
 .post-warn b { color:var(--ink); }
+
+/* Headings get focus on each new screen so screen readers announce it;
+   that focus doesn't need a visible box. */
+[tabindex="-1"]:focus { outline:none; }
+
+/* ---- Phone layout ---- */
+@media(max-width:600px) {
+ /* Top bar: logo + ? + sound + language on one row, the three links under it. */
+ .topbar { grid-template-columns:repeat(6,minmax(0,1fr)); gap:6px; margin-bottom:14px; padding-bottom:12px; }
+ .brand { grid-column:1 / 4; }
+ #nav-help, #btn-sound, #btn-lang { grid-row:1; width:40px; min-height:40px; padding:0; justify-self:end; display:inline-flex; align-items:center; justify-content:center; }
+ #nav-help { grid-column:4; } #btn-sound { grid-column:5; font-size:16px; } #btn-lang { grid-column:6; }
+ #nav-map { grid-column:1 / 3; } #nav-progress { grid-column:3 / 5; } #lnk-tool { grid-column:5 / 7; }
+ #nav-map, #nav-progress, #lnk-tool { min-height:36px; }
+
+ /* Level screens: tighter story card, and a map that fits above the dock. */
+ .lvl-head { margin-bottom:10px; padding-bottom:10px; }
+ .lvl-meta { margin-bottom:8px; }
+ .lvl-meta .btn { min-height:38px; padding:6px 12px; }
+ .lvl-head .step { min-height:34px; padding:4px 2px; }
+ .mission { padding:12px 14px; margin-bottom:10px; }
+ .mission h2 { font-size:21px; margin-bottom:6px; }
+ .mission p { font-size:14.5px; line-height:1.5; }
+ .board svg { max-height:max(340px, calc(100svh - 220px)); }
+
+ /* The dock: running total, feedback and buttons stay in reach at the
+    bottom of the screen while the map is in view. */
+ .dock { position:sticky; bottom:0; z-index:6; margin:12px -16px 0; padding:8px 16px calc(10px + env(safe-area-inset-bottom));
+   background:color-mix(in srgb, var(--bg) 94%, transparent); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+   border-top:1.5px solid var(--line); box-shadow:0 -8px 18px -12px rgba(23,19,12,.35); }
+ .dock .readout { margin:0 0 4px; gap:10px; }
+ .dock .readout .trail { font-size:13px; }
+ .dock .readout .total { font-size:22px; }
+ .dock .say { margin:0 0 8px; min-height:0; font-size:13.5px; }
+ .dock .say:not(:empty) { margin-top:0; padding:8px 11px; }
+ .dock .controls { gap:6px; flex-wrap:wrap; }
+ .dock .controls .btn { min-height:44px; flex:1 1 0; min-width:0; padding:8px 6px; font-size:13.5px; white-space:nowrap; }
+ .dock .controls .btn:not(.ghost) { flex-basis:100%; order:2; font-size:15px; }
+ .dock .controls .grow { display:none; }
+ #screen-case .dock { padding-top:8px; }
+ #screen-case .dock .controls .btn { flex:0 0 auto; padding:8px 16px; }
+
+ /* World 2: the question sits above the map, so read → tap needs no scrolling. */
+ #screen-case:not(.hidden) { display:flex; flex-direction:column; }
+ #screen-case > .lvl-head { order:1; } #screen-case > .mission { order:2; } #c-ask { order:3; margin:0 0 10px; }
+ #screen-case > .board { order:4; } #screen-case > .dock { order:5; } #c-aid { order:6; } #c-panel { order:7; }
+}

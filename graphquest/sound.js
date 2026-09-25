@@ -23,9 +23,29 @@
     const A = root.AudioContext || root.webkitAudioContext;
     if (!A) return null;
     if (!ac) ac = new A();
-    if (ac.state === 'suspended') ac.resume();
+    if (ac.state !== 'running') ac.resume();   // 'suspended', or iOS 'interrupted'
     return ac;
   }
+
+  /* Phones only let a page make sound after a touch, and the unlocking has to
+     happen inside that touch. So on every touch until audio is running:
+     start the audio context and play one silent sample. On iPhone, also ask
+     for the 'playback' audio session so the game can be heard with the
+     silent switch on — the 🔊 button is how students mute it. */
+  function unlock() {
+    if (!on) return;
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = 'playback';
+      const a = ctx(); if (!a) return;
+      const src = a.createBufferSource();
+      src.buffer = a.createBuffer(1, 1, 22050);
+      src.connect(a.destination); src.start(0);
+      if (a.state === 'running') ['touchstart', 'touchend', 'pointerdown', 'click', 'keydown'].forEach(t => document.removeEventListener(t, unlock, true));
+    } catch (e) { }
+  }
+  ['touchstart', 'touchend', 'pointerdown', 'click', 'keydown'].forEach(t => document.addEventListener(t, unlock, true));
+  /* Coming back to the tab (or after a phone call) can leave audio paused. */
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && ac && ac.state !== 'running') ac.resume(); });
 
   /** One note: frequency (Hz), start offset and length (s), wave, volume, optional slide to f2. */
   function note(a, f, at, len, type, vol, f2) {
@@ -66,7 +86,7 @@
   function toggle() {
     on = !on;
     try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) { }
-    if (on) play('tap');
+    if (on) { unlock(); play('tap'); }
     return on;
   }
 

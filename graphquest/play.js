@@ -121,9 +121,9 @@
       '<div class="mission"><h2 id="p-title"></h2><p id="p-story" style="margin-bottom:8px;"></p><div id="p-terms"></div></div>' +
       '<div id="p-banner"></div>' +
       '<div class="board"><svg id="svgp" viewBox="0 0 640 400" role="group"></svg></div>' +
-      '<div class="readout"><div class="trail" id="p-trail"></div><div class="total" id="p-total"></div></div>' +
+      '<div class="dock"><div class="readout"><div class="trail" id="p-trail"></div><div class="total" id="p-total"></div></div>' +
       '<div class="say" id="p-say" role="status" aria-live="polite"></div>' +
-      '<div class="controls" id="p-controls"></div>' +
+      '<div class="controls" id="p-controls"></div></div>' +
       '<div id="p-ask"></div><div id="p-aid"></div><div id="p-panel"></div>';
     $('p-map').addEventListener('click', () => { stopClock(); renderMap(); show('map'); });
     $('svgp').addEventListener('click', ev => {
@@ -136,8 +136,8 @@
       if (t && cfg.onTap && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); cfg.onTap({ node: t.dataset.node }); }
     });
     show('play');
-    header();
     startClock();
+    header();
   }
 
   function header() {

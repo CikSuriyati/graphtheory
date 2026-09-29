@@ -41,20 +41,20 @@
   const MISSIONS = [
     { title: ['Water for everyone', 'Air untuk semua'], tool: 'network', target: 120,
       story: ['The new <b class="ink">water tank</b> must supply every place in town. Pipes cost money — the labels are in RM k. Connect every place for the lowest total cost.',
-        '<b class="ink">Tangki air</b> baharu mesti membekalkan setiap tempat di pekan. Paip memerlukan kos — label dalam RM k. Sambung setiap tempat dengan jumlah kos paling rendah.'],
-      why: ['joining every place for the least total cost is a tree with minimum total weight.', 'menyambung setiap tempat dengan jumlah kos paling rendah ialah pokok dengan jumlah pemberat minimum.'] },
+        '<b class="ink">Tangki air</b> baharu mesti membekalkan setiap tempat di pekan. Paip memerlukan kos, dan label pada peta dalam unit RM k. Sambung setiap tempat dengan jumlah kos paling rendah.'],
+      why: ['joining every place for the least total cost is a tree with minimum total weight.', 'Rangkaian yang menyambung setiap tempat dengan jumlah kos paling rendah ialah pokok dengan jumlah pemberat minimum.'] },
     { title: ['Ambulance!', 'Ambulans!'], tool: 'shortest', target: 90,
       story: ['An accident at the <b class="ink">Market</b>. The ambulance must reach the <b class="ink">Clinic</b> as fast as possible. The labels are minutes.',
-        'Kemalangan di <b class="ink">Pasar</b>. Ambulans mesti sampai ke <b class="ink">Klinik</b> secepat mungkin. Label ialah minit.'],
-      why: ['the fastest route between two places is a shortest path in a weighted graph.', 'laluan paling pantas antara dua tempat ialah laluan terpendek dalam graf berpemberat.'] },
+        'Berlaku kemalangan di <b class="ink">Pasar</b>. Ambulans mesti sampai ke <b class="ink">Klinik</b> secepat mungkin. Label pada peta ialah minit.'],
+      why: ['the fastest route between two places is a shortest path in a weighted graph.', 'Laluan paling pantas antara dua tempat ialah laluan terpendek dalam graf berpemberat.'] },
     { title: ['Traffic lights', 'Lampu isyarat'], tool: 'degree', target: 60,
       story: ['The council will put traffic lights at the <b class="ink">busiest junction</b> — the place where the most roads meet. Tap it.',
-        'Majlis akan memasang lampu isyarat di <b class="ink">simpang paling sibuk</b> — tempat paling banyak jalan bertemu. Ketik tempat itu.'],
-      why: ['the number of roads meeting at a place is its degree. The busiest junction has the highest degree.', 'bilangan jalan yang bertemu di sesuatu tempat ialah darjahnya. Simpang paling sibuk mempunyai darjah tertinggi.'] },
+        'Majlis akan memasang lampu isyarat di <b class="ink">simpang paling sibuk</b>, iaitu tempat paling banyak jalan bertemu. Ketik tempat itu.'],
+      why: ['the number of roads meeting at a place is its degree. The busiest junction has the highest degree.', 'Bilangan jalan yang bertemu di sesuatu tempat ialah darjahnya. Simpang paling sibuk mempunyai darjah tertinggi.'] },
     { title: ['The bridge is down', 'Jambatan runtuh'], tool: 'maze', target: 90,
       story: ['The bridge between the <b class="ink">Crossroads</b> and <b class="ink">Taman Baru</b> has collapsed. Can the fire engine still get from the <b class="ink">Fire station</b> to Taman Baru? Find a way — or say there is none.',
-        'Jambatan antara <b class="ink">Simpang empat</b> dan <b class="ink">Taman Baru</b> telah runtuh. Bolehkah jentera bomba masih pergi dari <b class="ink">Balai bomba</b> ke Taman Baru? Cari jalan — atau nyatakan tiada.'],
-      why: ['whether any route exists at all is a question about paths and whether the graph is connected.', 'sama ada wujud sebarang laluan ialah soalan tentang lorong dan sama ada graf tersambung.'] }
+        'Jambatan antara <b class="ink">Simpang empat</b> dan <b class="ink">Taman Baru</b> telah runtuh. Bolehkah jentera bomba masih pergi dari <b class="ink">Balai bomba</b> ke Taman Baru? Cari jalan itu. Jika tiada, nyatakan bahawa tiada jalan.'],
+      why: ['whether any route exists at all is a question about paths and whether the graph is connected.', 'Soalan sama ada wujud sebarang laluan ialah soalan tentang lorong dan sama ada graf itu tersambung.'] }
   ];
 
   const deg = v => TOWN.edges.reduce((d, e) => d + (e.a === v) + (e.b === v), 0);
@@ -132,7 +132,7 @@
     const right = k === c.M.tool, best = TOOLS.find(x => x.k === c.M.tool);
     c.toolRight = right;
     c.toolMsg = '<div class="note ' + (right ? 'ok' : 'warn') + '"><p style="margin:0;color:var(--ink);">' +
-      (right ? T('✓ Right tool — ', '✓ Alat yang betul — ') : T('The best tool here is <b>' + tt(best.name) + '</b>: ', 'Alat terbaik di sini ialah <b>' + tt(best.name) + '</b>: ')) + tt(c.M.why) + '</p></div>';
+      (right ? T('✓ Right tool — ', '✓ Alat yang betul. ') : T('The best tool here is <b>' + tt(best.name) + '</b>: ', 'Alat terbaik di sini ialah <b>' + tt(best.name) + '</b>. ')) + tt(c.M.why) + '</p></div>';
     c.phase = 'solve';
     PLAY.say(c.M.tool === 'degree' ? T('Tap the busiest junction.', 'Ketik simpang paling sibuk.') : c.M.tool === 'network' ? T('Tap pipes to lay them.', 'Ketik paip untuk memasangnya.') : T('Tap roads to build the route.', 'Ketik jalan untuk membina laluan.'));
     render();
@@ -158,7 +158,7 @@
     if (tool === 'degree') {
       if (!t.node) return;
       const top = Math.max(...TOWN.nodes.map(v => deg(v.id)));
-      if (deg(t.node) === top) { c.found = t.node; return done(T('Yes — ' + top + ' roads meet at the ' + nm(t.node) + '.', 'Ya — ' + top + ' jalan bertemu di ' + nm(t.node) + '.')); }
+      if (deg(t.node) === top) { c.found = t.node; return done(T('Yes — ' + top + ' roads meet at the ' + nm(t.node) + '.', 'Ya. Sebanyak ' + top + ' jalan bertemu di ' + nm(t.node) + '.')); }
       PLAY.shake('p-n' + t.node); logWrong('wrong_vertex_for_degree');
       return PLAY.say(T('The ' + nm(t.node) + ' has ' + deg(t.node) + ' roads. Is there a busier one?', nm(t.node) + ' ada ' + deg(t.node) + ' jalan. Ada yang lebih sibuk?'), true);
     }
@@ -184,23 +184,23 @@
   function togglePipe(i) { if (c.laid.has(i)) c.laid.delete(i); else c.laid.add(i); c.hl = null; render(); }
 
   function arrive() {
-    if (c.M.tool === 'maze') return done(T('Yes — the fire engine gets through by another road.', 'Ya — jentera bomba boleh melalui jalan lain.'));
+    if (c.M.tool === 'maze') return done(T('Yes — the fire engine gets through by another road.', 'Ya. Jentera bomba boleh sampai melalui jalan lain.'));
     const res = E.checkRoute(TOWN, 'M', 'K', 'm', null, c.route.edges);
-    if (res.optimal) return done(T('Fastest possible — ' + res.cost + ' minutes.', 'Paling pantas — ' + res.cost + ' minit.'));
+    if (res.optimal) return done(T('Fastest possible — ' + res.cost + ' minutes.', 'Ini laluan paling pantas, iaitu ' + res.cost + ' minit.'));
     logWrong('not_fastest');
-    PLAY.say(T('The ambulance got there in ' + res.cost + ' min — but ' + res.sol.best.cost + ' min is possible. Undo and try another way.', 'Ambulans sampai dalam ' + res.cost + ' minit — tetapi ' + res.sol.best.cost + ' minit boleh dicapai. Buat asal dan cuba jalan lain.'), true);
+    PLAY.say(T('The ambulance got there in ' + res.cost + ' min — but ' + res.sol.best.cost + ' min is possible. Undo and try another way.', 'Ambulans sampai dalam ' + res.cost + ' minit, tetapi ' + res.sol.best.cost + ' minit boleh dicapai. Buat asal dan cuba jalan lain.'), true);
   }
 
   function noWay() {
     logWrong('said_no_way_but_connected');
-    PLAY.say(T('Look again — there is another way round to Taman Baru.', 'Lihat semula — ada jalan lain ke Taman Baru.'), true);
+    PLAY.say(T('Look again — there is another way round to Taman Baru.', 'Lihat semula. Ada jalan lain ke Taman Baru.'), true);
   }
 
   function submitNet() {
     const cyc = PLAY.loopEdges(TOWN, c.laid), cost = PLAY.cost(TOWN, c.laid), best = PLAY.kruskal(TOWN).total;
-    if (cyc.length) { logWrong('cycle_created'); return PLAY.say(T('The red pipes form a cycle — one of them isn’t needed.', 'Paip merah membentuk kitaran — salah satunya tidak diperlukan.'), true); }
-    if (cost > best) { logWrong('not_minimum'); return PLAY.say(T('Everyone has water for RM' + cost + 'k — but RM' + best + 'k is possible.', 'Semua dapat air dengan RM' + cost + 'k — tetapi RM' + best + 'k boleh dicapai.'), true); }
-    done(T('Every place has water for RM' + cost + 'k — the cheapest possible.', 'Setiap tempat dapat air dengan RM' + cost + 'k — paling murah.'));
+    if (cyc.length) { logWrong('cycle_created'); return PLAY.say(T('The red pipes form a cycle — one of them isn’t needed.', 'Paip merah membentuk kitaran. Salah satu daripadanya tidak diperlukan.'), true); }
+    if (cost > best) { logWrong('not_minimum'); return PLAY.say(T('Everyone has water for RM' + cost + 'k — but RM' + best + 'k is possible.', 'Semua tempat mendapat air dengan kos RM' + cost + 'k, tetapi RM' + best + 'k boleh dicapai.'), true); }
+    done(T('Every place has water for RM' + cost + 'k — the cheapest possible.', 'Setiap tempat mendapat air dengan kos RM' + cost + 'k. Ini kos yang paling murah.'));
   }
 
   function hint() {
@@ -210,15 +210,15 @@
     if (t === 'network') {
       const k = PLAY.kruskal(TOWN), next = [...k.tree].sort((x, y) => TOWN.edges[x].w - TOWN.edges[y].w).find(i => !c.laid.has(i));
       if (next != null) c.hl = new Set([next]);
-      txt = T('Lay the highlighted pipe: the cheapest one left that doesn’t close a cycle.', 'Pasang paip yang diserlahkan: yang paling murah dan tidak menutup kitaran.');
+      txt = T('Lay the highlighted pipe: the cheapest one left that doesn’t close a cycle.', 'Pasang paip yang diserlahkan. Paip ini ialah paip paling murah yang tinggal dan tidak menutup kitaran.');
     } else if (t === 'shortest') {
       c.hintNode = 'S';
-      txt = T('Add up the minutes along each route. The fastest one passes the dashed ring.', 'Jumlahkan minit setiap laluan. Yang paling pantas melalui bulatan bertitik.');
+      txt = T('Add up the minutes along each route. The fastest one passes the dashed ring.', 'Jumlahkan minit bagi setiap laluan. Laluan yang paling pantas melalui bulatan bertitik.');
     } else if (t === 'degree') {
-      txt = T('Count the roads touching each place. Only one place has more than three.', 'Kira jalan yang menyentuh setiap tempat. Hanya satu tempat ada lebih daripada tiga.');
+      txt = T('Count the roads touching each place. Only one place has more than three.', 'Kira jalan yang menyentuh setiap tempat. Hanya satu tempat mempunyai lebih daripada tiga jalan.');
     } else {
       c.hintNode = 'K';
-      txt = T('The direct bridge is gone, but Taman Baru has another road. The dashed ring is on the way.', 'Jambatan sudah tiada, tetapi Taman Baru ada jalan lain. Bulatan bertitik berada dalam perjalanan.');
+      txt = T('The direct bridge is gone, but Taman Baru has another road. The dashed ring is on the way.', 'Jambatan itu sudah tiada, tetapi Taman Baru mempunyai jalan lain. Bulatan bertitik berada di sepanjang jalan itu.');
     }
     $('p-aid').innerHTML = '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span></h3><p>' + txt + '</p></div>';
     render();
@@ -248,7 +248,7 @@
   function card() {
     if (!unlocked()) {
       return '<div class="world locked bosscard"><div class="n">★</div><h3>' + T('Boss Level', 'Tahap Bos') + '</h3>' +
-        '<div class="topic">' + T('Four missions in one town — choose the right tool for each.', 'Empat misi dalam satu pekan — pilih alat yang betul untuk setiap satu.') + '</div>' +
+        '<div class="topic">' + T('Four missions in one town — choose the right tool for each.', 'Terdapat empat misi dalam satu pekan. Pilih alat yang betul untuk setiap misi.') + '</div>' +
         '<span class="corner pill lock">' + T('Clear Worlds 1–4 · ', 'Selesaikan Dunia 1–4 · ') + coreCleared() + ' / 20</span></div>';
     }
     const next = MISSIONS.findIndex((_, j) => !st.done['7-' + (j + 1)]);
@@ -258,7 +258,7 @@
     }).join('');
     const all = next < 0;
     return '<div class="world open bosscard"><div class="n" style="background:var(--yellow)">★</div><h3>' + T('Boss Level', 'Tahap Bos') + '</h3>' +
-      '<div class="topic">' + T('Four missions in one town — choose the right tool for each.', 'Empat misi dalam satu pekan — pilih alat yang betul untuk setiap satu.') + '</div>' +
+      '<div class="topic">' + T('Four missions in one town — choose the right tool for each.', 'Terdapat empat misi dalam satu pekan. Pilih alat yang betul untuk setiap misi.') + '</div>' +
       '<span class="corner pill ' + (all ? 'done' : 'part') + '">' + (all ? T('Cleared', 'Selesai') : MISSIONS.filter((_, j) => st.done['7-' + (j + 1)]).length + ' / 4') + '</span>' +
       '<div class="steps">' + steps + '</div></div>';
   }

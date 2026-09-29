@@ -30,50 +30,50 @@
     {
       title: ['Connect every kampung', 'Sambung setiap kampung'], target: 60, goal: 'connect',
       story: ['You are a telco engineer bringing fibre internet to four kampung. Tap a cable route — or tap two places — to lay a cable. Every place must be connected to the <b class="ink">Exchange</b>.',
-        'Anda jurutera telco yang membawa internet gentian optik ke empat kampung. Ketik laluan kabel — atau ketik dua tempat — untuk memasang kabel. Setiap tempat mesti bersambung dengan <b class="ink">Pusat Telco</b>.'],
+        'Anda jurutera telco yang membawa internet gentian optik ke empat kampung. Ketik laluan kabel, atau ketik dua tempat, untuk memasang kabel. Setiap tempat mesti bersambung dengan <b class="ink">Pusat Telco</b>.'],
       g: { nodes: [n('Z', 90, 200), n('A', 250, 80), n('B', 250, 320), n('C', 430, 90), n('D', 430, 310)],
         edges: [e('Z', 'A', 4), e('Z', 'B', 6), e('A', 'B', 3), e('A', 'C', 5), e('B', 'D', 2), e('C', 'D', 7), e('A', 'D', 8)] }
     },
     {
       title: ['No wasted cable', 'Tiada kabel membazir'], target: 75, goal: 'tree',
       story: ['A cable that closes a <b class="ink">cycle</b> — a closed ring of cables — is never needed: everyone is already connected without it. Connect every place with no cycles.',
-        'Kabel yang menutup satu <b class="ink">kitaran</b> — gelang kabel yang tertutup — tidak pernah diperlukan: semua sudah bersambung tanpanya. Sambung setiap tempat tanpa kitaran.'],
+        '<b class="ink">Kitaran</b> ialah gelang kabel yang tertutup. Kabel yang menutup satu kitaran tidak pernah diperlukan kerana semua tempat sudah bersambung tanpanya. Sambung setiap tempat tanpa kitaran.'],
       terms: [['cycle', 'kitaran']],
       g: { nodes: [n('Z', 80, 210), n('A', 220, 80), n('B', 220, 330), n('C', 380, 200), n('D', 530, 80), n('E', 540, 320)],
         edges: [e('Z', 'A', 5), e('Z', 'B', 4), e('A', 'B', 6), e('A', 'C', 3), e('B', 'C', 7), e('A', 'D', 9), e('C', 'D', 2), e('C', 'E', 8), e('D', 'E', 10), e('B', 'E', 11)] },
       qc: {
-        q: ['Six places are all connected, with no cycles. How many cables does that take?', 'Enam tempat semuanya bersambung, tanpa kitaran. Berapa banyak kabel diperlukan?'],
+        q: ['Six places are all connected, with no cycles. How many cables does that take?', 'Enam tempat semuanya bersambung tanpa kitaran. Berapakah bilangan kabel yang diperlukan?'],
         opts: [['a', '5'], ['b', '6'], ['c', '7']], answer: 'a',
-        why: ['each cable brings exactly one new place into the network. Start from one place, add five more — five cables.', 'setiap kabel membawa tepat satu tempat baharu ke dalam rangkaian. Mula dengan satu tempat, tambah lima lagi — lima kabel.']
+        why: ['each cable brings exactly one new place into the network. Start from one place, add five more — five cables.', 'Setiap kabel membawa tepat satu tempat baharu ke dalam rangkaian. Mula dengan satu tempat dan tambah lima tempat lagi. Ini memerlukan lima kabel.']
       }
     },
     {
       title: ['On a budget', 'Dalam bajet'], target: 90, goal: 'budget', over: 3,
       story: ['The district council gives you a budget. Connect every place, no cycles, and stay within it.',
-        'Majlis daerah memberi anda bajet. Sambung setiap tempat, tanpa kitaran, dan jangan melebihi bajet.'],
+        'Majlis daerah memberi anda bajet. Sambung setiap tempat tanpa kitaran, dan jangan melebihi bajet itu.'],
       g: { nodes: [n('Z', 70, 200), n('A', 200, 80), n('B', 200, 320), n('C', 340, 200), n('D', 470, 70), n('E', 480, 330), n('F', 600, 200)],
         edges: [e('Z', 'A', 6), e('Z', 'B', 3), e('A', 'B', 8), e('A', 'C', 5), e('B', 'C', 4), e('A', 'D', 11), e('C', 'D', 7), e('C', 'E', 9), e('B', 'E', 12), e('D', 'F', 10), e('E', 'F', 2), e('D', 'E', 13)] },
       qc: {
-        q: ['Your network connects everyone with no cycles. Adding one more cable would…', 'Rangkaian anda menyambung semua tanpa kitaran. Menambah satu lagi kabel akan…'],
+        q: ['Your network connects everyone with no cycles. Adding one more cable would…', 'Rangkaian anda menyambung semua tempat tanpa kitaran. Menambah satu lagi kabel akan…'],
         opts: [['a', ['create a cycle', 'mewujudkan kitaran']], ['b', ['connect a place that was cut off', 'menyambung tempat yang terputus']], ['c', ['change nothing', 'tidak mengubah apa-apa']]], answer: 'a',
-        why: ['its two ends are already joined through the network, so the new cable closes a ring. That is exactly what makes a tree: connected, and one cable fewer would split it; one more makes a cycle.', 'kedua-dua hujungnya sudah bersambung melalui rangkaian, jadi kabel baharu menutup satu gelang. Itulah pokok: tersambung, kurang satu kabel akan memutuskannya; lebih satu mewujudkan kitaran.']
+        why: ['its two ends are already joined through the network, so the new cable closes a ring. That is exactly what makes a tree: connected, and one cable fewer would split it; one more makes a cycle.', 'Kedua-dua hujungnya sudah bersambung melalui rangkaian, jadi kabel baharu itu menutup satu gelang. Itulah sifat pokok. Pokok sentiasa tersambung. Jika kurang satu kabel, rangkaian akan terputus. Jika lebih satu kabel, kitaran akan terbentuk.']
       }
     },
     {
       title: ['Cheapest possible', 'Paling murah'], target: 120, goal: 'min',
       story: ['The contract goes to the cheapest network. Connect every kampung for the lowest possible total cost.',
-        'Kontrak diberi kepada rangkaian paling murah. Sambung setiap kampung dengan jumlah kos paling rendah.'],
+        'Kontrak akan diberikan kepada rangkaian yang paling murah. Sambung setiap kampung dengan jumlah kos yang paling rendah.'],
       g: { nodes: [n('Z', 80, 330), n('A', 90, 110), n('B', 250, 200), n('C', 260, 50), n('D', 420, 110), n('E', 420, 330), n('F', 580, 210)],
         edges: [e('Z', 'A', 9), e('Z', 'B', 4), e('Z', 'E', 12), e('A', 'B', 6), e('A', 'C', 7), e('B', 'C', 10), e('B', 'D', 3), e('B', 'E', 5), e('C', 'D', 8), e('D', 'E', 11), e('D', 'F', 2), e('E', 'F', 13)] },
       qc: {
         q: ['Engineers usually lay the cheapest cable first. Why does that work?', 'Jurutera biasanya memasang kabel paling murah dahulu. Kenapa cara ini berkesan?'],
-        opts: [['a', ['Cheap cables keep the total low — as long as each one doesn’t close a cycle', 'Kabel murah mengekalkan jumlah rendah — asalkan setiap satu tidak menutup kitaran']], ['b', ['The cheapest cable always reaches the Exchange', 'Kabel paling murah sentiasa sampai ke Pusat Telco']], ['c', ['Cheap cables connect the most places', 'Kabel murah menyambung paling banyak tempat']]], answer: 'a',
-        why: ['take cables from cheapest up, skipping any that would close a cycle, and you always end with the cheapest network. That method is called Kruskal’s algorithm.', 'ambil kabel dari yang paling murah, langkau yang akan menutup kitaran, dan anda sentiasa mendapat rangkaian paling murah. Kaedah ini dipanggil algoritma Kruskal.']
+        opts: [['a', ['Cheap cables keep the total low — as long as each one doesn’t close a cycle', 'Kabel murah mengekalkan jumlah kos yang rendah, asalkan setiap kabel tidak menutup kitaran.']], ['b', ['The cheapest cable always reaches the Exchange', 'Kabel paling murah sentiasa sampai ke Pusat Telco.']], ['c', ['Cheap cables connect the most places', 'Kabel murah menyambung paling banyak tempat.']]], answer: 'a',
+        why: ['take cables from cheapest up, skipping any that would close a cycle, and you always end with the cheapest network. That method is called Kruskal’s algorithm.', 'Ambil kabel bermula dari yang paling murah dan langkau kabel yang akan menutup kitaran. Dengan cara ini, anda sentiasa mendapat rangkaian yang paling murah. Kaedah ini dipanggil algoritma Kruskal.']
       }
     },
     {
       title: ['Random challenge', 'Cabaran rawak'], target: 120, goal: 'min', random: true,
-      story: ['A new district every time. Cheapest network wins.', 'Daerah baharu setiap kali. Rangkaian paling murah menang.']
+      story: ['A new district every time. Cheapest network wins.', 'Anda akan mendapat daerah baharu setiap kali bermain. Rangkaian yang paling murah akan menang.']
     }
   ];
 
@@ -158,7 +158,7 @@
   function onTap(t) {
     if (c.phase !== 'play') return;
     if (t.edge != null) { toggle(t.edge); return; }
-    if (!c.pick) { c.pick = t.node; PLAY.say(T('Now tap the place to connect it to.', 'Sekarang ketik tempat untuk disambungkan.')); return render(); }
+    if (!c.pick) { c.pick = t.node; PLAY.say(T('Now tap the place to connect it to.', 'Sekarang ketik tempat yang ingin disambungkan.')); return render(); }
     if (c.pick === t.node) { c.pick = null; PLAY.say(''); return render(); }
     const i = c.g.edges.findIndex(x => (x.a === c.pick && x.b === t.node) || (x.b === c.pick && x.a === t.node));
     const from = c.pick; c.pick = null;
@@ -180,17 +180,17 @@
     if (!s.conn) return;
     if (g !== 'connect' && s.cyc.length) {
       logWrong('cycle_created');
-      return PLAY.say(T('Everyone is connected, but there is a cycle — you paid for a cable nobody needs. Remove one red cable.', 'Semua bersambung, tetapi ada kitaran — anda membayar kabel yang tidak diperlukan. Buang satu kabel merah.'), true);
+      return PLAY.say(T('Everyone is connected, but there is a cycle — you paid for a cable nobody needs. Remove one red cable.', 'Semua tempat sudah bersambung, tetapi ada kitaran. Anda telah membayar untuk kabel yang tidak diperlukan. Buang satu kabel merah.'), true);
     }
     if (g === 'budget' && s.cost > c.budget) {
       logWrong('over_budget');
-      return PLAY.say(T('That costs ' + rm(s.cost) + ' — over the ' + rm(c.budget) + ' budget. Swap an expensive cable for a cheaper one.', 'Kosnya ' + rm(s.cost) + ' — melebihi bajet ' + rm(c.budget) + '. Tukar kabel mahal kepada yang lebih murah.'), true);
+      return PLAY.say(T('That costs ' + rm(s.cost) + ' — over the ' + rm(c.budget) + ' budget. Swap an expensive cable for a cheaper one.', 'Kosnya ' + rm(s.cost) + ', iaitu melebihi bajet ' + rm(c.budget) + '. Tukar kabel yang mahal kepada kabel yang lebih murah.'), true);
     }
     if (g === 'min' && s.cost > c.mst.total) {
       logWrong('not_minimum', 30);
-      $('p-panel').innerHTML = '<div class="note warn"><h3>' + T('It works — but it isn’t the cheapest', 'Ia berfungsi — tetapi bukan yang paling murah') + '</h3><p>' +
+      $('p-panel').innerHTML = '<div class="note warn"><h3>' + T('It works — but it isn’t the cheapest', 'Rangkaian ini berfungsi, tetapi bukan yang paling murah') + '</h3><p>' +
         T('Your network: <b class="ink">' + rm(s.cost) + '</b> — cheapest possible: <b class="ink">' + rm(c.mst.total) + '</b>. Try taking the cheapest cables first, skipping any that close a cycle.',
-          'Rangkaian anda: <b class="ink">' + rm(s.cost) + '</b> — paling murah: <b class="ink">' + rm(c.mst.total) + '</b>. Cuba ambil kabel paling murah dahulu, langkau yang menutup kitaran.') +
+          'Kos rangkaian anda ialah <b class="ink">' + rm(s.cost) + '</b>, tetapi kos paling murah ialah <b class="ink">' + rm(c.mst.total) + '</b>. Cuba ambil kabel paling murah dahulu dan langkau kabel yang menutup kitaran.') +
         '</p><span class="muted">' + T('+30 XP banked. Your best score counts.', '+30 XP disimpan. Markah terbaik anda yang dikira.') + '</span></div>';
       return;
     }
@@ -222,20 +222,20 @@
     if (c.phase !== 'play' || !c.aid) { $('p-aid').innerHTML = ''; return; }
     const s = state();
     if (c.aid === 'hint') {
-      const txt = c.L.goal !== 'connect' && s.cyc.length ? T('The highlighted cables form a cycle. Remove one of them and everyone stays connected.', 'Kabel yang diserlahkan membentuk kitaran. Buang salah satu dan semua tetap bersambung.')
+      const txt = c.L.goal !== 'connect' && s.cyc.length ? T('The highlighted cables form a cycle. Remove one of them and everyone stays connected.', 'Kabel yang diserlahkan membentuk kitaran. Jika anda membuang salah satu daripadanya, semua tempat tetap bersambung.')
         : c.hintNode ? T('The dashed ring marks a place still cut off. Lay a cable to it.', 'Bulatan bertitik menandakan tempat yang masih terputus. Pasang kabel ke situ.')
-          : c.hl && c.hl.size ? T('Lay the highlighted cable: the cheapest one you haven’t used that doesn’t close a cycle.', 'Pasang kabel yang diserlahkan: yang paling murah belum digunakan dan tidak menutup kitaran.')
-            : T('Every place is connected. Check the total against the goal.', 'Setiap tempat sudah bersambung. Semak jumlah dengan matlamat.');
+          : c.hl && c.hl.size ? T('Lay the highlighted cable: the cheapest one you haven’t used that doesn’t close a cycle.', 'Pasang kabel yang diserlahkan. Kabel ini ialah kabel paling murah yang belum digunakan dan tidak menutup kitaran.')
+            : T('Every place is connected. Check the total against the goal.', 'Setiap tempat sudah bersambung. Semak jumlah kos dengan matlamat.');
       $('p-aid').innerHTML = '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span></h3><p>' + txt + '</p></div>';
       return;
     }
     const rows = c.mst.steps.map(({ i, take }) => {
       const x = c.g.edges[i];
-      return '<tr class="' + (take ? 'best' : '') + '"><td>' + nm(x.a) + ' – ' + nm(x.b) + '</td><td class="num">' + rm(x.w) + '</td><td>' + (take ? T('✓ take it', '✓ ambil') : T('✗ skip — closes a cycle', '✗ langkau — menutup kitaran')) + '</td></tr>';
+      return '<tr class="' + (take ? 'best' : '') + '"><td>' + nm(x.a) + ' – ' + nm(x.b) + '</td><td class="num">' + rm(x.w) + '</td><td>' + (take ? T('✓ take it', '✓ ambil') : T('✗ skip — closes a cycle', '✗ langkau kerana menutup kitaran')) + '</td></tr>';
     }).join('');
     $('p-aid').innerHTML = '<div class="note"><h3>' + T('Learn: cheapest first', 'Belajar: paling murah dahulu') + ' <span class="pill alert">−10 XP</span></h3><p>' +
       T('Go through the cables from cheapest to dearest. Take each one unless it closes a cycle. You end with ' + (c.g.nodes.length - 1) + ' cables costing <b class="ink">' + rm(c.mst.total) + '</b> — dotted in blue on the map.',
-        'Semak kabel dari paling murah ke paling mahal. Ambil setiap satu kecuali ia menutup kitaran. Anda akan mendapat ' + (c.g.nodes.length - 1) + ' kabel berharga <b class="ink">' + rm(c.mst.total) + '</b> — bertitik biru pada peta.') +
+        'Semak kabel dari yang paling murah ke yang paling mahal. Ambil setiap kabel kecuali kabel yang menutup kitaran. Anda akan mendapat ' + (c.g.nodes.length - 1) + ' kabel berharga <b class="ink">' + rm(c.mst.total) + '</b>. Kabel ini ditunjukkan dengan garis biru bertitik pada peta.') +
       '</p><table><tr><th>' + T('Cable', 'Kabel') + '</th><th class="num">' + T('Cost', 'Kos') + '</th><th></th></tr>' + rows + '</table></div>';
   }
 
@@ -253,16 +253,16 @@
       };
     }
     return {
-      q: T('This district has ' + nn + ' places. How many cables does the cheapest network use?', 'Daerah ini ada ' + nn + ' tempat. Berapa kabel digunakan oleh rangkaian paling murah?'),
+      q: T('This district has ' + nn + ' places. How many cables does the cheapest network use?', 'Daerah ini mempunyai ' + nn + ' tempat. Berapakah bilangan kabel yang digunakan oleh rangkaian paling murah?'),
       opts: [['a', String(nn - 1)], ['b', String(nn)], ['c', String(nn + 1)]], answer: 'a',
-      why: T('the cheapest network has no cycles, so it joins ' + nn + ' places with ' + (nn - 1) + ' cables.', 'rangkaian paling murah tiada kitaran, jadi ia menyambung ' + nn + ' tempat dengan ' + (nn - 1) + ' kabel.')
+      why: T('the cheapest network has no cycles, so it joins ' + nn + ' places with ' + (nn - 1) + ' cables.', 'Rangkaian paling murah tidak mempunyai kitaran, jadi ia menyambung ' + nn + ' tempat dengan ' + (nn - 1) + ' kabel.')
     };
   }
 
   function renderPanel() {
     const s = state();
     const head = '<div class="note ok"><h3>' + T('Network live! ', 'Rangkaian hidup! ') + rm(s.cost) + '</h3><p>' +
-      (c.L.goal === 'min' ? T('The cheapest possible — the engine checked every cable.', 'Paling murah — enjin telah menyemak setiap kabel.')
+      (c.L.goal === 'min' ? T('The cheapest possible — the engine checked every cable.', 'Ini rangkaian yang paling murah. Enjin telah menyemak setiap kabel.')
         : T('Every place is connected with ' + c.laid.size + ' cables.', 'Setiap tempat bersambung dengan ' + c.laid.size + ' kabel.')) + '</p></div>';
     if (c.phase === 'check') {
       return PLAY.quick(head, quickCheck(), ok => {
@@ -279,18 +279,18 @@
     PLAY.discover({
       w: 4,
       opts: [
-        ['a', T('A network with no cycles always uses one cable fewer than the number of places.', 'Rangkaian tanpa kitaran sentiasa guna satu kabel kurang daripada bilangan tempat.')],
-        ['b', T('A network with no cycles uses as many cables as there are places.', 'Rangkaian tanpa kitaran guna kabel sebanyak bilangan tempat.')],
+        ['a', T('A network with no cycles always uses one cable fewer than the number of places.', 'Rangkaian tanpa kitaran sentiasa menggunakan satu kabel kurang daripada bilangan tempat.')],
+        ['b', T('A network with no cycles uses as many cables as there are places.', 'Rangkaian tanpa kitaran menggunakan kabel sebanyak bilangan tempat.')],
         ['c', T('A network with no cycles always includes the cheapest cable of each place.', 'Rangkaian tanpa kitaran sentiasa mengandungi kabel paling murah bagi setiap tempat.')]
       ],
       answer: 'a',
-      why: p => p === 'a' ? T('Exactly: 5 places took 4 cables, 6 took 5, 7 took 6. Each cable adds one new place.', 'Tepat: 5 tempat guna 4 kabel, 6 guna 5, 7 guna 6. Setiap kabel menambah satu tempat baharu.')
-        : p === 'b' ? T('Count again on Level 2: 6 places, 5 cables. One more cable would close a cycle.', 'Kira semula pada Tahap 2: 6 tempat, 5 kabel. Satu lagi kabel akan menutup kitaran.')
-          : T('In Level 1 many networks worked without some of the cheapest cables. Only the cheapest network overall follows a cost rule.', 'Dalam Tahap 1 banyak rangkaian berfungsi tanpa kabel paling murah. Hanya rangkaian paling murah keseluruhan mengikut peraturan kos.'),
+      why: p => p === 'a' ? T('Exactly: 5 places took 4 cables, 6 took 5, 7 took 6. Each cable adds one new place.', 'Tepat sekali. Lima tempat menggunakan 4 kabel, enam tempat menggunakan 5 kabel, dan tujuh tempat menggunakan 6 kabel. Setiap kabel menambah satu tempat baharu.')
+        : p === 'b' ? T('Count again on Level 2: 6 places, 5 cables. One more cable would close a cycle.', 'Kira semula pada Tahap 2. Terdapat 6 tempat dan 5 kabel. Satu lagi kabel akan menutup kitaran.')
+          : T('In Level 1 many networks worked without some of the cheapest cables. Only the cheapest network overall follows a cost rule.', 'Dalam Tahap 1, banyak rangkaian berfungsi tanpa kabel yang paling murah. Hanya rangkaian yang paling murah secara keseluruhan mengikut peraturan kos.'),
       terms: [
-        ['Subgraph', 'Subgraf', 'Part of a graph: some of its vertices and edges. Your network is a subgraph of the map.', 'Sebahagian graf: sebahagian bucu dan sisinya. Rangkaian anda ialah subgraf peta.'],
-        ['Tree', 'Pokok', 'A connected graph with no cycles. With n vertices it has exactly n − 1 edges.', 'Graf tersambung tanpa kitaran. Dengan n bucu ia ada tepat n − 1 sisi.'],
-        ['Tree with minimum total weight', 'Pokok dengan jumlah pemberat minimum', 'The tree joining every vertex whose edge weights add up to the least.', 'Pokok yang menyambung setiap bucu dengan jumlah pemberat sisi paling kecil.']
+        ['Subgraph', 'Subgraf', 'Part of a graph: some of its vertices and edges. Your network is a subgraph of the map.', 'Subgraf ialah sebahagian daripada graf, iaitu sebahagian bucu dan sisinya. Rangkaian anda ialah subgraf bagi peta itu.'],
+        ['Tree', 'Pokok', 'A connected graph with no cycles. With n vertices it has exactly n − 1 edges.', 'Pokok ialah graf tersambung tanpa kitaran. Jika pokok mempunyai n bucu, ia mempunyai tepat n − 1 sisi.'],
+        ['Tree with minimum total weight', 'Pokok dengan jumlah pemberat minimum', 'The tree joining every vertex whose edge weights add up to the least.', 'Ini ialah pokok yang menyambung setiap bucu dengan jumlah pemberat sisi yang paling kecil.']
       ]
     });
   }

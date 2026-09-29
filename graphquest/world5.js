@@ -28,33 +28,33 @@
     {
       title: ['Easy escape', 'Lolos mudah'], target: 60,
       story: ['You are trapped in the city. To escape, cross <b class="ink">every bridge exactly once</b>. Start anywhere: tap a place, then tap bridges.',
-        'Anda terperangkap di bandar. Untuk lolos, lintasi <b class="ink">setiap jambatan tepat sekali</b>. Mula di mana-mana: ketik satu tempat, kemudian ketik jambatan.'],
+        'Anda terperangkap di bandar. Untuk lolos, lintasi <b class="ink">setiap jambatan tepat sekali</b>. Anda boleh bermula di mana-mana. Ketik satu tempat, kemudian ketik jambatan.'],
       g: { nodes: [n('A', 200, 330), n('B', 440, 330), n('C', 200, 160), n('D', 440, 160), n('E', 320, 50)],
         edges: [e('A', 'B'), e('B', 'D'), e('D', 'C'), e('C', 'A'), e('C', 'E'), e('E', 'D'), e('A', 'D')] }
     },
     {
       title: ['Start at the Tower', 'Mula di Menara'], target: 75, start: 'H',
-      story: ['This time the escape must begin at the <b class="ink">Tower</b>.', 'Kali ini lolos mesti bermula di <b class="ink">Menara</b>.'],
+      story: ['This time the escape must begin at the <b class="ink">Tower</b>.', 'Kali ini, anda mesti mula melarikan diri dari <b class="ink">Menara</b>.'],
       g: { nodes: [n('E', 80, 200), n('A', 220, 80), n('B', 220, 320), n('H', 380, 80), n('D', 380, 320), n('K', 540, 200)],
         edges: [e('E', 'A'), e('E', 'B'), e('A', 'H'), e('B', 'D'), e('H', 'D'), e('H', 'K'), e('D', 'K')] }
     },
     {
       title: ['The impossible city', 'Bandar mustahil'], target: 90, impossible: true,
       story: ['Some say no one has ever escaped this city. Try — and if it truly can’t be done, press <b class="ink">It can’t be done</b> and prove it.',
-        'Kata orang tiada siapa pernah lolos dari bandar ini. Cuba — dan jika memang mustahil, tekan <b class="ink">Mustahil</b> dan buktikan.'],
+        'Kata orang, tiada siapa pernah lolos dari bandar ini. Cuba dahulu. Jika memang mustahil, tekan <b class="ink">Mustahil</b> dan buktikan.'],
       g: { nodes: [n('A', 90, 200), n('B', 250, 70), n('C', 250, 330), n('D', 420, 200), n('E', 580, 200)],
         edges: [e('A', 'B'), e('A', 'C'), e('B', 'C'), e('B', 'D'), e('C', 'D'), e('D', 'E')] }
     },
     {
       title: ['Return home', 'Pulang ke rumah'], target: 90, start: 'G', circuit: true,
       story: ['Start at the <b class="ink">Park</b>, cross every bridge exactly once, and end back at the Park.',
-        'Mula di <b class="ink">Taman</b>, lintasi setiap jambatan tepat sekali, dan kembali ke Taman.'],
+        'Mula di <b class="ink">Taman</b>, lintasi setiap jambatan tepat sekali, dan kembali semula ke Taman.'],
       g: { nodes: [n('A', 120, 90), n('E', 320, 40), n('C', 520, 90), n('G', 320, 200), n('B', 120, 310), n('F', 320, 360), n('D', 520, 310)],
         edges: [e('A', 'E'), e('E', 'C'), e('C', 'G'), e('G', 'A'), e('B', 'G'), e('G', 'D'), e('D', 'F'), e('F', 'B')] }
     },
     {
       title: ['Random city', 'Bandar rawak'], target: 120, random: true,
-      story: ['A new city every time. Predict first, then escape — or prove it can’t be done.', 'Bandar baharu setiap kali. Ramal dahulu, kemudian lolos — atau buktikan ia mustahil.']
+      story: ['A new city every time. Predict first, then escape — or prove it can’t be done.', 'Anda akan mendapat bandar baharu setiap kali bermain. Buat ramalan dahulu, kemudian cuba lolos. Jika mustahil, buktikan.']
     }
   ];
 
@@ -165,7 +165,7 @@
     if (c.phase === 'predict') {
       const q = c.L.circuit ? T('Can you cross every bridge exactly once and end back where you started?', 'Bolehkah anda melintasi setiap jambatan tepat sekali dan kembali ke tempat mula?')
         : c.L.start ? T('Starting at the ' + nm(c.L.start) + ', can you cross every bridge exactly once?', 'Bermula di ' + nm(c.L.start) + ', bolehkah anda melintasi setiap jambatan tepat sekali?')
-          : T('Can this city be escaped — every bridge crossed exactly once?', 'Bolehkah anda lolos dari bandar ini — setiap jambatan dilintasi tepat sekali?');
+          : T('Can this city be escaped — every bridge crossed exactly once?', 'Bolehkah anda lolos dari bandar ini dengan melintasi setiap jambatan tepat sekali?');
       $('p-ask').innerHTML = '<div class="note ask"><h3>' + T('Predict first', 'Ramal dahulu') + ' <span class="pill new">+20 XP</span></h3><p>' + q + '</p>' +
         '<div class="row"><button class="btn" data-pred="yes">' + T('Yes, it can', 'Ya, boleh') + '</button><button class="btn ghost" data-pred="no">' + T('No, it can’t', 'Tidak boleh') + '</button></div></div>';
       $('p-ask').querySelectorAll('[data-pred]').forEach(b => b.addEventListener('click', () => predict(b.dataset.pred === 'yes')));
@@ -173,7 +173,7 @@
     }
     if (c.proving) {
       $('p-ask').innerHTML = '<div class="note ask"><h3>' + T('Prove it', 'Buktikan') + '</h3><p style="margin:0;">' +
-        T('Tap every place where an <b>odd</b> number of bridges meet. Each is a place you would get stuck at — or have to start from.', 'Ketik setiap tempat yang mempunyai bilangan jambatan <b>ganjil</b>. Setiap satu ialah tempat anda akan tersekat — atau terpaksa bermula.') +
+        T('Tap every place where an <b>odd</b> number of bridges meet. Each is a place you would get stuck at — or have to start from.', 'Ketik setiap tempat yang mempunyai bilangan jambatan <b>ganjil</b>. Setiap tempat itu ialah tempat anda akan tersekat atau tempat anda terpaksa bermula.') +
         ' (' + c.proof.size + ' / ' + odds(c.g).length + ')</p></div>';
       return;
     }
@@ -186,7 +186,7 @@
     else logWrong('wrong_prediction');
     save();
     c.phase = 'play';
-    PLAY.say(c.L.start ? T('You start at the ' + nm(c.L.start) + '. Tap a bridge.', 'Anda bermula di ' + nm(c.L.start) + '. Ketik jambatan.') : T('Tap the place you want to start from.', 'Ketik tempat anda mahu bermula.'));
+    PLAY.say(c.L.start ? T('You start at the ' + nm(c.L.start) + '. Tap a bridge.', 'Anda bermula di ' + nm(c.L.start) + '. Ketik jambatan.') : T('Tap the place you want to start from.', 'Ketik tempat yang anda mahu jadikan titik mula.'));
     render();
   }
 
@@ -195,7 +195,7 @@
     if (c.phase !== 'play') return;
     if (c.proving) return proofTap(t);
     if (!c.nodes.length) {
-      if (!t.node) return PLAY.say(T('First tap a place to start from.', 'Ketik tempat untuk bermula dahulu.'), true);
+      if (!t.node) return PLAY.say(T('First tap a place to start from.', 'Ketik satu tempat untuk bermula dahulu.'), true);
       c.nodes = [t.node]; PLAY.say(''); return render();
     }
     const at = end();
@@ -205,13 +205,13 @@
       i = c.g.edges.findIndex((x, k) => !c.edges.includes(k) && ((x.a === at && x.b === t.node) || (x.b === at && x.a === t.node)));
       if (i < 0) {
         const usedOne = c.g.edges.findIndex(x => (x.a === at && x.b === t.node) || (x.b === at && x.a === t.node));
-        if (usedOne >= 0) { PLAY.shake('p-e' + usedOne); return PLAY.say(T('You’ve already crossed that bridge — each bridge only once.', 'Anda sudah melintasi jambatan itu — setiap jambatan sekali sahaja.'), true); }
+        if (usedOne >= 0) { PLAY.shake('p-e' + usedOne); return PLAY.say(T('You’ve already crossed that bridge — each bridge only once.', 'Anda sudah melintasi jambatan itu. Setiap jambatan hanya boleh dilintasi sekali.'), true); }
         PLAY.shake('p-n' + t.node); return PLAY.say(T('No bridge joins ' + nm(at) + ' and ' + nm(t.node) + '.', 'Tiada jambatan antara ' + nm(at) + ' dan ' + nm(t.node) + '.'), true);
       }
     }
     const x = c.g.edges[i];
     if (c.edges.length && c.edges[c.edges.length - 1] === i) return undo();
-    if (c.edges.includes(i)) { PLAY.shake('p-e' + i); return PLAY.say(T('You’ve already crossed that bridge — each bridge only once.', 'Anda sudah melintasi jambatan itu — setiap jambatan sekali sahaja.'), true); }
+    if (c.edges.includes(i)) { PLAY.shake('p-e' + i); return PLAY.say(T('You’ve already crossed that bridge — each bridge only once.', 'Anda sudah melintasi jambatan itu. Setiap jambatan hanya boleh dilintasi sekali.'), true); }
     if (x.a !== at && x.b !== at) { PLAY.shake('p-e' + i); return PLAY.say(T('That bridge doesn’t start at the ' + nm(at) + ', where you are.', 'Jambatan itu tidak bermula di ' + nm(at) + ', tempat anda berada.'), true); }
     c.edges.push(i); c.nodes.push(x.a === at ? x.b : x.a);
     PLAY.say('');
@@ -222,7 +222,7 @@
   function after() {
     const at = end();
     if (c.edges.length === c.g.edges.length) {
-      if (c.L.circuit && at !== c.nodes[0]) return PLAY.say(T('Every bridge crossed — but you ended at the ' + nm(at) + ', not home.', 'Semua jambatan dilintasi — tetapi anda berakhir di ' + nm(at) + ', bukan di rumah.'), true);
+      if (c.L.circuit && at !== c.nodes[0]) return PLAY.say(T('Every bridge crossed — but you ended at the ' + nm(at) + ', not home.', 'Semua jambatan sudah dilintasi, tetapi anda berakhir di ' + nm(at) + ', bukan di tempat mula.'), true);
       return solved(T('Escaped! Every bridge crossed exactly once.', 'Lolos! Setiap jambatan dilintasi tepat sekali.'));
     }
     const moves = c.g.edges.some((x, k) => !c.edges.includes(k) && (x.a === at || x.b === at));
@@ -244,10 +244,10 @@
   function cant() {
     if (c.can) {
       logWrong('said_impossible_but_possible');
-      return PLAY.say(T('It can be done here — keep trying. Where you start matters.', 'Ia boleh dilakukan di sini — teruskan mencuba. Tempat mula penting.'), true);
+      return PLAY.say(T('It can be done here — keep trying. Where you start matters.', 'Bandar ini boleh dilolosi. Teruskan mencuba. Tempat anda bermula adalah penting.'), true);
     }
     c.proving = true; c.edges = []; c.nodes = [];
-    PLAY.say(T('Right, it can’t be done. Now prove it.', 'Betul, ia mustahil. Sekarang buktikan.'));
+    PLAY.say(T('Right, it can’t be done. Now prove it.', 'Betul, ia mustahil. Sekarang buktikan mengapa.'));
     render();
   }
 
@@ -256,12 +256,12 @@
     const odd = oddSet(), d = deg(c.g, t.node);
     if (!odd.has(t.node)) {
       PLAY.shake('p-n' + t.node); logWrong('wrong_odd_tap', 'odd' + t.node);
-      return PLAY.say(T('The ' + nm(t.node) + ' has ' + d + ' bridges — an even number.', nm(t.node) + ' ada ' + d + ' jambatan — nombor genap.'), true);
+      return PLAY.say(T('The ' + nm(t.node) + ' has ' + d + ' bridges — an even number.', nm(t.node) + ' ada ' + d + ' jambatan. Itu ialah nombor genap.'), true);
     }
     c.proof.add(t.node); render();
     if (c.proof.size === odd.size) solved(T(odd.size + ' places have an odd number of bridges. You arrive and leave in pairs, so only the start and the end can be odd — more than two means no escape.',
-      odd.size + ' tempat mempunyai bilangan jambatan ganjil. Anda tiba dan pergi secara berpasangan, jadi hanya tempat mula dan tamat boleh ganjil — lebih daripada dua bermakna tiada jalan lolos.'));
-    else PLAY.say(T('Yes — ' + d + ' bridges. Keep going.', 'Ya — ' + d + ' jambatan. Teruskan.'));
+      odd.size + ' tempat mempunyai bilangan jambatan ganjil. Anda tiba dan pergi secara berpasangan, jadi hanya tempat mula dan tempat tamat boleh ganjil. Jika lebih daripada dua tempat ganjil, tiada jalan untuk lolos.'));
+    else PLAY.say(T('Yes — ' + d + ' bridges. Keep going.', 'Ya, tempat ini ada ' + d + ' jambatan. Teruskan.'));
   }
 
   function solved(msg) {
@@ -289,8 +289,8 @@
     const o = odds(c.g);
     let txt;
     if (c.aid === 'hint') {
-      txt = !c.can ? T('Count the bridges at each place. What happens every time you walk through a place in the middle of your route?', 'Kira jambatan di setiap tempat. Apa berlaku setiap kali anda melalui satu tempat di tengah laluan?')
-        : o.length === 2 && !c.L.start ? T('Start at one of the two places with a dashed ring.', 'Mula di salah satu daripada dua tempat berbulatan bertitik.')
+      txt = !c.can ? T('Count the bridges at each place. What happens every time you walk through a place in the middle of your route?', 'Kira jambatan di setiap tempat. Apakah yang berlaku setiap kali anda melalui satu tempat di tengah laluan?')
+        : o.length === 2 && !c.L.start ? T('Start at one of the two places with a dashed ring.', 'Mula di salah satu daripada dua tempat yang mempunyai bulatan bertitik.')
           : T('Don’t cross a bridge that would cut you off from bridges you haven’t crossed yet.', 'Jangan lintasi jambatan yang akan memisahkan anda daripada jambatan yang belum dilintasi.');
       $('p-aid').innerHTML = '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span></h3><p>' + txt + '</p></div>';
       return;
@@ -317,18 +317,18 @@
     PLAY.discover({
       w: 5,
       opts: [
-        ['a', T('Count the places with an odd number of bridges: 0 or 2 means you can escape; more than 2 means you can’t.', 'Kira tempat dengan bilangan jambatan ganjil: 0 atau 2 bermakna boleh lolos; lebih daripada 2 bermakna tidak boleh.')],
+        ['a', T('Count the places with an odd number of bridges: 0 or 2 means you can escape; more than 2 means you can’t.', 'Kira tempat yang mempunyai bilangan jambatan ganjil. Jika ada 0 atau 2 tempat, anda boleh lolos. Jika ada lebih daripada 2 tempat, anda tidak boleh lolos.')],
         ['b', T('You can escape if every place has at least two bridges.', 'Anda boleh lolos jika setiap tempat ada sekurang-kurangnya dua jambatan.')],
-        ['c', T('You can escape if the total number of bridges is even.', 'Anda boleh lolos jika jumlah jambatan genap.')]
+        ['c', T('You can escape if the total number of bridges is even.', 'Anda boleh lolos jika jumlah jambatan ialah nombor genap.')]
       ],
       answer: 'a',
-      why: p => p === 'a' ? T('Exactly. In the middle of a route you arrive and leave — two bridges each time. Only the start and the end can be odd.', 'Tepat sekali. Di tengah laluan anda tiba dan pergi — dua jambatan setiap kali. Hanya tempat mula dan tamat boleh ganjil.')
-        : p === 'b' ? T('The impossible city had at least two bridges at almost every place and still couldn’t be escaped.', 'Bandar mustahil ada sekurang-kurangnya dua jambatan hampir di setiap tempat dan tetap tidak boleh dilolosi.')
-          : T('The impossible city had 6 bridges — an even number — and still couldn’t be escaped.', 'Bandar mustahil ada 6 jambatan — nombor genap — dan tetap tidak boleh dilolosi.'),
+      why: p => p === 'a' ? T('Exactly. In the middle of a route you arrive and leave — two bridges each time. Only the start and the end can be odd.', 'Tepat sekali. Di tengah laluan, anda tiba dan pergi menggunakan dua jambatan setiap kali. Hanya tempat mula dan tempat tamat boleh ganjil.')
+        : p === 'b' ? T('The impossible city had at least two bridges at almost every place and still couldn’t be escaped.', 'Bandar mustahil itu ada sekurang-kurangnya dua jambatan di hampir setiap tempat, tetapi tetap tidak boleh dilolosi.')
+          : T('The impossible city had 6 bridges — an even number — and still couldn’t be escaped.', 'Bandar mustahil itu ada 6 jambatan, iaitu nombor genap, tetapi tetap tidak boleh dilolosi.'),
       terms: [
-        ['Euler trail', 'Surih Euler', 'A trail that uses every edge of a graph exactly once.', 'Surih yang menggunakan setiap sisi graf tepat sekali.'],
-        ['Euler circuit', 'Litar Euler', 'An Euler trail that ends where it started. Possible when every vertex has even degree.', 'Surih Euler yang berakhir di tempat ia bermula. Boleh apabila setiap bucu berdarjah genap.'],
-        ['Odd vertex', 'Bucu ganjil', 'A vertex with odd degree. An Euler trail exists only with 0 or 2 of them (in a connected graph).', 'Bucu berdarjah ganjil. Surih Euler wujud hanya jika ada 0 atau 2 daripadanya (dalam graf tersambung).']
+        ['Euler trail', 'Surih Euler', 'A trail that uses every edge of a graph exactly once.', 'Surih Euler ialah surih yang menggunakan setiap sisi graf tepat sekali.'],
+        ['Euler circuit', 'Litar Euler', 'An Euler trail that ends where it started. Possible when every vertex has even degree.', 'Litar Euler ialah surih Euler yang berakhir di tempat ia bermula. Ia boleh dibentuk apabila setiap bucu berdarjah genap.'],
+        ['Odd vertex', 'Bucu ganjil', 'A vertex with odd degree. An Euler trail exists only with 0 or 2 of them (in a connected graph).', 'Bucu ganjil ialah bucu yang berdarjah ganjil. Dalam graf tersambung, surih Euler wujud hanya jika terdapat 0 atau 2 bucu ganjil.']
       ]
     });
   }

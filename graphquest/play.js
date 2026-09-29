@@ -120,11 +120,13 @@
       '<div class="steps" id="p-steps"></div></div>' +
       '<div class="mission"><h2 id="p-title"></h2><p id="p-story" style="margin-bottom:8px;"></p><div id="p-terms"></div></div>' +
       '<div id="p-banner"></div>' +
+      // the question sits above the map (read, then tap); feedback stays in the dock below
+      '<div id="p-ask"></div>' +
       '<div class="board"><svg id="svgp" viewBox="0 0 640 400" role="group"></svg></div>' +
       '<div class="dock"><div class="readout"><div class="trail" id="p-trail"></div><div class="total" id="p-total"></div></div>' +
       '<div class="say" id="p-say" role="status" aria-live="polite"></div>' +
       '<div class="controls" id="p-controls"></div></div>' +
-      '<div id="p-ask"></div><div id="p-aid"></div><div id="p-panel"></div>';
+      '<div id="p-aid"></div><div id="p-panel"></div>';
     $('p-map').addEventListener('click', () => { stopClock(); renderMap(); show('map'); });
     $('svgp').addEventListener('click', ev => {
       const t = ev.target.closest('[data-edge],[data-node]');
@@ -233,7 +235,7 @@
         x.disabled = true;
         if (x.dataset.opt === qc.answer) x.classList.add('right'); else if (x === b) x.classList.add('wrong');
       });
-      $('p-qc-out').innerHTML = '<p style="margin:12px 0;">' + (ok ? T('Right — ', 'Betul — ') : T('Not quite — ', 'Belum tepat — ')) + qc.why + '</p>' +
+      $('p-qc-out').innerHTML = '<p style="margin:12px 0;">' + (ok ? T('Right — ', 'Betul. ') : T('Not quite — ', 'Belum tepat. ')) + qc.why + '</p>' +
         '<button class="btn sm" id="p-score">' + T('See my XP', 'Lihat XP saya') + '</button>';
       $('p-score').addEventListener('click', () => done(ok));
     }));

@@ -29,40 +29,40 @@
     {
       title: ['A valid timetable', 'Jadual yang sah'], target: 60, maxSlots: 4, goal: 'valid',
       story: ['Plan the SPM trial exams. A line joins two subjects that <b class="ink">share students</b> — they can’t sit in the same slot. Pick a slot below, then tap subjects to put them in it.',
-        'Rancang peperiksaan percubaan SPM. Garisan menghubungkan dua subjek yang <b class="ink">berkongsi murid</b> — ia tidak boleh diadakan dalam slot yang sama. Pilih slot di bawah, kemudian ketik subjek untuk meletakkannya.'],
+        'Rancang peperiksaan percubaan SPM. Garisan menghubungkan dua subjek yang <b class="ink">berkongsi murid</b>. Kedua-dua subjek itu tidak boleh diadakan dalam slot yang sama. Pilih slot di bawah, kemudian ketik subjek untuk meletakkannya.'],
       g: { nodes: [n('M', 120, 110), n('S', 320, 60), n('H', 520, 110), n('E', 320, 220), n('B', 320, 350)],
         edges: [e('M', 'S'), e('S', 'H'), e('H', 'E'), e('E', 'M'), e('B', 'M'), e('B', 'H')] },
-      qc: { q: ['Maths and Science share students. Can their exams be in the same slot?', 'Matematik dan Sains berkongsi murid. Bolehkah peperiksaannya dalam slot yang sama?'],
-        opts: [['a', ['No — a student can’t sit two papers at once', 'Tidak — murid tidak boleh menduduki dua kertas serentak']], ['b', ['Yes, in different rooms', 'Ya, dalam bilik berbeza']], ['c', ['Only if there are 2 slots', 'Hanya jika ada 2 slot']]], answer: 'a',
-        why: ['a line (an edge) means a clash. Joined subjects must get different slots — different colours.', 'garisan (sisi) bermaksud pertembungan. Subjek yang dihubungkan mesti mendapat slot berbeza — warna berbeza.'] }
+      qc: { q: ['Maths and Science share students. Can their exams be in the same slot?', 'Matematik dan Sains berkongsi murid. Bolehkah peperiksaan kedua-duanya diadakan dalam slot yang sama?'],
+        opts: [['a', ['No — a student can’t sit two papers at once', 'Tidak, kerana murid tidak boleh menduduki dua kertas serentak.']], ['b', ['Yes, in different rooms', 'Ya, jika diadakan dalam bilik yang berbeza.']], ['c', ['Only if there are 2 slots', 'Hanya jika ada 2 slot.']]], answer: 'a',
+        why: ['a line (an edge) means a clash. Joined subjects must get different slots — different colours.', 'Garisan (sisi) bermaksud pertembungan. Subjek yang dihubungkan mesti mendapat slot yang berbeza, iaitu warna yang berbeza.'] }
     },
     {
       title: ['Three slots only', 'Tiga slot sahaja'], target: 75, maxSlots: 3, goal: 'max',
-      story: ['The hall is free for only <b class="ink">3 slots</b>. Fit every paper in.', 'Dewan hanya kosong untuk <b class="ink">3 slot</b>. Muatkan setiap kertas.'],
+      story: ['The hall is free for only <b class="ink">3 slots</b>. Fit every paper in.', 'Dewan hanya kosong untuk <b class="ink">3 slot</b>. Muatkan setiap kertas ke dalam slot itu.'],
       g: { nodes: [n('P', 320, 60), n('C', 200, 230), n('I', 440, 230), n('A', 100, 90), n('M', 90, 330), n('E', 560, 360)],
         edges: [e('P', 'C'), e('C', 'I'), e('I', 'P'), e('A', 'P'), e('A', 'M'), e('M', 'C'), e('E', 'I')] },
       qc: { q: ['Physics, Chemistry and Biology all clash with each other. At least how many slots do they need?', 'Fizik, Kimia dan Biologi semuanya bertembung antara satu sama lain. Sekurang-kurangnya berapa slot diperlukan?'],
         opts: [['a', '3'], ['b', '2'], ['c', '1']], answer: 'a',
-        why: ['each of the three clashes with the other two, so no two of them can share a slot.', 'setiap satu bertembung dengan dua yang lain, jadi tiada dua daripadanya boleh berkongsi slot.'] }
+        why: ['each of the three clashes with the other two, so no two of them can share a slot.', 'Setiap subjek bertembung dengan dua subjek yang lain, jadi tiada dua daripadanya boleh berkongsi slot.'] }
     },
     {
       title: ['Fewest slots', 'Slot paling sedikit'], target: 90, goal: 'fewest',
-      story: ['Every extra slot is an extra exam day. Use the <b class="ink">fewest slots</b> possible.', 'Setiap slot tambahan ialah hari peperiksaan tambahan. Guna <b class="ink">slot paling sedikit</b>.'],
+      story: ['Every extra slot is an extra exam day. Use the <b class="ink">fewest slots</b> possible.', 'Setiap slot tambahan bermaksud satu hari peperiksaan tambahan. Gunakan <b class="ink">slot yang paling sedikit</b>.'],
       g: { nodes: [n('M', 80, 200), n('A', 220, 70), n('P', 220, 330), n('C', 380, 200), n('I', 520, 70), n('E', 520, 330), n('B', 610, 200)],
         edges: [e('M', 'A'), e('M', 'P'), e('A', 'P'), e('A', 'C'), e('P', 'C'), e('C', 'I'), e('C', 'E'), e('I', 'B'), e('E', 'B')] },
       qc: { q: ['Why can’t this timetable fit into 2 slots?', 'Kenapa jadual ini tidak muat dalam 2 slot?'],
-        opts: [['a', ['Some three subjects all clash with each other — each needs its own slot', 'Ada tiga subjek yang semuanya bertembung — setiap satu perlukan slot sendiri']], ['b', ['It has more than 6 subjects', 'Ia ada lebih daripada 6 subjek']], ['c', ['Chemistry clashes with the most subjects', 'Kimia bertembung dengan paling banyak subjek']]], answer: 'a',
-        why: ['Maths, Add Maths and Physics form a triangle of clashes. A triangle can never be done in 2 slots.', 'Matematik, Mat. Tambahan dan Fizik membentuk segi tiga pertembungan. Segi tiga tidak boleh dimuatkan dalam 2 slot.'] }
+        opts: [['a', ['Some three subjects all clash with each other — each needs its own slot', 'Ada tiga subjek yang semuanya bertembung, jadi setiap satu memerlukan slotnya sendiri.']], ['b', ['It has more than 6 subjects', 'Jadual ini mempunyai lebih daripada 6 subjek.']], ['c', ['Chemistry clashes with the most subjects', 'Kimia bertembung dengan paling banyak subjek.']]], answer: 'a',
+        why: ['Maths, Add Maths and Physics form a triangle of clashes. A triangle can never be done in 2 slots.', 'Matematik, Matematik Tambahan dan Fizik membentuk segi tiga pertembungan. Segi tiga tidak boleh dimuatkan dalam 2 slot.'] }
     },
     {
       title: ['The science stream', 'Aliran sains'], target: 120, goal: 'fewest',
-      story: ['A bigger timetable for the science stream. Fewest slots again.', 'Jadual lebih besar untuk aliran sains. Slot paling sedikit sekali lagi.'],
+      story: ['A bigger timetable for the science stream. Fewest slots again.', 'Ini jadual yang lebih besar untuk aliran sains. Sekali lagi, gunakan slot yang paling sedikit.'],
       g: { nodes: [n('P', 320, 50), n('C', 170, 250), n('I', 470, 250), n('A', 320, 180), n('M', 60, 110), n('E', 580, 110), n('B', 320, 360), n('G', 60, 350), n('R', 580, 350)],
         edges: [e('P', 'C'), e('P', 'I'), e('C', 'I'), e('A', 'P'), e('A', 'C'), e('A', 'I'), e('M', 'P'), e('M', 'C'), e('E', 'P'), e('E', 'I'), e('B', 'C'), e('B', 'I'), e('G', 'C'), e('G', 'M'), e('R', 'I'), e('R', 'B')] }
     },
     {
       title: ['Random timetable', 'Jadual rawak'], target: 120, goal: 'fewest', random: true,
-      story: ['A new set of clashes every time. Fewest slots wins.', 'Set pertembungan baharu setiap kali. Slot paling sedikit menang.']
+      story: ['A new set of clashes every time. Fewest slots wins.', 'Anda akan mendapat set pertembungan baharu setiap kali bermain. Jadual dengan slot paling sedikit akan menang.']
     }
   ];
 
@@ -162,19 +162,19 @@
     const bad = clashes();
     if (bad.length) {
       const x = c.g.edges[bad[0]];
-      PLAY.say(T(nm(x.a) + ' and ' + nm(x.b) + ' share students — they can’t both be in slot ' + c.col[x.a] + '.', nm(x.a) + ' dan ' + nm(x.b) + ' berkongsi murid — tidak boleh kedua-duanya dalam slot ' + c.col[x.a] + '.'), true);
+      PLAY.say(T(nm(x.a) + ' and ' + nm(x.b) + ' share students — they can’t both be in slot ' + c.col[x.a] + '.', nm(x.a) + ' dan ' + nm(x.b) + ' berkongsi murid. Kedua-duanya tidak boleh berada dalam slot ' + c.col[x.a] + '.'), true);
     } else PLAY.say('');
     render();
   }
 
   function submit() {
     if (c.phase !== 'play' || !allDone()) return;
-    if (clashes().length) { logWrong('clash'); return PLAY.say(T('Some papers still clash (red lines). Move one of each pair to another slot.', 'Masih ada kertas yang bertembung (garisan merah). Alihkan satu daripada setiap pasangan ke slot lain.'), true); }
+    if (clashes().length) { logWrong('clash'); return PLAY.say(T('Some papers still clash (red lines). Move one of each pair to another slot.', 'Masih ada kertas yang bertembung (garisan merah). Alihkan satu subjek daripada setiap pasangan ke slot lain.'), true); }
     const u = used(), L = c.L;
-    if (L.goal === 'max' && u > L.maxSlots) { logWrong('too_many_slots'); return PLAY.say(T('That uses ' + u + ' slots — only ' + L.maxSlots + ' are free.', 'Itu guna ' + u + ' slot — hanya ' + L.maxSlots + ' yang kosong.'), true); }
+    if (L.goal === 'max' && u > L.maxSlots) { logWrong('too_many_slots'); return PLAY.say(T('That uses ' + u + ' slots — only ' + L.maxSlots + ' are free.', 'Jadual itu menggunakan ' + u + ' slot, tetapi hanya ' + L.maxSlots + ' slot yang kosong.'), true); }
     if (L.goal === 'fewest' && u > c.chi.k) {
       logWrong('not_fewest', 30);
-      $('p-panel').innerHTML = '<div class="note warn"><h3>' + T('Valid — but not the fewest slots', 'Sah — tetapi bukan slot paling sedikit') + '</h3><p>' +
+      $('p-panel').innerHTML = '<div class="note warn"><h3>' + T('Valid — but not the fewest slots', 'Jadual ini sah, tetapi bukan slot yang paling sedikit') + '</h3><p>' +
         T('You used <b class="ink">' + u + '</b> slots. It can be done in <b class="ink">' + c.chi.k + '</b>. Start with the subject that clashes most.', 'Anda guna <b class="ink">' + u + '</b> slot. Ia boleh dibuat dalam <b class="ink">' + c.chi.k + '</b>. Mula dengan subjek yang paling banyak bertembung.') +
         '</p><span class="muted">' + T('+30 XP banked.', '+30 XP disimpan.') + '</span></div>';
       return;
@@ -182,7 +182,7 @@
     $('p-panel').innerHTML = '';
     if (u === c.chi.k && L.goal !== 'valid') st.fewestSlots = (st.fewestSlots || 0) + 1;
     c.phase = 'check'; c.time = PLAY.stopClock(); c.aid = null;
-    PLAY.say(T('Timetable published — no clashes.', 'Jadual diterbitkan — tiada pertembungan.'));
+    PLAY.say(T('Timetable published — no clashes.', 'Jadual telah diterbitkan tanpa sebarang pertembungan.'));
     render();
   }
 
@@ -209,7 +209,7 @@
       .map(id => '<tr><td>' + nm(id) + '</td><td class="num">' + deg(c.g, id) + '</td><td><b>' + c.chi.colouring[id] + SHAPE[c.chi.colouring[id]] + '</b></td></tr>').join('');
     $('p-aid').innerHTML = '<div class="note"><h3>' + T('Learn: busiest first', 'Belajar: paling sibuk dahulu') + ' <span class="pill alert">−10 XP</span></h3><p>' +
       T('Place the subject with the most clashes first, then the next, each in the lowest slot that doesn’t clash. The largest group that all clash — ' + q.map(nm).join(', ') + ' — shows you need at least ' + q.length + ' slots. This timetable fits in <b class="ink">' + c.chi.k + '</b>:',
-        'Letakkan subjek yang paling banyak bertembung dahulu, kemudian seterusnya, setiap satu dalam slot terendah yang tidak bertembung. Kumpulan terbesar yang semuanya bertembung — ' + q.map(nm).join(', ') + ' — menunjukkan anda perlukan sekurang-kurangnya ' + q.length + ' slot. Jadual ini muat dalam <b class="ink">' + c.chi.k + '</b>:') +
+        'Letakkan subjek yang paling banyak bertembung dahulu, kemudian subjek seterusnya. Letakkan setiap subjek dalam slot terendah yang tidak bertembung. Kumpulan terbesar yang semuanya bertembung ialah ' + q.map(nm).join(', ') + '. Kumpulan ini menunjukkan anda memerlukan sekurang-kurangnya ' + q.length + ' slot. Jadual ini muat dalam <b class="ink">' + c.chi.k + '</b>:') +
       '</p><table><tr><th>' + T('Subject', 'Subjek') + '</th><th class="num">' + T('Clashes', 'Pertembungan') + '</th><th>' + T('Slot', 'Slot') + '</th></tr>' + rows + '</table></div>';
   }
 
@@ -217,14 +217,14 @@
   function quickCheck() {
     if (c.L.qc) { const q = c.L.qc; return { q: tt(q.q), answer: q.answer, why: tt(q.why), opts: q.opts.map(o => [o[0], Array.isArray(o[1]) ? tt(o[1]) : o[1]]) }; }
     if (c.i === 3) {
-      return { q: T('Physics, Chemistry, Biology and Add Maths all clash with each other. So the fewest slots is at least…', 'Fizik, Kimia, Biologi dan Mat. Tambahan semuanya bertembung antara satu sama lain. Jadi slot paling sedikit sekurang-kurangnya…'),
+      return { q: T('Physics, Chemistry, Biology and Add Maths all clash with each other. So the fewest slots is at least…', 'Fizik, Kimia, Biologi dan Matematik Tambahan semuanya bertembung antara satu sama lain. Jadi, bilangan slot paling sedikit ialah sekurang-kurangnya…'),
         opts: [['a', '4'], ['b', '3'], ['c', '5']], answer: 'a',
-        why: T('four subjects that all clash need four different slots.', 'empat subjek yang semuanya bertembung perlukan empat slot berbeza.') };
+        why: T('four subjects that all clash need four different slots.', 'Empat subjek yang semuanya bertembung memerlukan empat slot yang berbeza.') };
     }
     const k = c.chi.k;
-    return { q: T('A new subject is added that clashes with every other subject. The fewest slots becomes…', 'Subjek baharu ditambah yang bertembung dengan semua subjek lain. Slot paling sedikit menjadi…'),
+    return { q: T('A new subject is added that clashes with every other subject. The fewest slots becomes…', 'Satu subjek baharu yang bertembung dengan semua subjek lain telah ditambah. Bilangan slot paling sedikit menjadi…'),
       opts: [['a', String(k + 1)], ['b', String(k)], ['c', String(k + 2)]], answer: 'a',
-      why: T('it can’t share a slot with anyone, so it needs a slot of its own: ' + k + ' + 1.', 'ia tidak boleh berkongsi slot dengan sesiapa, jadi perlukan slot sendiri: ' + k + ' + 1.') };
+      why: T('it can’t share a slot with anyone, so it needs a slot of its own: ' + k + ' + 1.', 'Subjek itu tidak boleh berkongsi slot dengan mana-mana subjek, jadi ia memerlukan slotnya sendiri. Jawapannya ialah ' + k + ' + 1.') };
   }
 
   function renderPanel() {
@@ -243,17 +243,17 @@
     PLAY.discover({
       w: 6,
       opts: [
-        ['a', T('Subjects that all clash with each other each need their own slot — so the fewest slots is at least the size of the biggest such group.', 'Subjek yang semuanya bertembung antara satu sama lain perlukan slot sendiri — jadi slot paling sedikit sekurang-kurangnya saiz kumpulan terbesar sedemikian.')],
-        ['b', T('The fewest slots equals the number of clashes.', 'Slot paling sedikit sama dengan bilangan pertembungan.')],
+        ['a', T('Subjects that all clash with each other each need their own slot — so the fewest slots is at least the size of the biggest such group.', 'Subjek yang semuanya bertembung antara satu sama lain memerlukan slot masing-masing. Jadi, bilangan slot paling sedikit ialah sekurang-kurangnya saiz kumpulan terbesar sedemikian.')],
+        ['b', T('The fewest slots equals the number of clashes.', 'Bilangan slot paling sedikit sama dengan bilangan pertembungan.')],
         ['c', T('Every timetable fits in 2 slots if you are clever enough.', 'Setiap jadual muat dalam 2 slot jika anda cukup bijak.')]
       ],
       answer: 'a',
-      why: p => p === 'a' ? T('Exactly — a triangle forced 3 slots, and the science stream’s four-way clash forced 4.', 'Tepat — segi tiga memaksa 3 slot, dan pertembungan empat hala aliran sains memaksa 4.')
-        : p === 'b' ? T('Level 3 had 9 clashes and fitted in 3 slots.', 'Tahap 3 ada 9 pertembungan dan muat dalam 3 slot.')
-          : T('Three subjects that all clash can never share 2 slots — someone always doubles up.', 'Tiga subjek yang semuanya bertembung tidak boleh berkongsi 2 slot — pasti ada yang bertindih.'),
+      why: p => p === 'a' ? T('Exactly — a triangle forced 3 slots, and the science stream’s four-way clash forced 4.', 'Tepat sekali. Segi tiga memerlukan 3 slot, dan pertembungan empat hala dalam aliran sains memerlukan 4 slot.')
+        : p === 'b' ? T('Level 3 had 9 clashes and fitted in 3 slots.', 'Tahap 3 ada 9 pertembungan, tetapi jadualnya muat dalam 3 slot.')
+          : T('Three subjects that all clash can never share 2 slots — someone always doubles up.', 'Tiga subjek yang semuanya bertembung tidak boleh berkongsi 2 slot. Pasti ada dua subjek yang bertindih.'),
       terms: [
-        ['Graph colouring', 'Pewarnaan graf', 'Giving each vertex a colour so that joined vertices never share one.', 'Memberi setiap bucu satu warna supaya bucu yang dihubungkan tidak berkongsi warna.'],
-        ['Chromatic number', 'Nombor kromatik', 'The fewest colours a graph can be coloured with.', 'Bilangan warna paling sedikit untuk mewarnakan graf.']
+        ['Graph colouring', 'Pewarnaan graf', 'Giving each vertex a colour so that joined vertices never share one.', 'Pewarnaan graf ialah cara memberi setiap bucu satu warna supaya bucu yang dihubungkan tidak berkongsi warna.'],
+        ['Chromatic number', 'Nombor kromatik', 'The fewest colours a graph can be coloured with.', 'Ini ialah bilangan warna paling sedikit yang diperlukan untuk mewarnakan graf.']
       ]
     });
   }

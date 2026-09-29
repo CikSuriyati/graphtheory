@@ -56,7 +56,7 @@
     {
       title: ['Count the corridors', 'Kira koridor'], target: 60, terms: 'basic',
       story: ['<b class="ink">Case #007: The Missing Trophy.</b> The hockey trophy vanished from the school overnight. First, learn the map: each place is a <b class="ink">vertex</b> and each corridor is an <b class="ink">edge</b>. The number of corridors meeting at a place is its <b class="ink">degree</b>.',
-        '<b class="ink">Kes #007: Trofi Yang Hilang.</b> Trofi hoki sekolah hilang pada waktu malam. Mula-mula, kenali peta: setiap tempat ialah <b class="ink">bucu</b> dan setiap koridor ialah <b class="ink">sisi</b>. Bilangan koridor yang bertemu di sesuatu tempat ialah <b class="ink">darjah</b>nya.'],
+        '<b class="ink">Kes #007: Trofi Yang Hilang.</b> Trofi hoki sekolah hilang pada waktu malam. Mula-mula, kenali peta ini. Setiap tempat ialah <b class="ink">bucu</b> dan setiap koridor ialah <b class="ink">sisi</b>. Bilangan koridor yang bertemu di sesuatu tempat ialah <b class="ink">darjah</b>nya.'],
       g: {
         nodes: [p('G', 90, 200), p('O', 250, 90), p('C', 250, 310), p('L', 430, 90), p('H', 430, 310)],
         edges: [e('G', 'O'), e('G', 'C'), e('O', 'C'), e('O', 'L'), e('C', 'H'), e('L', 'H')]
@@ -65,13 +65,13 @@
       qc: {
         q: ['If a new corridor is built between the Canteen and the Library, the Canteen\'s degree becomes…', 'Jika koridor baharu dibina antara Kantin dan Perpustakaan, darjah Kantin menjadi…'],
         opts: [['a', '4'], ['b', '5'], ['c', '3']], answer: 'a',
-        why: ['A new corridor adds 1 to each end: the Canteen goes from 3 to 4, and the Library from 2 to 3.', 'Koridor baharu menambah 1 pada setiap hujung: Kantin daripada 3 menjadi 4, dan Perpustakaan daripada 2 menjadi 3.']
+        why: ['A new corridor adds 1 to each end: the Canteen goes from 3 to 4, and the Library from 2 to 3.', 'Koridor baharu menambah 1 pada setiap hujungnya. Darjah Kantin bertambah daripada 3 menjadi 4, dan darjah Perpustakaan bertambah daripada 2 menjadi 3.']
       }
     },
     {
       title: ['Follow the suspect', 'Jejak suspek'], target: 60,
       story: ['The CCTV shows three places the suspect visited, described only by how many corridors meet there. Find each place.',
-        'Rakaman CCTV menunjukkan tiga tempat yang dilawati suspek, diterangkan hanya melalui bilangan koridor yang bertemu di situ. Cari setiap tempat.'],
+        'Rakaman CCTV menunjukkan tiga tempat yang dilawati suspek. Setiap tempat hanya diterangkan melalui bilangan koridor yang bertemu di situ. Cari setiap tempat itu.'],
       g: {
         nodes: [p('G', 80, 220), p('O', 230, 100), p('C', 230, 320), p('L', 410, 90), p('H', 420, 300), p('F', 570, 300)],
         edges: [e('F', 'H'), e('G', 'O'), e('G', 'C'), e('O', 'C'), e('O', 'L'), e('O', 'H'), e('L', 'H')]
@@ -79,16 +79,16 @@
       steps: [{ t: 'find', d: 4, lead: 0 }, { t: 'find', d: 1, lead: 1 }, { t: 'find', d: 3, lead: 2 }],
       qc: {
         q: ['The Field has degree 1. What does that tell you?', 'Padang mempunyai darjah 1. Apakah maksudnya?'],
-        opts: [['a', ['Only one corridor leads there — a dead end', 'Hanya satu koridor menuju ke situ — jalan mati']],
-          ['b', ['It is the busiest place', 'Ia tempat paling sibuk']],
-          ['c', ['It is not connected to anything', 'Ia tidak bersambung dengan apa-apa']]], answer: 'a',
-        why: ['Degree 1 means exactly one edge touches it. Degree 0 would mean nothing reaches it at all.', 'Darjah 1 bermaksud tepat satu sisi menyentuhnya. Darjah 0 pula bermaksud tiada apa yang sampai ke situ.']
+        opts: [['a', ['Only one corridor leads there — a dead end', 'Hanya satu koridor menuju ke situ, jadi ia jalan mati.']],
+          ['b', ['It is the busiest place', 'Ia ialah tempat yang paling sibuk.']],
+          ['c', ['It is not connected to anything', 'Ia tidak bersambung dengan mana-mana tempat.']]], answer: 'a',
+        why: ['Degree 1 means exactly one edge touches it. Degree 0 would mean nothing reaches it at all.', 'Darjah 1 bermaksud tepat satu sisi menyentuh tempat itu. Darjah 0 pula bermaksud tiada sisi yang sampai ke situ.']
       }
     },
     {
       title: ['Loops and twin corridors', 'Gelung dan koridor berkembar'], target: 90, terms: 'types',
       story: ['Near the Field the map gets strange: a running track leaves the Field and comes straight back, and two separate corridors join the Canteen and the Hall.',
-        'Berhampiran Padang, peta menjadi pelik: trek larian keluar dari Padang dan terus kembali, dan dua koridor berasingan menghubungkan Kantin dan Dewan.'],
+        'Berhampiran Padang, peta ini menjadi pelik. Trek larian keluar dari Padang dan terus kembali ke Padang. Selain itu, dua koridor berasingan menghubungkan Kantin dan Dewan.'],
       g: {
         nodes: [p('O', 90, 110), p('S', 90, 310), p('L', 260, 300), p('C', 280, 90), p('H', 440, 200), p('F', 580, 210)],
         edges: [e('O', 'C'), e('O', 'L'), e('O', 'S'), e('S', 'L'), e('L', 'H'), e('C', 'H'), e('C', 'H'), e('H', 'F'), e('F', 'F')]
@@ -96,16 +96,16 @@
       steps: [{ t: 'loop' }, { t: 'multi' }, { t: 'count', v: 'F' }, { t: 'count', v: 'H' }],
       qc: {
         q: ['Is this map a simple graph?', 'Adakah peta ini graf mudah?'],
-        opts: [['a', ['No — it has a loop and a pair of multiple edges', 'Tidak — ia ada gelung dan sepasang sisi berbilang']],
-          ['b', ['Yes — every place can be reached', 'Ya — setiap tempat boleh dicapai']],
-          ['c', ['Yes — no place has degree 0', 'Ya — tiada tempat berdarjah 0']]], answer: 'a',
-        why: ['A simple graph has no loops and no multiple edges. Whether every place can be reached is a different idea.', 'Graf mudah tiada gelung dan tiada sisi berbilang. Sama ada setiap tempat boleh dicapai ialah idea yang berbeza.']
+        opts: [['a', ['No — it has a loop and a pair of multiple edges', 'Tidak, kerana ia mempunyai gelung dan sepasang sisi berbilang.']],
+          ['b', ['Yes — every place can be reached', 'Ya, kerana setiap tempat boleh dicapai.']],
+          ['c', ['Yes — no place has degree 0', 'Ya, kerana tiada tempat yang berdarjah 0.']]], answer: 'a',
+        why: ['A simple graph has no loops and no multiple edges. Whether every place can be reached is a different idea.', 'Graf mudah tidak mempunyai gelung dan tidak mempunyai sisi berbilang. Sama ada setiap tempat boleh dicapai ialah idea yang berbeza.']
       }
     },
     {
       title: ['Three witnesses', 'Tiga saksi'], target: 90,
       story: ['Three witnesses each saw one thing. Only one place fits all three clues — that\'s where the trophy is hidden.',
-        'Tiga saksi masing-masing nampak satu perkara. Hanya satu tempat yang sepadan dengan ketiga-tiga petunjuk — di situlah trofi disembunyikan.'],
+        'Tiga saksi masing-masing nampak satu perkara. Hanya satu tempat yang sepadan dengan ketiga-tiga petunjuk. Di situlah trofi itu disembunyikan.'],
       g: {
         nodes: [p('G', 70, 200), p('O', 200, 90), p('C', 200, 310), p('L', 350, 70), p('M', 360, 200), p('H', 350, 330), p('F', 520, 300), p('S', 520, 110)],
         edges: [e('G', 'O'), e('G', 'C'), e('O', 'L'), e('O', 'M'), e('C', 'M'), e('C', 'H'), e('L', 'S'), e('M', 'S'), e('M', 'H'), e('H', 'F'), e('S', 'F')]
@@ -115,7 +115,7 @@
     {
       title: ['Timed case', 'Kes berpemasa'], target: 120, random: true,
       story: ['A new school map every time. Work fast — the bonus clock is ticking.',
-        'Peta sekolah baharu setiap kali. Bertindak pantas — jam bonus sedang berdetik.']
+        'Anda akan mendapat peta sekolah baharu setiap kali bermain. Bertindak pantas kerana jam bonus sedang berdetik.']
     }
   ];
 
@@ -339,12 +339,12 @@
     } else if (s.t === 'find') {
       const lead = LEADS[s.lead];
       q = s.d === 1
-        ? T(lead[0] + ' only <b>1</b> corridor leads — a dead end.', lead[1] + ' yang hanya ada <b>1</b> koridor — jalan mati.')
+        ? T(lead[0] + ' only <b>1</b> corridor leads — a dead end.', lead[1] + ' yang hanya ada <b>1</b> koridor, iaitu jalan mati.')
         : T(lead[0] + ' exactly <b>' + s.d + '</b> corridors meet.', lead[1] + ' yang mempunyai tepat <b>' + s.d + '</b> koridor bertemu.');
       body = '<p class="muted" style="margin:6px 0 0;">' + T('👆 Tap that place on the map.', '👆 Ketik tempat itu pada peta.') + '</p>';
     } else if (s.t === 'loop') {
       q = T('One place has a <b>loop</b> — a corridor that leaves a place and comes straight back to it. Tap the loop or its place.',
-        'Satu tempat mempunyai <b>gelung</b> — koridor yang keluar dari satu tempat dan terus kembali ke tempat itu. Ketik gelung itu atau tempatnya.');
+        'Satu tempat mempunyai <b>gelung</b>, iaitu koridor yang keluar dari satu tempat dan terus kembali ke tempat itu. Ketik gelung itu atau tempatnya.');
     } else if (s.t === 'multi') {
       q = T('Two places are joined by <b>two separate corridors</b>. Tap one of those corridors.',
         'Dua tempat dihubungkan oleh <b>dua koridor berasingan</b>. Ketik salah satu koridor itu.');
@@ -389,19 +389,19 @@
   function answerCount(x) {
     if (c.phase !== 'play') return;
     const s = step(), d = degree(c.g, s.v);
-    if (x === d) return right(T('Yes — the ' + nm(s.v) + ' has degree ' + d + '.', 'Ya — ' + nm(s.v) + ' berdarjah ' + d + '.'));
-    if (hasLoop(c.g, s.v) && x === d - 1) return wrong('loop_counted_once', T('Close. The loop touches the ' + nm(s.v) + ' at both of its ends, so it adds 2, not 1.', 'Hampir. Gelung menyentuh ' + nm(s.v) + ' pada kedua-dua hujungnya, jadi ia menambah 2, bukan 1.'), 'c-n' + s.v);
-    if (inMultiPair(c.g, s.v) && x === d - 1) return wrong('multiple_edge_counted_once', T('Close. Two corridors join the same pair of places here — count each one.', 'Hampir. Dua koridor menghubungkan pasangan tempat yang sama di sini — kira setiap satu.'), 'c-n' + s.v);
-    wrong('miscounted_degree', T('Not quite. Trace each corridor that touches the ' + nm(s.v) + ', one at a time.', 'Belum tepat. Jejak setiap koridor yang menyentuh ' + nm(s.v) + ', satu demi satu.'), 'c-n' + s.v);
+    if (x === d) return right(T('Yes — the ' + nm(s.v) + ' has degree ' + d + '.', 'Ya, ' + nm(s.v) + ' berdarjah ' + d + '.'));
+    if (hasLoop(c.g, s.v) && x === d - 1) return wrong('loop_counted_once', T('Close. The loop touches the ' + nm(s.v) + ' at both of its ends, so it adds 2, not 1.', 'Hampir betul. Gelung menyentuh ' + nm(s.v) + ' pada kedua-dua hujungnya, jadi ia menambah 2, bukan 1.'), 'c-n' + s.v);
+    if (inMultiPair(c.g, s.v) && x === d - 1) return wrong('multiple_edge_counted_once', T('Close. Two corridors join the same pair of places here — count each one.', 'Hampir betul. Di sini, dua koridor menghubungkan pasangan tempat yang sama. Kira setiap koridor itu.'), 'c-n' + s.v);
+    wrong('miscounted_degree', T('Not quite. Trace each corridor that touches the ' + nm(s.v) + ', one at a time.', 'Belum tepat. Jejak setiap koridor yang menyentuh ' + nm(s.v) + ' satu demi satu.'), 'c-n' + s.v);
   }
 
   function tapNode(id) {
     if (c.phase !== 'play') return;
     const s = step();
-    if (s.t === 'count') return say(T('Use the number buttons under the map.', 'Guna butang nombor di bawah peta.'));
-    if (s.t === 'multi') return say(T('Tap the corridor itself — one of the pair.', 'Ketik koridor itu sendiri — salah satu daripada pasangan itu.'));
+    if (s.t === 'count') return say(T('Use the number buttons above the map.', 'Gunakan butang nombor di atas peta.'));
+    if (s.t === 'multi') return say(T('Tap the corridor itself — one of the pair.', 'Ketik koridor itu sendiri, iaitu salah satu daripada pasangan koridor itu.'));
     if (s.t === 'loop') {
-      if (hasLoop(c.g, id)) { markLoop(id); return right(T('Found it — the loop at the ' + nm(id) + '.', 'Jumpa — gelung di ' + nm(id) + '.')); }
+      if (hasLoop(c.g, id)) { markLoop(id); return right(T('Found it — the loop at the ' + nm(id) + '.', 'Anda menjumpainya. Gelung itu berada di ' + nm(id) + '.')); }
       return wrong('missed_loop', T('No loop at the ' + nm(id) + '. A loop starts and ends at the same place.', 'Tiada gelung di ' + nm(id) + '. Gelung bermula dan berakhir di tempat yang sama.'), 'c-n' + id);
     }
     if (s.t === 'find') {
@@ -409,16 +409,16 @@
       if (d === s.d) {
         c.done.add(id);
         return right(s.d === 1
-          ? T('Correct — only 1 corridor leads to the ' + nm(id) + '.', 'Betul — hanya 1 koridor menuju ke ' + nm(id) + '.')
-          : T('Correct — ' + s.d + ' corridors meet at the ' + nm(id) + '.', 'Betul — ' + s.d + ' koridor bertemu di ' + nm(id) + '.'));
+          ? T('Correct — only 1 corridor leads to the ' + nm(id) + '.', 'Betul. Hanya 1 koridor menuju ke ' + nm(id) + '.')
+          : T('Correct — ' + s.d + ' corridors meet at the ' + nm(id) + '.', 'Betul. Sebanyak ' + s.d + ' koridor bertemu di ' + nm(id) + '.'));
       }
-      return wrong('wrong_vertex_for_degree', T('The ' + nm(id) + ' has degree ' + d + ' — you need ' + s.d + '.', nm(id) + ' berdarjah ' + d + ' — anda perlukan ' + s.d + '.'), 'c-n' + id);
+      return wrong('wrong_vertex_for_degree', T('The ' + nm(id) + ' has degree ' + d + ' — you need ' + s.d + '.', nm(id) + ' berdarjah ' + d + '. Anda perlu mencari tempat yang berdarjah ' + s.d + '.'), 'c-n' + id);
     }
     // clues
     const j = s.clues.findIndex(cl => !clueHolds(c.g, id, cl));
     if (j < 0) { c.done.add(id); return right(T('Case closed! The trophy is at the ' + nm(id) + '.', 'Kes selesai! Trofi berada di ' + nm(id) + '.')); }
     const cl = s.clues[j];
-    const why = cl.k === 'deg' ? T('its degree is ' + degree(c.g, id), 'darjahnya ' + degree(c.g, id))
+    const why = cl.k === 'deg' ? T('its degree is ' + degree(c.g, id), 'darjahnya ialah ' + degree(c.g, id))
       : cl.k === 'adj' ? T('no corridor joins it to the ' + nm(cl.u), 'tiada koridor menghubungkannya dengan ' + nm(cl.u))
         : T('it is next to the ' + nm(cl.u), 'ia bersebelahan dengan ' + nm(cl.u));
     wrong('clue_ignored', T('The ' + nm(id) + ' doesn\'t fit clue ' + (j + 1) + ': ' + why + '.', nm(id) + ' tidak sepadan dengan petunjuk ' + (j + 1) + ': ' + why + '.'), 'c-n' + id);
@@ -430,18 +430,18 @@
     if (c.phase !== 'play') return;
     const s = step(), ed = c.g.edges[i];
     if (s.t === 'loop') {
-      if (ed.a === ed.b) { markLoop(ed.a); return right(T('Found it — the loop at the ' + nm(ed.a) + '.', 'Jumpa — gelung di ' + nm(ed.a) + '.')); }
+      if (ed.a === ed.b) { markLoop(ed.a); return right(T('Found it — the loop at the ' + nm(ed.a) + '.', 'Anda menjumpainya. Gelung itu berada di ' + nm(ed.a) + '.')); }
       return wrong('missed_loop', T('That corridor joins two different places. A loop starts and ends at the same place.', 'Koridor itu menghubungkan dua tempat berbeza. Gelung bermula dan berakhir di tempat yang sama.'), 'c-e' + i);
     }
     if (s.t === 'multi') {
       if (isMulti(c.g, i)) {
         const k = pairKey(ed);
         c.g.edges.forEach((x, j) => { if (pairKey(x) === k) c.found.add(j); });
-        return right(T('Yes — the ' + nm(ed.a) + ' and the ' + nm(ed.b) + ' are joined by two corridors: multiple edges.', 'Ya — ' + nm(ed.a) + ' dan ' + nm(ed.b) + ' dihubungkan oleh dua koridor: sisi berbilang.'));
+        return right(T('Yes — the ' + nm(ed.a) + ' and the ' + nm(ed.b) + ' are joined by two corridors: multiple edges.', 'Ya. ' + nm(ed.a) + ' dan ' + nm(ed.b) + ' dihubungkan oleh dua koridor. Ini dipanggil sisi berbilang.'));
       }
-      return wrong('missed_multiple_edge', T('That corridor has no twin. Look for two corridors joining the same two places.', 'Koridor itu tiada kembar. Cari dua koridor yang menghubungkan dua tempat yang sama.'), 'c-e' + i);
+      return wrong('missed_multiple_edge', T('That corridor has no twin. Look for two corridors joining the same two places.', 'Koridor itu tidak mempunyai kembar. Cari dua koridor yang menghubungkan dua tempat yang sama.'), 'c-e' + i);
     }
-    say(T('Tap a place (a circle), not a corridor.', 'Ketik tempat (bulatan), bukan koridor.'));
+    say(T('Tap a place (a circle), not a corridor.', 'Ketik satu tempat (bulatan), bukan koridor.'));
   }
 
   /* ============================================================
@@ -481,19 +481,19 @@
     if (c.hint === c.k) {
       const txt = {
         count: T('The corridors touching the ' + nm(s.v) + ' are highlighted. Count each one' + (hasLoop(c.g, s.v) ? ' — a loop counts twice.' : '.'),
-          'Koridor yang menyentuh ' + nm(s.v) + ' diserlahkan. Kira setiap satu' + (hasLoop(c.g, s.v) ? ' — gelung dikira dua kali.' : '.')),
-        find: T('Places far from ' + s.d + ' corridors are greyed out. Count the corridors at the rest.', 'Tempat yang jauh daripada ' + s.d + ' koridor dikelabukan. Kira koridor di tempat yang tinggal.'),
+          'Koridor yang menyentuh ' + nm(s.v) + ' telah diserlahkan. Kira setiap satu.' + (hasLoop(c.g, s.v) ? ' Gelung dikira dua kali.' : '')),
+        find: T('Places far from ' + s.d + ' corridors are greyed out. Count the corridors at the rest.', 'Tempat yang bilangan koridornya jauh berbeza daripada ' + s.d + ' telah dikelabukan. Kira koridor di tempat yang tinggal.'),
         loop: T('A loop is drawn as a small closed curve attached to one place.', 'Gelung dilukis sebagai lengkung tertutup kecil yang melekat pada satu tempat.'),
         multi: T('Look for two corridors that curve between the same pair of places.', 'Cari dua koridor yang melengkung antara pasangan tempat yang sama.'),
-        clues: T('Places that fail clue 1 are greyed out. Now test the rest against clues 2 and 3.', 'Tempat yang gagal petunjuk 1 dikelabukan. Sekarang uji yang lain dengan petunjuk 2 dan 3.')
+        clues: T('Places that fail clue 1 are greyed out. Now test the rest against clues 2 and 3.', 'Tempat yang tidak memenuhi petunjuk 1 telah dikelabukan. Sekarang uji tempat yang tinggal dengan petunjuk 2 dan 3.')
       }[s.t];
       html += '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span></h3><p>' + txt + '</p></div>';
     }
     if (c.learnOn) {
       let txt;
-      if (s.t === 'count') txt = T('The ' + nm(s.v) + ' touches: ' + touchList(s.v) + '. So its degree is ' + degree(c.g, s.v) + '.', nm(s.v) + ' menyentuh: ' + touchList(s.v) + '. Jadi darjahnya ' + degree(c.g, s.v) + '.');
-      else if (s.t === 'find') txt = T('Every place now shows its degree (d). Find the one with d=' + s.d + '.', 'Setiap tempat kini menunjukkan darjahnya (d). Cari yang mempunyai d=' + s.d + '.');
-      else if (s.t === 'loop') txt = T('A loop joins a place to itself. It adds 2 to that place\'s degree — look for d that seems too big.', 'Gelung menghubungkan tempat dengan dirinya sendiri. Ia menambah 2 pada darjah tempat itu.');
+      if (s.t === 'count') txt = T('The ' + nm(s.v) + ' touches: ' + touchList(s.v) + '. So its degree is ' + degree(c.g, s.v) + '.', nm(s.v) + ' disentuh oleh koridor ke: ' + touchList(s.v) + '. Jadi, darjahnya ialah ' + degree(c.g, s.v) + '.');
+      else if (s.t === 'find') txt = T('Every place now shows its degree (d). Find the one with d=' + s.d + '.', 'Setiap tempat kini menunjukkan darjahnya (d). Cari tempat yang mempunyai d=' + s.d + '.');
+      else if (s.t === 'loop') txt = T('A loop joins a place to itself. It adds 2 to that place\'s degree — look for d that seems too big.', 'Gelung menghubungkan sesuatu tempat dengan dirinya sendiri. Ia menambah 2 pada darjah tempat itu, jadi cari nilai d yang kelihatan terlalu besar.');
       else if (s.t === 'multi') txt = T('Multiple edges are two or more edges joining the same two vertices. A graph with no loops and no multiple edges is a simple graph.', 'Sisi berbilang ialah dua atau lebih sisi yang menghubungkan dua bucu yang sama. Graf tanpa gelung dan tanpa sisi berbilang ialah graf mudah.');
       else {
         let cand = c.g.nodes.map(v => v.id);
@@ -527,14 +527,14 @@
         'Jika koridor antara ' + nm(v) + ' dan ' + nm(u) + ' ditutup, darjah ' + nm(v) + ' menjadi…'),
       opts: [['a', String(d - 1)], ['b', String(d)], ['c', String(d + 1)]], answer: 'a',
       why: () => T('Each corridor adds 1 to each of its two ends. Closing one takes the ' + nm(v) + ' from ' + d + ' to ' + (d - 1) + ', and the ' + nm(u) + ' down by 1 too.',
-        'Setiap koridor menambah 1 pada kedua-dua hujungnya. Menutup satu koridor menjadikan ' + nm(v) + ' daripada ' + d + ' kepada ' + (d - 1) + ', dan ' + nm(u) + ' turut berkurang 1.')
+        'Setiap koridor menambah 1 pada kedua-dua hujungnya. Apabila satu koridor ditutup, darjah ' + nm(v) + ' berkurang daripada ' + d + ' kepada ' + (d - 1) + ', dan darjah ' + nm(u) + ' juga berkurang sebanyak 1.')
     };
   }
 
   function renderPanel() {
     if (c.phase === 'play') { $('c-panel').innerHTML = ''; return; }
     const head = '<div class="note ok"><h3>' + T('Case solved!', 'Kes selesai!') + '</h3><p>' +
-      (c.wrong ? T('You got there with ' + c.wrong + ' wrong answer' + (c.wrong > 1 ? 's' : '') + ' — mistakes cost nothing here.', 'Anda berjaya dengan ' + c.wrong + ' jawapan salah — kesilapan tidak merugikan di sini.')
+      (c.wrong ? T('You got there with ' + c.wrong + ' wrong answer' + (c.wrong > 1 ? 's' : '') + ' — mistakes cost nothing here.', 'Anda berjaya walaupun ada ' + c.wrong + ' jawapan salah. Kesilapan tidak merugikan anda di sini.')
         : T('Every answer right first time.', 'Semua jawapan betul pada cubaan pertama.')) + '</p></div>';
     if (c.phase === 'check') {
       const qc = quickCheck();
@@ -555,7 +555,7 @@
       if (b.dataset.opt === qc.answer) b.classList.add('right');
       else if (b.dataset.opt === pick) b.classList.add('wrong');
     });
-    $('c-qc-out').innerHTML = '<p style="margin:12px 0;">' + (ok ? T('Right — ', 'Betul — ') : T('Not quite — ', 'Belum tepat — ')) + qc.why() + '</p>' +
+    $('c-qc-out').innerHTML = '<p style="margin:12px 0;">' + (ok ? T('Right — ', 'Betul. ') : T('Not quite — ', 'Belum tepat. ')) + qc.why() + '</p>' +
       '<button class="btn sm" id="c-score">' + T('See my XP', 'Lihat XP saya') + '</button>';
     $('c-score').addEventListener('click', award);
   }
@@ -614,19 +614,19 @@
     }
 
     if (answered) {
-      const why = pick === 'b' ? T('Exactly. Each corridor has two ends, so it adds 1 to two places — 2 to the total.', 'Tepat sekali. Setiap koridor ada dua hujung, jadi ia menambah 1 pada dua tempat — 2 kepada jumlah.')
+      const why = pick === 'b' ? T('Exactly. Each corridor has two ends, so it adds 1 to two places — 2 to the total.', 'Tepat sekali. Setiap koridor ada dua hujung, jadi ia menambah 1 pada dua tempat. Ini menambah 2 kepada jumlah.')
         : pick === 'a' ? T('Look again: 12 is not 6. Each corridor is counted at both of its ends.', 'Lihat semula: 12 bukan 6. Setiap koridor dikira pada kedua-dua hujungnya.')
-          : T('There are 5 places, and 2 × 5 = 10, not 12. It is the corridors that matter.', 'Ada 5 tempat, dan 2 × 5 = 10, bukan 12. Koridor yang penting.');
+          : T('There are 5 places, and 2 × 5 = 10, not 12. It is the corridors that matter.', 'Ada 5 tempat, dan 2 × 5 = 10, bukan 12. Bilangan koridor yang penting, bukan bilangan tempat.');
       const rows = LEVELS.filter(L => L.g).map((L, k) => '<tr><td>' + T('Level ', 'Tahap ') + (k + 1) + '</td><td class="num">' + degSum(L.g) + '</td><td class="num">' + L.g.edges.length + '</td><td class="num">' + (2 * L.g.edges.length) + '</td></tr>').join('');
       const term = (a, b, d1, d2) => '<div class="tcard"><b>' + T(a, b) + '</b><i>' + T(b, a) + '</i><span>' + T(d1, d2) + '</span></div>';
       html += '<p style="margin-top:16px;"><b class="ink">' + why + '</b></p>';
       if (st.discovered[2]) {
-        html += '<p>' + T('It works on every map you solved — even Level 3, where the loop adds 2 to one place:', 'Ia berlaku pada setiap peta yang anda selesaikan — termasuk Tahap 3, di mana gelung menambah 2 pada satu tempat:') + '</p>' +
+        html += '<p>' + T('It works on every map you solved — even Level 3, where the loop adds 2 to one place:', 'Ia berlaku pada setiap peta yang anda selesaikan. Ini termasuk Tahap 3, iaitu apabila gelung menambah 2 pada satu tempat:') + '</p>' +
           '<table><tr><th>' + T('Map', 'Peta') + '</th><th class="num">' + T('Sum of degrees', 'Hasil tambah darjah') + '</th><th class="num">' + T('Corridors', 'Koridor') + '</th><th class="num">2 × ' + T('corridors', 'koridor') + '</th></tr>' + rows + '</table>' +
           '<div class="sec-title" style="margin-top:22px;">' + T('Now it has a name', 'Kini ia ada nama') + '</div><div class="terms">' +
-          term('Degree', 'Darjah', 'The number of edges touching a vertex. A loop counts 2.', 'Bilangan sisi yang menyentuh sesuatu bucu. Gelung dikira 2.') +
-          term('Sum of degrees = 2 × edges', 'Hasil tambah darjah = 2 × bilangan sisi', 'True for every graph, because each edge has two ends.', 'Benar bagi setiap graf, kerana setiap sisi ada dua hujung.') +
-          term('Simple graph', 'Graf mudah', 'A graph with no loops and no multiple edges.', 'Graf tanpa gelung dan tanpa sisi berbilang.') +
+          term('Degree', 'Darjah', 'The number of edges touching a vertex. A loop counts 2.', 'Darjah ialah bilangan sisi yang menyentuh sesuatu bucu. Gelung dikira 2.') +
+          term('Sum of degrees = 2 × edges', 'Hasil tambah darjah = 2 × bilangan sisi', 'True for every graph, because each edge has two ends.', 'Ini benar bagi setiap graf kerana setiap sisi ada dua hujung.') +
+          term('Simple graph', 'Graf mudah', 'A graph with no loops and no multiple edges.', 'Graf mudah ialah graf tanpa gelung dan tanpa sisi berbilang.') +
           '</div>';
       }
       html += '<div class="row" style="margin-top:24px;"><button class="btn" id="btn-disc-map">' + T('Back to map', 'Kembali ke peta') + '</button>' +

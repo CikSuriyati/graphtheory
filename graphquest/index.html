@@ -1814,8 +1814,8 @@
         <p id="c-story" style="margin-bottom:8px;"></p>
         <div id="c-terms"></div>
       </div>
-      <div class="board"><svg id="svg2" viewBox="0 0 640 400" role="group"></svg></div>
       <div class="note ask" id="c-ask"></div>
+      <div class="board"><svg id="svg2" viewBox="0 0 640 400" role="group"></svg></div>
       <div class="dock">
       <div class="say" id="c-say" role="status" aria-live="polite"></div>
       <div class="controls">
@@ -1886,7 +1886,7 @@
       {
         title: ['4 towns', '4 pekan'], target: 45,
         story: ['Flood in Temerloh! A relief lorry must carry supplies to the relief centre (PPS) at Chenor. Every road shows its distance — its <b class="ink">weight</b>. Tap roads to build the shortest route.',
-          'Banjir di Temerloh! Sebuah lori bantuan mesti membawa bekalan ke Pusat Pemindahan Sementara (PPS) di Chenor. Setiap jalan menunjukkan jaraknya — iaitu <b class="ink">pemberat</b>nya. Ketik jalan untuk membina laluan terpendek.'],
+          'Banjir di Temerloh! Sebuah lori bantuan mesti membawa bekalan ke Pusat Pemindahan Sementara (PPS) di Chenor. Setiap jalan menunjukkan jaraknya, iaitu <b class="ink">pemberat</b>nya. Ketik jalan untuk membina laluan terpendek.'],
         terms: true,
         g: {
           nodes: [n('S', 'Temerloh', 80, 200), n('A', 'Mentakab', 300, 90), n('B', 'Kuala Krau', 300, 310), n('T', 'PPS Chenor', 550, 200)],
@@ -1897,7 +1897,7 @@
       {
         title: ['6 towns', '6 pekan'], target: 75,
         story: ['The water is rising towards Jerantut. Six towns, many roads. Find the shortest road distance to the PPS.',
-          'Air semakin naik ke arah Jerantut. Enam pekan, banyak jalan. Cari jarak jalan terpendek ke PPS.'],
+          'Air semakin naik ke arah Jerantut. Terdapat enam pekan dan banyak jalan. Cari jarak jalan terpendek ke PPS.'],
         g: {
           nodes: [n('S', 'Temerloh', 70, 210), n('M', 'Mentakab', 220, 90), n('K', 'Kuala Krau', 220, 330),
           n('L', 'Lanchang', 390, 110), n('D', 'Kerdau', 390, 300), n('T', 'PPS Jerantut', 560, 200)],
@@ -1909,7 +1909,7 @@
       {
         title: ['Road closed!', 'Jalan ditutup!'], target: 90, close: 6,
         story: ['Heading for the PPS at Maran. Listen for the news — roads can flood while the lorry is on its way.',
-          'Menuju ke PPS di Maran. Dengar berita — jalan boleh dinaiki air semasa lori dalam perjalanan.'],
+          'Lori sedang menuju ke PPS di Maran. Dengar berita kerana jalan boleh dinaiki air semasa lori dalam perjalanan.'],
         g: {
           nodes: [n('S', 'Temerloh', 70, 200), n('A', 'Sanggang', 210, 70), n('B', 'Kuala Krau', 210, 330),
           n('C', 'Chenor', 360, 200), n('D', 'Kerdau', 480, 80), n('T', 'PPS Maran', 590, 270)],
@@ -1921,7 +1921,7 @@
       {
         title: ['Fastest, not shortest', 'Paling pantas, bukan terpendek'], target: 90, key: 'm',
         story: ['The PPS at Triang needs medicine urgently. Each road now shows <b class="ink">km and minutes</b>. The highway is longer but faster. This time find the <b class="ink">fastest</b> route — add up the minutes.',
-          'PPS di Triang memerlukan ubat dengan segera. Setiap jalan kini menunjukkan <b class="ink">km dan minit</b>. Lebuh raya lebih jauh tetapi lebih laju. Kali ini cari laluan <b class="ink">paling pantas</b> — jumlahkan minit.'],
+          'PPS di Triang memerlukan ubat dengan segera. Setiap jalan kini menunjukkan <b class="ink">km dan minit</b>. Lebuh raya lebih jauh tetapi lebih laju. Kali ini, cari laluan <b class="ink">paling pantas</b> dengan menjumlahkan minit.'],
         g: {
           nodes: [n('S', 'Temerloh', 70, 200), n('A', 'Mentakab', 220, 80), n('B', 'Lanchang', 220, 320),
           n('C', 'Kerdau', 400, 80), n('D', 'Bera', 400, 320), n('T', 'PPS Triang', 570, 200)],
@@ -1933,7 +1933,7 @@
       {
         title: ['Random challenge', 'Cabaran rawak'], target: 120, random: true,
         story: ['A new map every time you play. Shortest route to the PPS — no two games the same.',
-          'Peta baharu setiap kali anda bermain. Laluan terpendek ke PPS — tiada dua permainan yang sama.']
+          'Anda akan mendapat peta baharu setiap kali bermain. Cari laluan terpendek ke PPS. Tiada dua permainan yang sama.']
       }
     ];
 
@@ -2152,13 +2152,13 @@
         { icon: '🚩', done: !!st.classCode, h: T('Start', 'Mula'),
           say: T('Type the class code from your teacher and your register number.', 'Taip kod kelas daripada guru dan nombor giliran anda.') },
         { icon: '📝', done: tests.some(r => r.test === 'pre') || cleared > 0, h: T('Pre-test', 'Ujian pra'),
-          say: T('Answer 10 quick questions on your own. It is not for your grade — it shows what you know before playing.', 'Jawab 10 soalan pantas sendiri. Tidak dikira untuk gred — ia menunjukkan apa yang anda tahu sebelum bermain.') },
+          say: T('Answer 10 quick questions on your own. It is not for your grade — it shows what you know before playing.', 'Jawab 10 soalan pantas secara sendiri. Ujian ini tidak dikira untuk gred. Ia menunjukkan apa yang anda tahu sebelum bermain.') },
         { icon: '🎮', done: cleared >= need, h: T('Play the 6 worlds', 'Main 6 dunia'), worlds: true,
           say: T('Four core worlds with 5 levels each, then two bonus worlds and the Boss Level. Clear at least ' + need + ' levels. Earn XP and badges as you go.', 'Empat dunia teras dengan 5 tahap setiap satu, kemudian dua dunia bonus dan Tahap Bos. Selesaikan sekurang-kurangnya ' + need + ' tahap. Kumpul XP dan lencana sepanjang perjalanan.') },
         { icon: '📤', done: st.sent > 0, h: T('Submit at My progress', 'Hantar di Kemajuan saya'),
-          say: T('Open My progress at the top and press Submit results. Your work goes to your teacher. This doesn’t end the game — you can keep playing and submit again.', 'Buka Kemajuan saya di atas dan tekan Hantar keputusan. Kerja anda dihantar kepada guru. Ini tidak menamatkan permainan — anda boleh terus bermain dan hantar lagi.') },
+          say: T('Open My progress at the top and press Submit results. Your work goes to your teacher. This doesn’t end the game — you can keep playing and submit again.', 'Buka Kemajuan saya di atas dan tekan Hantar keputusan. Kerja anda dihantar kepada guru. Ini tidak menamatkan permainan. Anda boleh terus bermain dan menghantar keputusan lagi.') },
         { icon: '✏️', done: postDone, h: T('Post-test', 'Ujian pasca'),
-          say: T('Take it only when you have finished playing — one try. It waits at the top of the map. Answer 10 questions again, on your own.', 'Jawab hanya apabila anda sudah selesai bermain — satu cubaan. Ia menunggu di bahagian atas peta. Jawab 10 soalan sekali lagi, sendiri.') },
+          say: T('Take it only when you have finished playing — one try. It waits at the top of the map. Answer 10 questions again, on your own.', 'Jawab ujian ini hanya apabila anda sudah selesai bermain. Anda hanya ada satu cubaan. Ujian ini menunggu di bahagian atas peta. Jawab 10 soalan sekali lagi secara sendiri.') },
         { icon: '🏆', done: postDone, h: T('Finish!', 'Tamat!'),
           say: T('See your score before and after. You can keep playing to earn more badges.', 'Lihat markah anda sebelum dan selepas. Anda boleh terus bermain untuk mengumpul lebih banyak lencana.') }
       ];
@@ -2581,8 +2581,8 @@
       if (run.phase !== 'play') return;
       const e = run.g.edges[i], r = run.route, end = endOf();
       if (r.edges.length && r.edges[r.edges.length - 1] === i) return undo();
-      if (run.closed.has(i)) { shake('e' + i); return say(T('This road is closed — banjir. Find another way.', 'Jalan ini ditutup — banjir. Cari jalan lain.'), true); }
-      if (end === run.t) return say(T('The lorry is at the PPS. Send it, or undo a road.', 'Lori sudah tiba di PPS. Hantar, atau buat asal satu jalan.'));
+      if (run.closed.has(i)) { shake('e' + i); return say(T('This road is closed — banjir. Find another way.', 'Jalan ini ditutup kerana banjir. Cari jalan lain.'), true); }
+      if (end === run.t) return say(T('The lorry is at the PPS. Send it, or undo a road.', 'Lori sudah tiba di PPS. Hantar lori itu, atau buat asal satu jalan.'));
       if (e.a !== end && e.b !== end) {
         shake('e' + i); shake('l' + i);
         return say(T("That road doesn't start from " + node(end).name + ', where the lorry is now.',
@@ -2615,9 +2615,9 @@
     function afterMove() {
       const end = endOf();
       drawGraph(); renderReadout();
-      if (end === run.t) return say(T('Arrived! Happy with this route? Send the lorry.', 'Sudah tiba! Puas hati dengan laluan ini? Hantar lori.'));
+      if (end === run.t) return say(T('Arrived! Happy with this route? Send the lorry.', 'Lori sudah tiba! Adakah anda berpuas hati dengan laluan ini? Jika ya, hantar lori itu.'));
       const open = E.neighbours(run.g, end, run.closed).filter(nb => !run.route.nodes.includes(nb.to));
-      if (!open.length) { shake('n' + end); return say(T('Dead end — every road from here goes somewhere you have been. Undo a road.', 'Jalan mati — setiap jalan dari sini menuju ke tempat yang sudah dilalui. Buat asal satu jalan.'), true); }
+      if (!open.length) { shake('n' + end); return say(T('Dead end — every road from here goes somewhere you have been. Undo a road.', 'Ini jalan mati. Setiap jalan dari sini menuju ke tempat yang sudah dilalui. Buat asal satu jalan.'), true); }
       say('');
     }
 
@@ -2672,7 +2672,7 @@
             ? T('Look at the minutes, not the km. The fastest route passes through <b class="ink">' + nm + '</b> (the dashed ring).',
               'Lihat minit, bukan km. Laluan paling pantas melalui <b class="ink">' + nm + '</b> (bulatan bertitik).')
             : T('The shortest route passes through <b class="ink">' + nm + '</b> (the dashed ring). Before you choose each road, ask: what is the total so far?',
-              'Laluan terpendek melalui <b class="ink">' + nm + '</b> (bulatan bertitik). Sebelum memilih setiap jalan, tanya: berapakah jumlah setakat ini?')) +
+              'Laluan terpendek melalui <b class="ink">' + nm + '</b> (bulatan bertitik). Sebelum memilih setiap jalan, tanya diri anda berapakah jumlah jarak setakat ini.')) +
           '</p></div>';
         return;
       }
@@ -2684,9 +2684,9 @@
         ' <span class="pill alert">−10 XP</span></h3><p>' +
         (run.key === 'm'
           ? T('Each route’s time is the sum of the minutes on its roads. The smallest total is the fastest route — dotted in blue on the map.',
-            'Masa setiap laluan ialah hasil tambah minit pada jalannya. Jumlah terkecil ialah laluan paling pantas — bertitik biru pada peta.')
+            'Masa setiap laluan ialah hasil tambah minit pada jalan-jalannya. Jumlah terkecil ialah laluan paling pantas. Laluan ini ditunjukkan dengan garis biru bertitik pada peta.')
           : T('Each route’s length is the sum of the weights on its roads. The smallest total is the <b class="ink">shortest path</b> — dotted in blue on the map.',
-            'Panjang setiap laluan ialah hasil tambah pemberat pada jalannya. Jumlah terkecil ialah <b class="ink">laluan terpendek</b> — bertitik biru pada peta.')) +
+            'Panjang setiap laluan ialah hasil tambah pemberat pada jalan-jalannya. Jumlah terkecil ialah <b class="ink">laluan terpendek</b>. Laluan ini ditunjukkan dengan garis biru bertitik pada peta.')) +
         '</p><table><tr><th>' + T('Route', 'Laluan') + '</th><th class="num">' + T('Roads', 'Jalan') + '</th><th class="num">km</th>' +
         (run.key === 'm' ? '<th class="num">min</th>' : '') + '</tr>' + rows + '</table>' +
         (sol.routes.length > 6 ? '<p class="muted" style="margin:6px 0 0;">' + T('+ ' + (sol.routes.length - 6) + ' longer routes not shown', '+ ' + (sol.routes.length - 6) + ' laluan lebih panjang tidak ditunjukkan') + '</p>' : '') +
@@ -2736,18 +2736,18 @@
         save();
         const extra = {
           fewest_edges_not_shortest: T('You picked a route with the fewest roads. Fewer roads doesn’t always mean fewer km.',
-            'Anda memilih laluan dengan jalan paling sedikit. Jalan yang sedikit tidak semestinya km yang sedikit.'),
+            'Anda memilih laluan dengan jalan paling sedikit. Bilangan jalan yang sedikit tidak semestinya bermaksud jarak yang pendek.'),
           chose_distance_not_time: T('This is the shortest route in km — but the mission is about time. Check the minutes.',
-            'Ini laluan terpendek dalam km — tetapi misinya tentang masa. Semak minit.'),
+            'Ini laluan terpendek dalam km, tetapi misi ini tentang masa. Semak minit.'),
           valid_not_optimal: T('Somewhere a road that looked short led to a long total. Compare the totals, not single roads.',
-            'Ada jalan yang nampak pendek tetapi jumlahnya panjang. Bandingkan jumlah, bukan satu-satu jalan.')
+            'Ada jalan yang nampak pendek, tetapi jumlah jaraknya panjang. Bandingkan jumlah, bukan satu-satu jalan.')
         }[res.tag];
         $('panel').innerHTML = '<div class="note warn"><h3>' +
           T('Valid route, but not the ' + (u === 'min' ? 'fastest' : 'shortest'), 'Laluan sah, tetapi bukan yang ' + (u === 'min' ? 'paling pantas' : 'terpendek')) +
           '</h3><p>' + T('Your route: <b class="ink">' + res.cost + ' ' + u + '</b> — best possible: <b class="ink">' + best.cost + ' ' + u + '</b>. ',
-            'Laluan anda: <b class="ink">' + res.cost + ' ' + u + '</b> — terbaik: <b class="ink">' + best.cost + ' ' + u + '</b>. ') + extra + '</p>' +
+            'Laluan anda ialah <b class="ink">' + res.cost + ' ' + u + '</b>, tetapi laluan terbaik ialah <b class="ink">' + best.cost + ' ' + u + '</b>. ') + extra + '</p>' +
           '<div class="row"><button class="btn sm" id="btn-again">' + T('Try again', 'Cuba lagi') + '</button>' +
-          '<span class="muted">' + T('+30 XP banked. Mistakes cost nothing — your best score counts.', '+30 XP disimpan. Kesilapan tidak merugikan — markah terbaik anda yang dikira.') + '</span></div></div>';
+          '<span class="muted">' + T('+30 XP banked. Mistakes cost nothing — your best score counts.', '+30 XP disimpan. Kesilapan tidak merugikan anda kerana markah terbaik anda yang dikira.') + '</span></div></div>';
         $('btn-again').addEventListener('click', () => {
           $('panel').innerHTML = '';
           run.route = { nodes: [run.s], edges: [] };
@@ -2771,23 +2771,23 @@
         return {
           cmp: km, answer: E.sameRoute(km.edges, best.edges) ? 'same' : 'longer',
           q: T('The route with the shortest <b class="ink">distance</b> is ' + km.km + ' km. Compared with your route, how long does it take?',
-            'Laluan dengan <b class="ink">jarak</b> terpendek ialah ' + km.km + ' km. Berbanding laluan anda, berapa lama masanya?'),
+            'Laluan dengan <b class="ink">jarak</b> terpendek ialah ' + km.km + ' km. Berbanding laluan anda, berapa lamakah masa yang diambil oleh laluan itu?'),
           opts: [['longer', T('It takes longer', 'Ia mengambil masa lebih lama')], ['same', T('It is my route', 'Itulah laluan saya')], ['shorter', T('It is faster', 'Ia lebih pantas')]],
           explain: ok => T((ok ? 'Right — ' : 'Look at the blue dots: ') + 'the shortest route takes ' + km.min + ' min, your route ' + best.min + ' min. Shortest in km is not always fastest.',
-            (ok ? 'Betul — ' : 'Lihat titik biru: ') + 'laluan terpendek mengambil ' + km.min + ' minit, laluan anda ' + best.min + ' minit. Terpendek dalam km tidak semestinya paling pantas.')
+            (ok ? 'Betul. ' : 'Lihat titik biru. ') + 'Laluan terpendek mengambil masa ' + km.min + ' minit, manakala laluan anda mengambil masa ' + best.min + ' minit. Terpendek dalam km tidak semestinya paling pantas.')
         };
       }
       const f = sol.fewest, same = E.sameRoute(f.edges, best.edges);
       return {
         cmp: f, answer: same ? 'same' : 'longer',
         q: T('Now think about the route with the <b class="ink">fewest roads</b> (' + sol.minHops + ' roads). Compared with your route, its distance is…',
-          'Sekarang fikirkan laluan dengan <b class="ink">jalan paling sedikit</b> (' + sol.minHops + ' jalan). Berbanding laluan anda, jaraknya…'),
+          'Sekarang fikirkan laluan dengan <b class="ink">jalan paling sedikit</b> (' + sol.minHops + ' jalan). Berbanding laluan anda, jarak laluan itu…'),
         opts: [['longer', T('Longer than mine', 'Lebih jauh daripada laluan saya')], ['same', T('Exactly my route', 'Sama dengan laluan saya')], ['shorter', T('Shorter than mine', 'Lebih dekat daripada laluan saya')]],
         explain: ok => same
           ? T((ok ? 'Right — ' : 'Not quite — ') + 'here the route with the fewest roads is also the shortest. That won’t always happen. Watch for it in the next levels.',
-            (ok ? 'Betul — ' : 'Belum tepat — ') + 'di sini laluan dengan jalan paling sedikit juga yang terpendek. Ini tidak selalu berlaku. Perhatikan pada tahap seterusnya.')
+            (ok ? 'Betul. ' : 'Belum tepat. ') + 'Di sini, laluan dengan jalan paling sedikit juga merupakan laluan terpendek. Ini tidak selalu berlaku. Perhatikan pada tahap seterusnya.')
           : T((ok ? 'Right — ' : 'Look at the blue dots: ') + 'the ' + f.edges.length + '-road route is ' + f.km + ' km, but yours is ' + best.km + ' km. Fewer roads, more km.',
-            (ok ? 'Betul — ' : 'Lihat titik biru: ') + 'laluan ' + f.edges.length + ' jalan ialah ' + f.km + ' km, tetapi laluan anda ' + best.km + ' km. Jalan lebih sedikit, km lebih banyak.')
+            (ok ? 'Betul. ' : 'Lihat titik biru. ') + 'Laluan ' + f.edges.length + ' jalan ialah ' + f.km + ' km, tetapi laluan anda hanya ' + best.km + ' km. Walaupun jalannya lebih sedikit, jaraknya lebih jauh.')
       };
     }
 
@@ -2894,8 +2894,8 @@
     function renderDiscover() {
       if (WORLD[discoverWorld] && WORLD[discoverWorld].renderDiscover) return WORLD[discoverWorld].renderDiscover();
       const opts = [
-        ['a', T('The route with the fewest roads is always the shortest.', 'Laluan dengan jalan paling sedikit sentiasa yang terpendek.')],
-        ['b', T('Fewest roads is not always shortest distance — you have to add up the weights.', 'Jalan paling sedikit tidak semestinya jarak terpendek — anda perlu menjumlahkan pemberat.')],
+        ['a', T('The route with the fewest roads is always the shortest.', 'Laluan dengan jalan paling sedikit sentiasa merupakan laluan terpendek.')],
+        ['b', T('Fewest roads is not always shortest distance — you have to add up the weights.', 'Laluan dengan jalan paling sedikit tidak semestinya mempunyai jarak terpendek. Anda perlu menjumlahkan pemberat.')],
         ['c', T('The shortest road leaving the start is always on the best route.', 'Jalan terpendek yang keluar dari titik mula sentiasa berada pada laluan terbaik.')]
       ];
       const answered = discoverPick !== null || st.discovered[3];
@@ -2907,15 +2907,15 @@
 
       if (answered) {
         const why = pick === 'b' ? T('Exactly. You found it before anyone told you.', 'Tepat sekali. Anda menemuinya sebelum sesiapa memberitahu.')
-          : pick === 'a' ? T('Remember Level 2: the 2-road route was 44 km, but the best was 30 km with 3 roads.', 'Ingat Tahap 2: laluan 2 jalan ialah 44 km, tetapi yang terbaik 30 km dengan 3 jalan.')
-            : T('Remember Level 1: the shortest road out of Temerloh (8 km) was not on the best route.', 'Ingat Tahap 1: jalan terpendek keluar dari Temerloh (8 km) bukan pada laluan terbaik.');
+          : pick === 'a' ? T('Remember Level 2: the 2-road route was 44 km, but the best was 30 km with 3 roads.', 'Ingat Tahap 2. Laluan 2 jalan ialah 44 km, tetapi laluan terbaik ialah 30 km dengan 3 jalan.')
+            : T('Remember Level 1: the shortest road out of Temerloh (8 km) was not on the best route.', 'Ingat Tahap 1. Jalan terpendek keluar dari Temerloh (8 km) tidak berada pada laluan terbaik.');
         const term = (a, b, d1, d2) => '<div class="tcard"><b>' + T(a, b) + '</b><i>' + T(b, a) + '</i><span>' + T(d1, d2) + '</span></div>';
         html += '<p style="margin-top:16px;"><b class="ink">' + why + '</b></p>' +
           '<div class="sec-title" style="margin-top:22px;">' + T('Now it has a name', 'Kini ia ada nama') + '</div>' +
           '<div class="terms">' +
-          term('Weight', 'Pemberat', 'The value on an edge — a distance, a time or a cost.', 'Nilai pada sisi — jarak, masa atau kos.') +
-          term('Weighted graph', 'Graf berpemberat', 'A graph whose edges carry weights, like your road map.', 'Graf yang sisinya membawa pemberat, seperti peta jalan anda.') +
-          term('Shortest path', 'Laluan terpendek', 'The path between two vertices with the smallest total weight.', 'Lorong antara dua bucu dengan jumlah pemberat paling kecil.') +
+          term('Weight', 'Pemberat', 'The value on an edge — a distance, a time or a cost.', 'Pemberat ialah nilai pada sisi, seperti jarak, masa atau kos.') +
+          term('Weighted graph', 'Graf berpemberat', 'A graph whose edges carry weights, like your road map.', 'Graf berpemberat ialah graf yang sisinya mempunyai pemberat, seperti peta jalan anda.') +
+          term('Shortest path', 'Laluan terpendek', 'The path between two vertices with the smallest total weight.', 'Laluan terpendek ialah lorong antara dua bucu dengan jumlah pemberat yang paling kecil.') +
           '</div>' +
           '<div class="row" style="margin-top:24px;"><button class="btn" id="btn-disc-map">' + T('Back to map', 'Kembali ke peta') + '</button>' +
           '<span class="muted">' + (st.discovered[3] ? T('+20 XP for discovering', '+20 XP kerana menemui') : '') + '</span></div>';

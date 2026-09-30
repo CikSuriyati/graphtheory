@@ -13,7 +13,9 @@
  *     never creates duplicates.
  *   - Rows are validated field by field; a bad row rejects the whole
  *     batch with a message, rather than half-writing it.
- *   - No names are stored. student_code is class code + register number.
+ *   - student_code is class code + the student's name or register number
+ *     (e.g. 4S1-17 or 4S1-AINA SOFEA). group is the student's kumpulan
+ *     (e.g. 1 or MELUR); it decides the team on the class board.
  *
  * SETUP
  *   1. Open a Google Sheet > Extensions > Apps Script
@@ -43,6 +45,9 @@ var FIELDS = [
   'mistake_tag', 'boss_tool_choice'
 ];
 var RECEIVED_COL = FIELDS.length + 1;          // server time, added by this script
+/* The group column comes after 'received', so sheets made before it existed
+   keep every old column where it was. Old rows simply have no group. */
+var GROUP_COL = RECEIVED_COL + 1;
 
 /* Pre-test, post-test and survey rows go to their own tab. */
 var TESTS_SHEET = 'Tests';
@@ -51,12 +56,13 @@ var TEST_FIELDS = [
   'answers', 'correct_items', 'time_s', 'levels_cleared', 'skipped'
 ];
 var TEST_RECEIVED_COL = TEST_FIELDS.length + 1;
+var TEST_GROUP_COL = TEST_RECEIVED_COL + 1;
 
-/* Class leaderboard teams. Leave the Teams tab empty and students are grouped
-   in fours by register number (1–4 = Team 1, 5–8 = Team 2, …). To choose teams
-   yourself, add rows: student_code (e.g. 4S1-17) | team (any name). */
+/* Class leaderboard teams. A student's team is the group (kumpulan) they
+   typed when joining; a student who left it empty plays alone and appears
+   only in the players list. To set or override a team, add rows to the
+   Teams tab: student_code (e.g. 4S1-17) | team (any name). */
 var TEAMS_SHEET = 'Teams';
-var TEAM_SIZE = 4;
 
 var MAX_ROWS_PER_POST = 500;
 
@@ -76,7 +82,7 @@ function doGet(e) {
   }
   if (String(p.key || '') !== TEACHER_KEY) return json({ ok: false, code: 'BAD_KEY', error: 'That teacher key is not right.' });
 
-  return json({ ok: true, rows: readTab(getSheet(), RECEIVED_COL), tests: readTab(getTestsSheet(), TEST_RECEIVED_COL) });
+  return json({ ok: true, rows: readTab(getSheet(), GROUP_COL), tests: readTab(getTestsSheet(), TEST_GROUP_COL), teams: teamMap() });
 }
 
 /* ==================================================================
@@ -88,11 +94,12 @@ function doGet(e) {
 function board(cls) {
   if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(cls)) return { ok: false, error: 'Unknown class code.' };
   var since = weekStart();
-  var rows = readTab(getSheet(), RECEIVED_COL).filter(function (r) { return String(r.class_code) === cls; });
-  var best = {}, everyone = {};
+  var rows = readTab(getSheet(), GROUP_COL).filter(function (r) { return String(r.class_code) === cls; });
+  var best = {}, everyone = {}, groupOf = {};
   rows.forEach(function (r) {
     var s = String(r.student_code);
     everyone[s] = true;
+    if (String(r.group || '').trim()) groupOf[s] = String(r.group).trim();   // rows are in order, so the latest group wins
     if (!(new Date(r.received) >= since)) return;
     var k = r.world + '-' + r.level, b = best[s] || (best[s] = {});
     b[k] = Math.max(b[k] || 0, Number(r.score_xp) || 0);
@@ -101,11 +108,11 @@ function board(cls) {
   var students = Object.keys(everyone).map(function (s) {
     var xp = 0, b = best[s] || {};
     Object.keys(b).forEach(function (k) { xp += b[k]; });
-    var reg = Number(s.split('-').pop()) || 0;
-    return { code: s, xp: xp, team: teamOf[s] || ('Team ' + Math.ceil(reg / TEAM_SIZE)) };
+    return { code: s, xp: xp, team: teamOf[s] || groupOf[s] || '' };        // '' = playing alone
   }).sort(function (a, b) { return b.xp - a.xp; });
   var teams = {};
   students.forEach(function (s) {
+    if (!s.team) return;
     var t = teams[s.team] || (teams[s.team] = { team: s.team, total: 0, members: [] });
     t.total += s.xp; t.members.push({ code: s.code, xp: s.xp });
   });
@@ -144,7 +151,7 @@ function getTeamsSheet() {
 function readTab(sheet, cols) {
   var last = sheet.getLastRow();
   if (last < 2) return [];
-  var head = sheet.getRange(1, 1, 1, cols).getValues()[0];
+  var head = sheet.getRange(1, 1, 1, cols).getValues()[0].map(function (h, i) { return h || ('col' + (i + 1)); });
   return sheet.getRange(2, 1, last - 1, cols).getValues().map(function (r) {
     var o = {};
     head.forEach(function (h, i) { o[h] = (r[i] instanceof Date) ? r[i].toISOString() : r[i]; });
@@ -185,12 +192,13 @@ function doPost(e) {
       if (known[id]) return;                   // already stored — skip, don't duplicate
       known[id] = true;
       var line = FIELDS.map(function (f) { return r[f] === undefined ? '' : r[f]; });
-      line.push(now);
+      line.push(now, r.group || '');
       out.push(line);
     });
 
     if (out.length) {
-      sheet.getRange(sheet.getLastRow() + 1, 1, out.length, RECEIVED_COL).setValues(out);
+      ensureGroupHeader(sheet, GROUP_COL);
+      sheet.getRange(sheet.getLastRow() + 1, 1, out.length, GROUP_COL).setValues(out);
     }
     return json({ ok: true, received: rows.length, added: out.length, skipped: rows.length - out.length,
                   testsReceived: tests.length, testsAdded: testsAdded });
@@ -211,7 +219,8 @@ function checkRow(r) {
   if (!r || typeof r !== 'object') return 'not an object.';
   if (!/^[a-z0-9]+-[a-z0-9]+$/i.test(String(r.attempt_id || ''))) return 'missing attempt_id.';
   if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(String(r.class_code || ''))) return 'bad class_code.';
-  if (!/^[A-Z0-9]+-\d{1,3}$/.test(String(r.student_code || ''))) return 'bad student_code.';
+  if (!okStudent(r.student_code)) return 'bad student_code.';
+  if (!okGroup(r.group)) return 'bad group.';
   if (!isInt(r.world, 1, 7)) return 'bad world.';          // 7 = the Boss Level
   if (!isInt(r.level, 1, 5)) return 'bad level.';
   if (typeof r.correct !== 'boolean' || typeof r.optimal !== 'boolean') return 'correct/optimal must be true or false.';
@@ -226,7 +235,8 @@ function checkTest(r) {
   if (!r || typeof r !== 'object') return 'not an object.';
   if (!/^t[a-z0-9]+-[a-z0-9]+$/i.test(String(r.test_id || ''))) return 'missing test_id.';
   if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(String(r.class_code || ''))) return 'bad class_code.';
-  if (!/^[A-Z0-9]+-\d{1,3}$/.test(String(r.student_code || ''))) return 'bad student_code.';
+  if (!okStudent(r.student_code)) return 'bad student_code.';
+  if (!okGroup(r.group)) return 'bad group.';
   if (['pre', 'post', 'survey'].indexOf(r.test) < 0) return 'test must be pre, post or survey.';
   if (['A', 'B', ''].indexOf(r.form) < 0) return 'bad form.';
   if (!isInt(r.score, 0, 50) || !isInt(r.max, 0, 50)) return 'bad score.';
@@ -245,12 +255,25 @@ function appendNew(sheet, list, fields, idField) {
     if (known[id]) return;
     known[id] = true;
     var line = fields.map(function (f) { return r[f] === undefined ? '' : r[f]; });
-    line.push(now);
+    line.push(now, r.group || '');
     out.push(line);
   });
-  if (out.length) sheet.getRange(sheet.getLastRow() + 1, 1, out.length, fields.length + 1).setValues(out);
+  if (out.length) {
+    ensureGroupHeader(sheet, fields.length + 2);
+    sheet.getRange(sheet.getLastRow() + 1, 1, out.length, fields.length + 2).setValues(out);
+  }
   return out.length;
 }
+
+/* Class part, a dash, then a register number or a name. Names start with a
+   letter or digit, so nothing can start with = + @ and turn into a formula. */
+var NAME_RE = /^[\p{L}\p{N}][\p{L}\p{N} .'@\/-]{0,39}$/u;
+function okStudent(v) {
+  var s = String(v || ''), i = s.indexOf('-');
+  return i > 0 && /^[A-Z0-9]+$/.test(s.slice(0, i)) && NAME_RE.test(s.slice(i + 1));
+}
+/* Optional: rows from phones that haven't updated yet have no group. */
+function okGroup(v) { return v === undefined || v === '' || (NAME_RE.test(String(v)) && String(v).length <= 20); }
 
 function isInt(v, lo, hi) { return typeof v === 'number' && v === Math.round(v) && v >= lo && v <= hi; }
 
@@ -258,6 +281,12 @@ function isInt(v, lo, hi) { return typeof v === 'number' && v === Math.round(v) 
 /* ==================================================================
    HELPERS
    ================================================================== */
+
+/** Sheets made before the group column get its header the first time it's needed. */
+function ensureGroupHeader(sheet, col) {
+  var cell = sheet.getRange(1, col);
+  if (cell.getValue() !== 'group') cell.setValue('group').setFontWeight('bold');
+}
 
 function knownIds(sheet) {
   var out = {}, last = sheet.getLastRow();
@@ -270,9 +299,9 @@ function getTestsSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(TESTS_SHEET) || ss.insertSheet(TESTS_SHEET);
   if (sh.getLastRow() === 0) {
-    sh.appendRow(TEST_FIELDS.concat(['received']));
+    sh.appendRow(TEST_FIELDS.concat(['received', 'group']));
     sh.setFrozenRows(1);
-    sh.getRange(1, 1, 1, TEST_RECEIVED_COL).setFontWeight('bold');
+    sh.getRange(1, 1, 1, TEST_GROUP_COL).setFontWeight('bold');
   }
   return sh;
 }
@@ -289,9 +318,9 @@ function setupSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
   if (sh.getLastRow() === 0) {
-    sh.appendRow(FIELDS.concat(['received']));
+    sh.appendRow(FIELDS.concat(['received', 'group']));
     sh.setFrozenRows(1);
-    sh.getRange(1, 1, 1, RECEIVED_COL).setFontWeight('bold');
+    sh.getRange(1, 1, 1, GROUP_COL).setFontWeight('bold');
   }
   return sh;
 }
@@ -322,7 +351,13 @@ function testCollector() {
   bad({ world: 0 }, 'world 0');
   bad({ optimal: 'yes' }, 'string boolean');
   bad({ score_xp: 101 }, 'score over 100');
-  bad({ student_code: 'Ali' }, 'a name as student_code');
+  bad({ student_code: 'Ali' }, 'a name with no class');
+  bad({ student_code: '4S1-=HYPERLINK(1)' }, 'a formula as the name');
+  bad({ group: '<b>' }, 'markup as the group');
+  var named = JSON.parse(JSON.stringify(good)); named.student_code = '4S1-AINA SOFEA'; named.group = 'MELUR';
+  if (checkRow(named)) throw new Error('Name and group rejected: ' + checkRow(named));
+  var old = JSON.parse(JSON.stringify(good)); delete old.group;
+  if (checkRow(old)) throw new Error('Row without a group rejected: ' + checkRow(old));
   bad({ attempt_id: '' }, 'missing id');
 
   var t = { test_id: 'tlx3k9a-abc12', timestamp: '2026-10-14 10:32', class_code: '4S1-2026', student_code: '4S1-17',

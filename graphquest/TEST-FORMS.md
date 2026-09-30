@@ -59,21 +59,21 @@ Answer: **7**
 
 **Form A**  
 Which of these is a simple graph?  
-*Yang manakah graf mudah?*
+*Yang manakah antara berikut ialah graf mudah?*
 
-- a) A graph with a loop at one vertex · *Graf dengan gelung pada satu bucu*
-- b) A graph with two edges joining the same pair of vertices · *Graf dengan dua sisi menghubungkan pasangan bucu yang sama*
-- c) A graph with no loops and no multiple edges · *Graf tanpa gelung dan tanpa sisi berbilang* ✅
-- d) A graph where every vertex has a loop · *Graf yang setiap bucunya ada gelung*
+- a) A graph with a loop at one vertex · *Graf yang mempunyai gelung pada satu bucu.*
+- b) A graph with two edges joining the same pair of vertices · *Graf yang mempunyai dua sisi yang menghubungkan pasangan bucu yang sama.*
+- c) A graph with no loops and no multiple edges · *Graf yang tidak mempunyai gelung dan tidak mempunyai sisi berbilang.* ✅
+- d) A graph where every vertex has a loop · *Graf yang setiap bucunya mempunyai gelung.*
 
 **Form B**  
 Which of these makes a graph NOT a simple graph?  
-*Yang manakah menjadikan sebuah graf BUKAN graf mudah?*
+*Yang manakah antara berikut menjadikan sebuah graf BUKAN graf mudah?*
 
-- a) It has a vertex of degree 1 · *Ia ada bucu berdarjah 1*
-- b) It has two edges joining the same two vertices · *Ia ada dua sisi yang menghubungkan dua bucu yang sama* ✅
-- c) It is not connected · *Ia tidak tersambung*
-- d) It has 6 vertices · *Ia ada 6 bucu*
+- a) It has a vertex of degree 1 · *Graf itu mempunyai bucu berdarjah 1.*
+- b) It has two edges joining the same two vertices · *Graf itu mempunyai dua sisi yang menghubungkan dua bucu yang sama.* ✅
+- c) It is not connected · *Graf itu tidak tersambung.*
+- d) It has 6 vertices · *Graf itu mempunyai 6 bucu.*
 
 ## 5. Degree with a loop · Darjah dengan gelung
 
@@ -97,7 +97,7 @@ Answer: **5**
 
 **Form A**  
 Which of these is a path in this graph?  
-*Yang manakah lorong dalam graf ini?*
+*Yang manakah antara berikut ialah lorong dalam graf ini?*
 
 *Diagram:* vertices P, Q, R, S, T; edges P–Q, P–R, P–S, Q–R, S–T.
 
@@ -108,7 +108,7 @@ Which of these is a path in this graph?
 
 **Form B**  
 Which of these is a path in this graph?  
-*Yang manakah lorong dalam graf ini?*
+*Yang manakah antara berikut ialah lorong dalam graf ini?*
 
 *Diagram:* vertices A, B, C, D, E; edges A–B, B–C, B–D, B–E, C–D.
 
@@ -125,9 +125,9 @@ Is this graph connected?
 
 *Diagram:* vertices A, B, C, D, E; edges A–B, B–C, D–E.
 
-- a) Yes — every vertex has at least one edge · *Ya — setiap bucu ada sekurang-kurangnya satu sisi*
-- b) No — some pairs of vertices have no path between them · *Tidak — ada pasangan bucu yang tiada lorong antaranya* ✅
-- c) Yes — it has 3 edges · *Ya — ia ada 3 sisi*
+- a) Yes — every vertex has at least one edge · *Ya, kerana setiap bucu mempunyai sekurang-kurangnya satu sisi.*
+- b) No — some pairs of vertices have no path between them · *Tidak, kerana ada pasangan bucu yang tidak dihubungkan oleh sebarang lorong.* ✅
+- c) Yes — it has 3 edges · *Ya, kerana graf itu mempunyai 3 sisi.*
 
 **Form B**  
 Is this graph connected?  
@@ -135,9 +135,9 @@ Is this graph connected?
 
 *Diagram:* vertices A, B, C, D, E; edges A–B, A–C, B–D, C–D, D–E.
 
-- a) Yes — there is a path between every pair of vertices · *Ya — ada lorong antara setiap pasangan bucu* ✅
-- b) No — it has a vertex of degree 1 · *Tidak — ia ada bucu berdarjah 1*
-- c) No — it contains a cycle · *Tidak — ia mengandungi kitaran*
+- a) Yes — there is a path between every pair of vertices · *Ya, kerana ada lorong antara setiap pasangan bucu.* ✅
+- b) No — it has a vertex of degree 1 · *Tidak, kerana graf itu mempunyai bucu berdarjah 1.*
+- c) No — it contains a cycle · *Tidak, kerana graf itu mengandungi kitaran.*
 
 ## 8. Shortest path · Laluan terpendek
 

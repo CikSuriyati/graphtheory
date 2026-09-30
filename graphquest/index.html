@@ -271,6 +271,19 @@
       border-color: var(--terra);
     }
 
+    .fld-wide {
+      grid-column: 1 / -1;
+    }
+
+    .team-note {
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 4px 0 10px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      background: var(--yellow-soft);
+    }
+
     label.fld {
       display: block;
       font-size: 14px;
@@ -280,7 +293,7 @@
 
     .fields {
       display: grid;
-      grid-template-columns: 1.4fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 14px;
       margin: 24px 0 8px;
     }
@@ -1504,6 +1517,39 @@
       margin: 16px 0 6px;
     }
 
+    .tpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 260px;
+      margin-top: 12px;
+    }
+
+    .tpad button {
+      height: 46px;
+      border: 2px solid var(--ink);
+      background: #fff;
+      border-radius: 12px;
+      font: inherit;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .tpad button:active {
+      background: var(--orange);
+    }
+
+    .got-badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 2px solid var(--ink);
+      border-radius: 99px;
+      background: var(--yellow);
+    }
+
     .pad {
       display: flex;
       gap: 8px;
@@ -1723,13 +1769,18 @@
       <div class="fields">
         <div>
           <label class="fld" for="in-class" id="lbl-class"></label>
-          <input type="text" id="in-class" placeholder="4S1-2026" autocomplete="off" spellcheck="false" maxlength="20">
+          <input type="text" id="in-class" placeholder="4S1" autocomplete="off" spellcheck="false" maxlength="20">
         </div>
         <div>
+          <label class="fld" for="in-group" id="lbl-group"></label>
+          <input type="text" id="in-group" placeholder="Melur" autocomplete="off" spellcheck="false" maxlength="20">
+        </div>
+        <div class="fld-wide">
           <label class="fld" for="in-reg" id="lbl-reg"></label>
-          <input type="text" id="in-reg" inputmode="numeric" placeholder="17" autocomplete="off" maxlength="3">
+          <input type="text" id="in-reg" placeholder="17 / Aina Sofea" autocomplete="off" spellcheck="false" maxlength="40">
         </div>
       </div>
+      <p class="team-note" id="entry-team"></p>
       <p class="muted" id="entry-privacy" style="margin-bottom:22px;"></p>
       <p id="entry-error" class="entry-error" role="alert"></p>
       <button class="btn" id="btn-enter"></button>
@@ -1860,7 +1911,7 @@
     /* ============================================================
        1. CONFIG  —  paste your Apps Script Web App URL here
        ============================================================ */
-    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyFnia-RLg8WPjFM5ymNCpKdB8KXfhRuAJhHR1ZLEPPvBZapMygv_UjW1DvYHppjPF_/exec';
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzfqG4lKu-Q8FJ5xT8I46_xaXgT-WDPqHfpdvq5FzxpoC17XGZtQ18ToXBkObBTwayX/exec';
 
     const E = GraphEngine;
     const STORE = 'graphquest.v1';
@@ -1953,6 +2004,7 @@
     ['Network Builder', 'Pembina Rangkaian'], ['Graph Master', 'Pakar Graf'], ['Graph Legend', 'Lagenda Graf']];
 
     const BADGES = [
+      { k: 'test_ready', name: ['Ready to Explore', 'Sedia Meneroka'], how: ['Finish the pre-test', 'Selesaikan ujian pra'] },
       { k: 'first_connection', name: ['First Connection', 'Sambungan Pertama'], how: ['Finish your first level', 'Tamatkan tahap pertama anda'] },
       { k: 'sharp_detective', name: ['Sharp Detective', 'Detektif Tajam'], how: ['5 cases without hints · World 2', '5 kes tanpa petunjuk · Dunia 2'] },
       { k: 'road_master', name: ['Road Master', 'Raja Jalan'], how: ['5 best routes in a row', '5 laluan terbaik berturut-turut'] },
@@ -1960,19 +2012,28 @@
       { k: 'euler_explorer', name: ['Euler Explorer', 'Penjelajah Euler'], how: ['Predict 5 escapes · World 5', 'Ramal 5 lolos · Dunia 5'] },
       { k: 'exam_planner', name: ['Exam Planner', 'Perancang Peperiksaan'], how: ['3 timetables, fewest slots · World 6', '3 jadual, slot paling sedikit · Dunia 6'] },
       { k: 'graph_legend', name: ['Graph Legend', 'Lagenda Graf'], how: ['Clear the Boss Level', 'Tamatkan Tahap Bos'] },
-      { k: 'team_player', name: ['Team Player', 'Pemain Pasukan'], how: ['Finish a class team challenge', 'Tamatkan cabaran pasukan kelas'] }
+      { k: 'team_player', name: ['Team Player', 'Pemain Pasukan'], how: ['Finish a class team challenge', 'Tamatkan cabaran pasukan kelas'] },
+      { k: 'test_done', name: ['Quest Complete', 'Pengembaraan Tamat'], how: ['Finish the post-test', 'Selesaikan ujian pasca'] }
     ];
     const tt = pair => T(pair[0], pair[1]);
 
     /* ============================================================
        4. SAVED PROGRESS  (this device only)
        ============================================================ */
-    function blank() { return { classCode: '', reg: '', best: {}, done: {}, streak: 0, badges: [], discovered: {}, attempts: [], sent: 0, tests: [], testsSent: 0 }; }
+    function blank() { return { classCode: '', group: '', reg: '', best: {}, done: {}, streak: 0, badges: [], discovered: {}, attempts: [], sent: 0, tests: [], testsSent: 0 }; }
     let st = blank();
     try { const raw = localStorage.getItem(STORE); if (raw) st = Object.assign(blank(), JSON.parse(raw)); } catch (e) { }
     function save() { try { localStorage.setItem(STORE, JSON.stringify(st)); } catch (e) { } }
 
+    /* A student is class code + name or register number (e.g. 4S1-17, 4S1-AINA SOFEA).
+       Only the part of the class code before a dash is used, as before, so
+       students who joined earlier keep the same code. The group (kumpulan) is
+       sent alongside and decides the team; it can change without a new code. */
     const studentCode = () => st.classCode.split('-')[0] + '-' + st.reg;
+    const whoOf = code => code.slice(code.indexOf('-') + 1);
+    const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const tidy = v => String(v || '').trim().replace(/\s+/g, ' ').toUpperCase();
+    const NAME_OK = /^[\p{L}\p{N}][\p{L}\p{N} .'@\/-]{0,39}$/u;
     /* The playable worlds. Each has its levels and a start(i). World 3 lives in
        this file; World 2 comes from world2.js. A world missing here shows as
        "Coming soon" on the map. */
@@ -2059,11 +2120,11 @@
     $('btn-sound').addEventListener('click', () => { SFX.toggle(); soundButton(); if (!SFX.on && window.speechSynthesis) speechSynthesis.cancel(); });
 
     $('btn-lang').addEventListener('click', () => {
-      const entryValues = current === 'entry' ? [$('in-class').value, $('in-reg').value] : null;
+      const entryValues = current === 'entry' ? [$('in-class').value, $('in-group').value, $('in-reg').value] : null;
       LANG = LANG === 'bm' ? 'en' : 'bm';
       try { localStorage.setItem(LANG_KEY, LANG); } catch (e) { }
       applyLang();
-      if (entryValues) { $('in-class').value = entryValues[0]; $('in-reg').value = entryValues[1]; }
+      if (entryValues) { $('in-class').value = entryValues[0]; $('in-group').value = entryValues[1]; $('in-reg').value = entryValues[2]; }
     });
 
     /* ============================================================
@@ -2079,9 +2140,12 @@
       $('chip-2').textContent = T('5 levels each', '5 tahap setiap satu');
       $('chip-3').textContent = T('English & BM', 'BM & English');
       $('lbl-class').textContent = T('Class code', 'Kod kelas');
-      $('lbl-reg').textContent = T('Register number', 'Nombor giliran');
-      $('entry-privacy').textContent = T('Your teacher gives you the class code. No names or passwords — your progress is saved on this device.',
-        'Guru anda akan memberi kod kelas. Tiada nama atau kata laluan — kemajuan anda disimpan pada peranti ini.');
+      $('lbl-group').innerHTML = T('Group <span class="muted">(optional)</span>', 'Kumpulan <span class="muted">(pilihan)</span>');
+      $('entry-team').innerHTML = T('<b>Playing alone?</b> Leave Group empty. <b>Playing as a team?</b> Everyone in the team types the same group name, for example <b>Melur</b>. Your team’s average XP is ranked against the other teams in your class.',
+        '<b>Bermain seorang?</b> Biarkan Kumpulan kosong. <b>Bermain secara berpasukan?</b> Setiap ahli pasukan menaip nama kumpulan yang sama, contohnya <b>Melur</b>. Purata XP pasukan anda akan disusun dengan pasukan lain dalam kelas anda.');
+      $('lbl-reg').textContent = T('Name or register number', 'Nama atau nombor giliran');
+      $('entry-privacy').textContent = T('Your teacher gives you the class code. Use the same name or number every time. Your progress is saved on this device.',
+        'Guru anda akan memberi kod kelas. Gunakan nama atau nombor yang sama setiap kali. Kemajuan anda disimpan pada peranti ini.');
       $('btn-enter').textContent = T('Enter the quest →', 'Mulakan pengembaraan →');
       $('btn-entry-help').textContent = T('How to play', 'Cara bermain');
       $('entry-guide').innerHTML = [
@@ -2092,26 +2156,33 @@
       $('art-caption').textContent = T('Every connection is a new possibility.', 'Setiap sambungan membuka peluang baharu.');
       $('entry-error').textContent = '';
 
-      $('in-class').value = st.classCode; $('in-reg').value = st.reg;
+      $('in-class').value = st.classCode; $('in-group').value = st.group || ''; $('in-reg').value = st.reg;
     }
     $('btn-enter').addEventListener('click', () => {
       const cc = $('in-class').value.trim().toUpperCase().replace(/\s+/g, '');
-      const rg = $('in-reg').value.trim();
+      const gp = tidy($('in-group').value);
+      const raw = tidy($('in-reg').value);
+      const rg = /^\d{1,3}$/.test(raw) ? String(+raw) : raw;           // 017 → 17; a name stays a name
       const okC = /^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(cc);
-      const okR = /^\d{1,3}$/.test(rg) && +rg >= 1;
-      $('in-class').classList.toggle('bad', !okC);
-      $('in-reg').classList.toggle('bad', !okR);
-      $('in-class').setAttribute('aria-invalid', String(!okC));
-      $('in-reg').setAttribute('aria-invalid', String(!okR));
-      $('entry-error').textContent = !okC ? T('Enter your class code, for example 4S1-2026.', 'Masukkan kod kelas, contohnya 4S1-2026.') : !okR ? T('Enter a register number from 1 to 999.', 'Masukkan nombor giliran dari 1 hingga 999.') : '';
+      const okG = gp === '' || (NAME_OK.test(gp) && gp.length <= 20);    // empty = playing alone
+      const okR = rg !== '0' && NAME_OK.test(rg);
+      [['in-class', okC], ['in-group', okG], ['in-reg', okR]].forEach(([id, ok]) => {
+        $(id).classList.toggle('bad', !ok); $(id).setAttribute('aria-invalid', String(!ok));
+      });
+      $('entry-error').textContent = !okC ? T('Enter your class code, for example 4S1.', 'Masukkan kod kelas, contohnya 4S1.')
+        : !okG ? T('A group name uses letters and numbers, for example 1 or Melur. Leave it empty to play alone.', 'Nama kumpulan menggunakan huruf dan nombor, contohnya 1 atau Melur. Biarkan kosong jika bermain seorang.')
+          : !okR ? T('Enter your name or register number.', 'Masukkan nama atau nombor giliran anda.') : '';
       if (!okC) return $('in-class').focus();
+      if (!okG) return $('in-group').focus();
       if (!okR) return $('in-reg').focus();
-      if (st.classCode && (st.classCode !== cc || st.reg !== String(+rg))) {
-        if (!confirm(T('This device has progress for ' + studentCode() + '. Start fresh as ' + cc.split('-')[0] + '-' + (+rg) + '?',
-          'Peranti ini ada kemajuan untuk ' + studentCode() + '. Mula baharu sebagai ' + cc.split('-')[0] + '-' + (+rg) + '?'))) return;
+      const next = cc.split('-')[0] + '-' + rg;
+      // a new class or a new name is a new student; changing only the group keeps the progress
+      if (st.classCode && studentCode() !== next) {
+        if (!confirm(T('This device has progress for ' + studentCode() + '. Start fresh as ' + next + '?',
+          'Peranti ini ada kemajuan untuk ' + studentCode() + '. Mula baharu sebagai ' + next + '?'))) return;
         st = blank(); mapMilestones = null;
       }
-      st.classCode = cc; st.reg = String(+rg); save();
+      st.classCode = cc; st.group = gp; st.groupAsked = true; st.reg = rg; save();
       enterQuest();
     });
     $('btn-entry-help').addEventListener('click', () => openGuide(false));
@@ -2126,7 +2197,7 @@
       if (GQT.needPre()) return GQT.start('pre', afterPre);
       afterPre();
     }
-    ['in-class', 'in-reg'].forEach(id => {
+    ['in-class', 'in-group', 'in-reg'].forEach(id => {
       $(id).setAttribute('aria-describedby', 'entry-error');
       $(id).addEventListener('input', e => { e.target.classList.remove('bad'); e.target.removeAttribute('aria-invalid'); $('entry-error').textContent = ''; });
       $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-enter').click(); });
@@ -2144,13 +2215,13 @@
     }
     /* The quest path: the whole journey on one trail, with "you are here". */
     const GUIDE_ICON = { 1: '🧭', 2: '🔍', 3: '🏁', 4: '🌐', 5: '🚪', 6: '🎨' };
-    const BADGE_ICON = { first_connection: '🔗', sharp_detective: '🕵️', road_master: '🛣️', budget_engineer: '💰', euler_explorer: '🗺️', exam_planner: '📅', graph_legend: '👑', team_player: '🤝' };
+    const BADGE_ICON = { first_connection: '🔗', sharp_detective: '🕵️', road_master: '🛣️', budget_engineer: '💰', euler_explorer: '🗺️', exam_planner: '📅', graph_legend: '👑', team_player: '🤝', test_ready: '🚀', test_done: '🏁' };
     function questStops() {
       const tests = st.tests || [], cleared = Object.keys(st.done).filter(k => st.done[k]).length;
       const postDone = tests.some(r => r.test === 'post'), need = GQT.POST_AFTER_LEVELS;
       const stops = [
         { icon: '🚩', done: !!st.classCode, h: T('Start', 'Mula'),
-          say: T('Type the class code from your teacher and your register number.', 'Taip kod kelas daripada guru dan nombor giliran anda.') },
+          say: T('Type the class code from your teacher and your name or register number. Playing as a team? Add your group too.', 'Taip kod kelas daripada guru dan nama atau nombor giliran anda. Bermain secara berpasukan? Isi juga kumpulan anda.') },
         { icon: '📝', done: tests.some(r => r.test === 'pre') || cleared > 0, h: T('Pre-test', 'Ujian pra'),
           say: T('Answer 10 quick questions on your own. It is not for your grade — it shows what you know before playing.', 'Jawab 10 soalan pantas secara sendiri. Ujian ini tidak dikira untuk gred. Ia menunjukkan apa yang anda tahu sebelum bermain.') },
         { icon: '🎮', done: cleared >= need, h: T('Play the 6 worlds', 'Main 6 dunia'), worlds: true,
@@ -2250,7 +2321,7 @@
         card(3, T('XP, ranks and badges', 'XP, pangkat dan lencana'), li([
           T('Up to <b>100 XP</b> a level: 60 for solving, 20 for the quick check, 10 for no hints, 10 for speed.', 'Sehingga <b>100 XP</b> setiap tahap: 60 kerana selesai, 20 untuk semakan pantas, 10 tanpa petunjuk, 10 untuk kelajuan.'),
           T('A new <b>rank</b> every 500 XP, from Novice to Graph Legend.', '<b>Pangkat</b> baharu setiap 500 XP, dari Pemula hingga Lagenda Graf.'),
-          T('Earn <b>8 badges</b> — see them on My progress.', 'Kumpul <b>8 lencana</b> — lihat di Kemajuan saya.')
+          T('Earn <b>' + BADGES.length + ' badges</b>. See them on My progress.', 'Kumpul <b>' + BADGES.length + ' lencana</b>. Lihat di Kemajuan saya.')
         ])) +
         card(4, T('Discover the rule', 'Temui peraturan'), li([
           T('Finish a world’s 5 levels and <b>Discover</b> opens.', 'Tamatkan 5 tahap sesuatu dunia dan <b>Temui</b> dibuka.'),
@@ -2703,7 +2774,7 @@
       st.attempts.push(Object.assign({
         attempt_id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
         timestamp: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()),
-        class_code: st.classCode, student_code: studentCode(), boss_tool_choice: ''
+        class_code: st.classCode, student_code: studentCode(), group: st.group || '', boss_tool_choice: ''
       }, a));
     }
     const logW3 = a => logAttempt(Object.assign({ world: 3, level: run.i + 1, hints_used: run.hints, learn_used: run.learn, time_s: secs() }, a));
@@ -2956,7 +3027,7 @@
       };
       const unsent = st.attempts.length - st.sent + unsentTests().length;
       $('screen-progress').innerHTML =
-        '<div class="kicker">' + studentCode() + ' · ' + st.classCode + '</div>' +
+        '<div class="kicker">' + whoOf(studentCode()) + ' · ' + st.classCode + (st.group ? ' · ' + T('Group ', 'Kumpulan ') + st.group : '') + '</div>' +
         '<h1>' + T('My <span class="script">progress</span>', 'Kemajuan <span class="script">saya</span>') + '</h1>' +
         '<p>' + T('Every attempt helps you learn. Replaying keeps your best score.', 'Setiap cubaan membantu anda belajar. Markah terbaik dikekalkan apabila bermain semula.') + '</p>' +
         '<div class="player"><div class="kpi"><b>' + xp + ' XP</b><span>' + tt(RANKS[r]) + '</span></div>' +
@@ -3003,11 +3074,11 @@
       const me = studentCode(), mine = d.students.find(x => x.code === me), myTeam = mine ? mine.team : null;
       const team = d.teams.find(t => t.team === myTeam);
       if (team && team.members.length > 1 && team.members.every(m => m.xp > 0)) giveBadges(['team_player']);
-      const tRows = d.teams.slice(0, 8).map((t, k) => '<div class="lrow' + (t.team === myTeam ? ' me' : '') + '"><span><b>' + (k + 1) + '</b> · ' + t.team +
-        ' <span class="muted">(' + t.members.map(m => m.code === me ? '<b class="ink">' + m.code + '</b>' : m.code).join(', ') + ')</span></span><b>' + t.xp + '</b></div>').join('');
+      const tRows = d.teams.slice(0, 8).map((t, k) => '<div class="lrow' + (t.team === myTeam ? ' me' : '') + '"><span><b>' + (k + 1) + '</b> · ' + esc(t.team) +
+        ' <span class="muted">(' + t.members.map(m => m.code === me ? '<b class="ink">' + esc(whoOf(m.code)) + '</b>' : esc(whoOf(m.code))).join(', ') + ')</span></span><b>' + t.xp + '</b></div>').join('');
       const rank = d.students.findIndex(x => x.code === me);
-      const sRows = d.students.slice(0, 10).map((x, k) => '<div class="lrow' + (x.code === me ? ' me' : '') + '"><span><b>' + (k + 1) + '</b> · ' + x.code + '</span><b>' + x.xp + '</b></div>').join('') +
-        (rank >= 10 ? '<div class="lrow me"><span><b>' + (rank + 1) + '</b> · ' + me + '</span><b>' + d.students[rank].xp + '</b></div>' : '');
+      const sRows = d.students.slice(0, 10).map((x, k) => '<div class="lrow' + (x.code === me ? ' me' : '') + '"><span><b>' + (k + 1) + '</b> · ' + esc(whoOf(x.code)) + '</span><b>' + x.xp + '</b></div>').join('') +
+        (rank >= 10 ? '<div class="lrow me"><span><b>' + (rank + 1) + '</b> · ' + esc(whoOf(me)) + '</span><b>' + d.students[rank].xp + '</b></div>' : '');
       el.innerHTML = '<div class="grid2b"><div class="card"><h3 style="margin:0 0 4px;">' + T('Teams', 'Pasukan') + '</h3><p class="muted" style="margin:0 0 6px;">' +
         T('Average XP per member — help your teammates.', 'Purata XP setiap ahli — bantu rakan sepasukan anda.') + '</p>' + (tRows || '<p class="muted">—</p>') + '</div>' +
         '<div class="card"><h3 style="margin:0 0 6px;">' + T('Players', 'Pemain') + '</h3>' + (sRows || '<p class="muted">—</p>') + '</div></div>' +
@@ -3069,10 +3140,13 @@
 
     /* ---------- go ---------- */
     if (window.W2) W2.wire();
-    if (st.classCode) { current = 'map'; }
+    // students who joined before the Group box land on the join screen once; they may leave it empty
+    const askGroup = st.classCode && !st.groupAsked && !st.group;
+    if (st.classCode && !askGroup) { current = 'map'; }
     applyLang();
     show(current);
-    if (st.classCode) GQT.fromUrl();
+    if (st.classCode && !askGroup) GQT.fromUrl();
+    else if (askGroup) { $('entry-error').textContent = T('New: playing as a team? Type your group. Playing alone? Leave it empty. Then press the button. Your progress is kept.', 'Baharu: bermain secara berpasukan? Taip kumpulan anda. Bermain seorang? Biarkan kosong. Kemudian tekan butang. Kemajuan anda tetap disimpan.'); $('in-group').focus(); }
   </script>
   <!-- Cloudflare Web Analytics -->
   <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js'

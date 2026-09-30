@@ -203,7 +203,7 @@
    Script with the teacher key, or from a CSV downloaded from the Sheet.
    Everything is computed here, in the browser; nothing is sent anywhere.
    ============================================================ */
-const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyFnia-RLg8WPjFM5ymNCpKdB8KXfhRuAJhHR1ZLEPPvBZapMygv_UjW1DvYHppjPF_/exec';
+const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzfqG4lKu-Q8FJ5xT8I46_xaXgT-WDPqHfpdvq5FzxpoC17XGZtQ18ToXBkObBTwayX/exec';
 const LANG_KEY = 'graphtheory-lang', CONN_KEY = 'graphquest.teacher';
 
 let LANG = 'en';
@@ -288,7 +288,7 @@ const tagLabel = t => TAGS[t] ? tt(TAGS[t].l) : t;
 /* ============================================================
    Loading
    ============================================================ */
-let ALL = [], TESTS = [], PRE = null, source = null, loadedAt = null, current = null, openStudent = null;
+let ALL = [], TESTS = [], TEAMS = {}, PRE = null, source = null, loadedAt = null, current = null, openStudent = null;
 
 function conn() { try { return JSON.parse(localStorage.getItem(CONN_KEY)) || {}; } catch (e) { return {}; } }
 function saveConn(o) { try { localStorage.setItem(CONN_KEY, JSON.stringify(o)); } catch (e) {} }
@@ -311,6 +311,7 @@ async function loadFromScript() {
     }
     saveConn({ url, key });
     TESTS = (data.tests || []).map(cleanTest);
+    TEAMS = data.teams || {};
     useRows(data.rows, 'script');
   } catch (err) {
     showErr(err.message && err.message !== 'Failed to fetch' ? err.message
@@ -348,7 +349,7 @@ function readFile(file, then) {
 const bool = v => v === true || /^(true|yes|1)$/i.test(String(v).trim());
 function clean(r) {
   return {
-    id: String(r.attempt_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(),
+    id: String(r.attempt_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(), grp: String(r.group || '').trim(),
     w: +r.world, lv: +r.level, correct: bool(r.correct), ok: bool(r.optimal), xp: +r.score_xp || 0,
     hints: +r.hints_used || 0, learn: +r.learn_used || 0, t: +r.time_s || 0, tag: String(r.mistake_tag || '').trim(),
     tool: String(r.boss_tool_choice || '').trim()
@@ -359,7 +360,7 @@ function cleanTest(r) {
   let answers = null;
   try { answers = JSON.parse(r.answers || 'null'); } catch (e) {}
   return {
-    id: String(r.test_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(),
+    id: String(r.test_id || ''), ts: String(r.timestamp || ''), cls: String(r.class_code || '').trim(), stu: String(r.student_code || '').trim(), grp: String(r.group || '').trim(),
     test: String(r.test || ''), form: String(r.form || ''), score: +r.score || 0, max: +r.max || 0, answers,
     items: String(r.correct_items || ''), t: +r.time_s || 0, levels: +r.levels_cleared || 0, skipped: bool(r.skipped)
   };
@@ -383,12 +384,28 @@ function useRows(rows, src) {
    Numbers
    ============================================================ */
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+/* A student code is class + '-' + name or register number (4S1-17, 4S1-AINA SOFEA). */
+const whoOf = code => code.slice(code.indexOf('-') + 1);
+/* The team, worked out the same way as the class board in the game: the
+   Teams tab first, then the group the student typed. '' = playing alone. */
+function teamOf(code, grp) {
+  return TEAMS[code.toUpperCase()] || grp || '';
+}
+const teamLabel = t => t || T('— alone', '— seorang');
+const byWho = (a, b) => a.localeCompare(b, undefined, { numeric: true });
 const byTime = (a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : a.n - b.n);
 
 function stats(rows) {
   const students = [...new Set(rows.map(r => r.stu))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const S = {};
-  students.forEach(s => { S[s] = { code: s, best: {}, cleared: {}, wrong: 0, hints: 0, learn: 0, last: '', tries: 0, worlds: new Set() }; });
+  students.forEach(s => { S[s] = { code: s, cls: '', grp: '', best: {}, cleared: {}, wrong: 0, hints: 0, learn: 0, last: '', tries: 0, worlds: new Set() }; });
+  rows.slice().sort(byTime).forEach(r => {
+    const s = S[r.stu];
+    s.cls = r.cls || s.cls;
+    if (r.grp) s.grp = r.grp;                          // the latest group wins
+  });
+  students.forEach(c => { S[c].team = teamOf(c, S[c].grp); });
+  students.sort((a, b) => byWho(S[a].cls, S[b].cls) || byWho(S[a].team, S[b].team) || byWho(whoOf(a), whoOf(b)));
   rows.forEach(r => {
     const s = S[r.stu], k = r.w + '-' + r.lv;
     s.best[k] = Math.max(s.best[k] || 0, r.xp);
@@ -609,10 +626,25 @@ function renderStudents(X, rows) {
   const body = X.students.map(s => {
     const st = X.S[s];
     const cell = w => st.mastery[w] == null ? '<td class="num muted">—</td>' : '<td class="num' + (st.mastery[w] < 70 ? ' low' : '') + '">' + Math.round(st.mastery[w]) + '%</td>';
-    return '<tr class="pick" data-stu="' + esc(s) + '"><td><b>' + esc(s) + '</b></td><td class="num">' + st.xp + '</td>' + WKEYS.map(w => cell(w)).join('') +
+    return '<tr class="pick" data-stu="' + esc(s) + '"><td>' + esc(st.cls) + '</td><td>' + esc(teamLabel(st.team)) + '</td><td><b>' + esc(whoOf(s)) + '</b></td><td class="num">' + st.xp + '</td>' + WKEYS.map(w => cell(w)).join('') +
       '<td class="num">' + Object.keys(st.cleared).filter(k => WORLDS[k.split('-')[0]]).length + '</td><td class="num">' + st.wrong + '</td><td class="num">' + (st.hints + st.learn) + '</td><td class="muted">' + esc(st.last.slice(0, 16).replace('T', ' ')) + '</td></tr>';
   }).join('');
-  $('students').innerHTML = '<table><tr><th>' + T('Student', 'Murid') + '</th><th class="num">XP</th>' + WKEYS.map(w => '<th class="num">' + T('World ', 'Dunia ') + w + '</th>').join('') +
+  // one line per team: members and average XP, like the class board. Students with no group play alone.
+  const G = {};
+  X.students.filter(c => X.S[c].team).forEach(c => {
+    const st = X.S[c], k = st.cls + '\u0000' + st.team;
+    (G[k] = G[k] || { cls: st.cls, team: st.team, xp: 0, who: [] });
+    G[k].xp += st.xp; G[k].who.push(whoOf(c));
+  });
+  const groups = Object.values(G).sort((a, b) => byWho(a.cls, b.cls) || b.xp / b.who.length - a.xp / a.who.length);
+  const alone = X.students.filter(c => !X.S[c].team).length;
+  const teamTable = groups.length
+    ? '<table><tr><th>' + T('Class code', 'Kod kelas') + '</th><th>' + T('Group', 'Kumpulan') + '</th><th class="num">' + T('Members', 'Ahli') + '</th><th class="num">' + T('Average XP', 'Purata XP') + '</th><th>' + T('Students', 'Murid') + '</th></tr>' +
+      groups.map(g => '<tr><td>' + esc(g.cls) + '</td><td><b>' + esc(g.team) + '</b></td><td class="num">' + g.who.length + '</td><td class="num">' + Math.round(g.xp / g.who.length) + '</td><td>' + esc(g.who.join(', ')) + '</td></tr>').join('') + '</table>'
+    : '<p class="muted" style="margin:0;">' + T('No teams yet. Students who type a group when they join appear here as a team.', 'Belum ada pasukan. Murid yang menaip kumpulan semasa menyertai akan dipaparkan di sini sebagai pasukan.') + '</p>';
+  $('students').innerHTML = '<h3 style="margin:0 0 6px;">' + T('Teams', 'Pasukan') + '</h3>' + teamTable +
+    (alone ? '<p class="muted" style="margin:8px 0 0;">' + T(alone + (alone === 1 ? ' student plays' : ' students play') + ' alone (no group). To join a team later, a student taps “Change” on the map and types the group.', alone + ' murid bermain seorang (tiada kumpulan). Untuk menyertai pasukan kemudian, murid menekan “Tukar” pada peta dan menaip kumpulan.') + '</p>' : '') +
+    '<h3 style="margin:22px 0 6px;">' + T('Students', 'Murid') + '</h3><table><tr><th>' + T('Class code', 'Kod kelas') + '</th><th>' + T('Group', 'Kumpulan') + '</th><th>' + T('Name / register no.', 'Nama / no. giliran') + '</th><th class="num">XP</th>' + WKEYS.map(w => '<th class="num">' + T('World ', 'Dunia ') + w + '</th>').join('') +
     '<th class="num">' + T('Levels cleared', 'Tahap selesai') + '</th><th class="num">' + T('Wrong', 'Salah') + '</th><th class="num">' + T('Help used', 'Bantuan') + '</th><th>' + T('Last active', 'Aktif terakhir') + '</th></tr>' + body + '</table>';
   renderStudent(X, rows);
 }
@@ -630,7 +662,7 @@ function renderStudent(X, rows) {
     return '<h3 style="margin:16px 0 4px;">' + T('World ', 'Dunia ') + w + ' · ' + esc(tt(WORLDS[w].name)) + ' — ' + Math.round(st.mastery[w]) + '%</h3>' +
       '<table><tr><th>' + T('Level', 'Tahap') + '</th><th>' + T('Attempts, oldest first', 'Cubaan, terawal dahulu') + '</th><th class="num">' + T('Best', 'Terbaik') + '</th><th>' + T('Mistakes', 'Kesilapan') + '</th></tr>' + lv + '</table>';
   }).join('');
-  $('student').innerHTML = '<div class="student"><div class="row spread"><h2 style="margin:0;">' + esc(openStudent) + '</h2><button class="btn ghost sm" id="btn-close-stu">' + T('Close', 'Tutup') + '</button></div>' +
+  $('student').innerHTML = '<div class="student"><div class="row spread"><h2 style="margin:0;">' + esc(whoOf(openStudent)) + ' <span class="muted" style="font-size:15px;">' + esc(st.cls) + (st.team ? ' · ' + T('Group ', 'Kumpulan ') + esc(st.team) : ' · ' + T('plays alone', 'bermain seorang')) + '</span></h2><button class="btn ghost sm" id="btn-close-stu">' + T('Close', 'Tutup') + '</button></div>' +
     '<div class="kpis"><div class="kpi"><b>' + st.xp + ' XP</b><span>' + esc(rank) + '</span></div>' +
     '<div class="kpi"><b>' + Object.keys(st.cleared).filter(k => WORLDS[k.split('-')[0]]).length + '</b><span>' + T('levels cleared', 'tahap selesai') + '</span></div>' +
     '<div class="kpi"><b>' + st.wrong + '</b><span>' + T('wrong answers', 'jawapan salah') + '</span></div>' +
@@ -705,7 +737,7 @@ function renderPrePost(X) {
       const game = played.has(stu);
       if (pre && game) itemsPre.push(pre.items);
       if (post && game) itemsPost.push(post.items);
-      if (pre && post) pairs.push({ stu, pre: pre.score, post: post.score, max: post.max, game, preForm: pre.form, postForm: post.form, levels: post.levels });
+      if (pre && post) pairs.push({ stu, cls: post.cls, grp: post.grp || pre.grp, pre: pre.score, post: post.score, max: post.max, game, preForm: pre.form, postForm: post.form, levels: post.levels });
       else if (pre) preOnly++;
       else if (post) postOnly++;
     });
@@ -771,13 +803,14 @@ function renderPrePost(X) {
         comments.slice(-6).map(c => '<div class="flag" style="margin-top:8px;"><span style="font-size:14px;color:var(--ink);">“' + esc(c) + '”</span></div>').join('') : '');
   }
 
-  // per student
+  // per student. The study-group column only matters when a control class took the tests.
+  const control = pairs.some(p => !p.game);
   if (pairs.length) {
-    html += '<h3 style="margin:22px 0 4px;">' + T('Every student', 'Setiap murid') + '</h3><div class="scroll"><table><tr><th>' + T('Student', 'Murid') + '</th><th>' + T('Group', 'Kumpulan') + '</th><th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Gain', 'Peningkatan') +
+    html += '<h3 style="margin:22px 0 4px;">' + T('Every student', 'Setiap murid') + '</h3><div class="scroll"><table><tr><th>' + T('Class code', 'Kod kelas') + '</th><th>' + T('Group', 'Kumpulan') + '</th><th>' + T('Name / register no.', 'Nama / no. giliran') + '</th>' + (control ? '<th>' + T('Study group', 'Kumpulan kajian') + '</th>' : '') + '<th class="num">' + T('Pre', 'Pra') + '</th><th class="num">' + T('Post', 'Pasca') + '</th><th class="num">' + T('Gain', 'Peningkatan') +
       '</th>' + WKEYS.map(w => '<th class="num">' + T('World ', 'Dunia ') + w + '</th>').join('') + '</tr>' +
       pairs.sort((a, b) => a.stu.localeCompare(b.stu, undefined, { numeric: true })).map(p => {
         const st = X.S[p.stu], m = w => st && st.mastery[w] != null ? Math.round(st.mastery[w]) + '%' : '—';
-        return '<tr><td>' + esc(p.stu) + '</td><td>' + (p.game ? T('game', 'permainan') : T('control', 'kawalan')) + '</td><td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num' + (p.post - p.pre < 0 ? ' low' : '') + '">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td>' + WKEYS.map(w => '<td class="num">' + m(w) + '</td>').join('') + '</tr>';
+        return '<tr><td>' + esc(st ? st.cls : p.cls || '') + '</td><td>' + esc(teamLabel(st ? st.team : teamOf(p.stu, p.grp || ''))) + '</td><td>' + esc(whoOf(p.stu)) + '</td>' + (control ? '<td>' + (p.game ? T('game', 'permainan') : T('control', 'kawalan')) + '</td>' : '') + '<td class="num">' + p.pre + '</td><td class="num">' + p.post + '</td><td class="num' + (p.post - p.pre < 0 ? ' low' : '') + '">' + (p.post - p.pre >= 0 ? '+' : '') + (p.post - p.pre) + '</td>' + WKEYS.map(w => '<td class="num">' + m(w) + '</td>').join('') + '</tr>';
       }).join('') + '</table></div>';
   }
   $('prepost').innerHTML = html + '<div style="margin-top:14px;">' + loader + (PRE ? ' <button class="btn ghost sm" id="btn-pre-clear">' + T('Use in-game tests', 'Guna ujian dalam permainan') + '</button>' : '') + '</div>';
@@ -834,7 +867,8 @@ document.addEventListener('click', e => {
 /* ---------- go ---------- */
 (function init() {
   const c = conn();
-  $('in-url').value = c.url || DEFAULT_ENDPOINT;
+  // a link saved before the September 2026 redeploy points at the old script
+  $('in-url').value = (c.url && c.url !== 'https://script.google.com/macros/s/AKfycbyFnia-RLg8WPjFM5ymNCpKdB8KXfhRuAJhHR1ZLEPPvBZapMygv_UjW1DvYHppjPF_/exec') ? c.url : DEFAULT_ENDPOINT;
   if (c.key) $('in-key').value = c.key;
   renderStatic();
   if (c.url && c.key) loadFromScript();

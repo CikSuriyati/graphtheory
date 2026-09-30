@@ -53,19 +53,19 @@
       num(['What is the degree of vertex P?', 'Apakah darjah bucu P?'], 3, { g: G1A }),
       num(['A graph has 7 edges. What is the sum of the degrees of all its vertices?', 'Sebuah graf mempunyai 7 sisi. Apakah hasil tambah darjah semua bucunya?'], 14),
       num(['The vertices of a graph have degrees 3, 3, 2, 2 and 2. How many edges does the graph have?', 'Bucu-bucu sebuah graf mempunyai darjah 3, 3, 2, 2 dan 2. Berapakah bilangan sisi graf itu?'], 6),
-      mc(['Which of these is a simple graph?', 'Yang manakah graf mudah?'], [
-        ['a', ['A graph with a loop at one vertex', 'Graf dengan gelung pada satu bucu']],
-        ['b', ['A graph with two edges joining the same pair of vertices', 'Graf dengan dua sisi menghubungkan pasangan bucu yang sama']],
-        ['c', ['A graph with no loops and no multiple edges', 'Graf tanpa gelung dan tanpa sisi berbilang']],
-        ['d', ['A graph where every vertex has a loop', 'Graf yang setiap bucunya ada gelung']]], 'c'),
+      mc(['Which of these is a simple graph?', 'Yang manakah antara berikut ialah graf mudah?'], [
+        ['a', ['A graph with a loop at one vertex', 'Graf yang mempunyai gelung pada satu bucu.']],
+        ['b', ['A graph with two edges joining the same pair of vertices', 'Graf yang mempunyai dua sisi yang menghubungkan pasangan bucu yang sama.']],
+        ['c', ['A graph with no loops and no multiple edges', 'Graf yang tidak mempunyai gelung dan tidak mempunyai sisi berbilang.']],
+        ['d', ['A graph where every vertex has a loop', 'Graf yang setiap bucunya mempunyai gelung.']]], 'c'),
       num(['What is the degree of vertex X?', 'Apakah darjah bucu X?'], 4, { g: G5A }),
-      mc(['Which of these is a path in this graph?', 'Yang manakah lorong dalam graf ini?'], [
+      mc(['Which of these is a path in this graph?', 'Yang manakah antara berikut ialah lorong dalam graf ini?'], [
         ['a', ['P → Q → P → S', 'P → Q → P → S']], ['b', ['P → Q → R', 'P → Q → R']],
         ['c', ['P → T', 'P → T']], ['d', ['Q → S → T', 'Q → S → T']]], 'b', { g: G1A }),
       mc(['Is this graph connected?', 'Adakah graf ini tersambung?'], [
-        ['a', ['Yes — every vertex has at least one edge', 'Ya — setiap bucu ada sekurang-kurangnya satu sisi']],
-        ['b', ['No — some pairs of vertices have no path between them', 'Tidak — ada pasangan bucu yang tiada lorong antaranya']],
-        ['c', ['Yes — it has 3 edges', 'Ya — ia ada 3 sisi']]], 'b', { g: G7A }),
+        ['a', ['Yes — every vertex has at least one edge', 'Ya, kerana setiap bucu mempunyai sekurang-kurangnya satu sisi.']],
+        ['b', ['No — some pairs of vertices have no path between them', 'Tidak, kerana ada pasangan bucu yang tidak dihubungkan oleh sebarang lorong.']],
+        ['c', ['Yes — it has 3 edges', 'Ya, kerana graf itu mempunyai 3 sisi.']]], 'b', { g: G7A }),
       num(['The numbers are distances in km. What is the shortest distance from S to T?', 'Nombor-nombor itu ialah jarak dalam km. Apakah jarak terpendek dari S ke T?'], 9, { g: G8A, unit: 'km' }),
       num(['A tree has 8 vertices. How many edges does it have?', 'Sebuah pokok mempunyai 8 bucu. Berapakah bilangan sisinya?'], 7),
       num(['The numbers are cable lengths in metres. Every house must be connected using the least total cable. What is that smallest total?', 'Nombor-nombor itu ialah panjang kabel dalam meter. Setiap rumah mesti disambungkan dengan jumlah kabel paling sedikit. Berapakah jumlah itu?'], 9, { g: G10A, unit: 'm' })
@@ -74,19 +74,19 @@
       num(['What is the degree of vertex B?', 'Apakah darjah bucu B?'], 4, { g: G1B }),
       num(['A graph has 9 edges. What is the sum of the degrees of all its vertices?', 'Sebuah graf mempunyai 9 sisi. Apakah hasil tambah darjah semua bucunya?'], 18),
       num(['The vertices of a graph have degrees 4, 3, 3, 2 and 2. How many edges does the graph have?', 'Bucu-bucu sebuah graf mempunyai darjah 4, 3, 3, 2 dan 2. Berapakah bilangan sisi graf itu?'], 7),
-      mc(['Which of these makes a graph NOT a simple graph?', 'Yang manakah menjadikan sebuah graf BUKAN graf mudah?'], [
-        ['a', ['It has a vertex of degree 1', 'Ia ada bucu berdarjah 1']],
-        ['b', ['It has two edges joining the same two vertices', 'Ia ada dua sisi yang menghubungkan dua bucu yang sama']],
-        ['c', ['It is not connected', 'Ia tidak tersambung']],
-        ['d', ['It has 6 vertices', 'Ia ada 6 bucu']]], 'b'),
+      mc(['Which of these makes a graph NOT a simple graph?', 'Yang manakah antara berikut menjadikan sebuah graf BUKAN graf mudah?'], [
+        ['a', ['It has a vertex of degree 1', 'Graf itu mempunyai bucu berdarjah 1.']],
+        ['b', ['It has two edges joining the same two vertices', 'Graf itu mempunyai dua sisi yang menghubungkan dua bucu yang sama.']],
+        ['c', ['It is not connected', 'Graf itu tidak tersambung.']],
+        ['d', ['It has 6 vertices', 'Graf itu mempunyai 6 bucu.']]], 'b'),
       num(['What is the degree of vertex M?', 'Apakah darjah bucu M?'], 5, { g: G5B }),
-      mc(['Which of these is a path in this graph?', 'Yang manakah lorong dalam graf ini?'], [
+      mc(['Which of these is a path in this graph?', 'Yang manakah antara berikut ialah lorong dalam graf ini?'], [
         ['a', ['A → C', 'A → C']], ['b', ['A → B → A → E', 'A → B → A → E']],
         ['c', ['A → B → C → D', 'A → B → C → D']], ['d', ['E → D', 'E → D']]], 'c', { g: G1B }),
       mc(['Is this graph connected?', 'Adakah graf ini tersambung?'], [
-        ['a', ['Yes — there is a path between every pair of vertices', 'Ya — ada lorong antara setiap pasangan bucu']],
-        ['b', ['No — it has a vertex of degree 1', 'Tidak — ia ada bucu berdarjah 1']],
-        ['c', ['No — it contains a cycle', 'Tidak — ia mengandungi kitaran']]], 'a', { g: G7B }),
+        ['a', ['Yes — there is a path between every pair of vertices', 'Ya, kerana ada lorong antara setiap pasangan bucu.']],
+        ['b', ['No — it has a vertex of degree 1', 'Tidak, kerana graf itu mempunyai bucu berdarjah 1.']],
+        ['c', ['No — it contains a cycle', 'Tidak, kerana graf itu mengandungi kitaran.']]], 'a', { g: G7B }),
       num(['The numbers are distances in km. What is the shortest distance from S to T?', 'Nombor-nombor itu ialah jarak dalam km. Apakah jarak terpendek dari S ke T?'], 8, { g: G8B, unit: 'km' }),
       num(['A tree has 11 vertices. How many edges does it have?', 'Sebuah pokok mempunyai 11 bucu. Berapakah bilangan sisinya?'], 10),
       num(['The numbers are cable lengths in metres. Every house must be connected using the least total cable. What is that smallest total?', 'Nombor-nombor itu ialah panjang kabel dalam meter. Setiap rumah mesti disambungkan dengan jumlah kabel paling sedikit. Berapakah jumlah itu?'], 10, { g: G10B, unit: 'm' })
@@ -119,7 +119,11 @@
   const tests = () => st.tests || (st.tests = []);
   const cleared = () => Object.keys(st.done).filter(k => st.done[k]).length;
   const lastOf = kind => tests().filter(r => r.test === kind).slice(-1)[0];
-  const formFor = kind => ((+st.reg % 2 === 1) === (kind === 'pre')) ? 'A' : 'B';
+  /* Odd register numbers: form A first. A name has no number, so its letters
+     decide instead — the same name always gets the same order. */
+  const parity = () => /^\d+$/.test(st.reg) ? +st.reg % 2
+    : [...String(st.reg)].reduce((a, ch) => a + ch.codePointAt(0), 0) % 2;
+  const formFor = kind => ((parity() === 1) === (kind === 'pre')) ? 'A' : 'B';
 
   const preTaken = () => !!tests().find(r => r.test === 'pre' && !r.skipped);
   const preSkipped = () => !!tests().find(r => r.test === 'pre' && r.skipped);
@@ -134,7 +138,7 @@
     tests().push(Object.assign({
       test_id: 't' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
       timestamp: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()),
-      class_code: st.classCode, student_code: studentCode(), form: '', score: 0, max: 0, answers: '', correct_items: '',
+      class_code: st.classCode, student_code: studentCode(), group: st.group || '', form: '', score: 0, max: 0, answers: '', correct_items: '',
       time_s: 0, levels_cleared: cleared(), skipped: false
     }, row));
     save();
@@ -188,13 +192,15 @@
       el.innerHTML = '<div class="card"><div class="badge">' + (k === 'pre' ? T('Pre-test', 'Ujian pra') : T('Post-test', 'Ujian pasca')) + '</div>' +
         '<h1>' + title + '</h1>' +
         '<p style="font-size:16.5px;">' + (k === 'pre'
-          ? T('10 quick questions about graphs, before you play. It is not marked for your grade — it shows what you know now, so we can see what the game teaches.', '10 soalan ringkas tentang graf, sebelum anda bermain. Ia tidak dikira untuk gred anda — ia menunjukkan apa yang anda tahu sekarang, supaya kita dapat lihat apa yang diajar oleh permainan ini.')
-          : T('10 questions like the ones before you started. Answer on your own — no hints this time.', '10 soalan seperti sebelum anda mula. Jawab sendiri — tiada petunjuk kali ini.')) + '</p>' +
+          ? T('10 quick questions about graphs, before you play. It is not marked for your grade — it shows what you know now, so we can see what the game teaches.', 'Terdapat 10 soalan ringkas tentang graf yang perlu dijawab sebelum anda bermain. Ujian ini tidak dikira untuk gred anda. Ia menunjukkan apa yang anda tahu sekarang, supaya kita dapat melihat apa yang diajar oleh permainan ini.')
+          : T('10 questions like the ones before you started. Answer on your own — no hints this time.', 'Terdapat 10 soalan seperti soalan sebelum anda mula bermain. Jawab secara sendiri. Tiada petunjuk diberikan kali ini.')) + '</p>' +
         (k === 'post' ? '<div class="post-warn"><b>⚠️ ' + T('Only start when you have finished playing.', 'Mula hanya apabila anda sudah selesai bermain.') + '</b> ' +
-          T('You get one try, and your teacher uses it to see how much you learned from the whole game. Want to play more first? Press <i>Not yet</i> — the post-test will wait for you on the map.', 'Anda ada satu cubaan sahaja, dan guru anda menggunakannya untuk melihat berapa banyak yang anda pelajari daripada keseluruhan permainan. Mahu bermain lagi dahulu? Tekan <i>Belum lagi</i> — ujian pasca akan menunggu anda di peta.') + '</div>' : '') +
+          T('You get one try, and your teacher uses it to see how much you learned from the whole game. Want to play more first? Press <i>Not yet</i> — the post-test will wait for you on the map.', 'Anda ada satu cubaan sahaja, dan guru anda menggunakannya untuk melihat berapa banyak yang anda pelajari daripada keseluruhan permainan. Mahu bermain lagi dahulu? Tekan <i>Belum lagi</i>. Ujian pasca akan menunggu anda di peta.') + '</div>' : '') +
+        (k === 'pre' ? '<p class="muted" style="margin:0;">' + T('This is the only step before the game starts. Finish it and you earn the <b>Ready to Explore</b> badge.', 'Ini satu-satunya langkah sebelum permainan bermula. Selesaikannya dan anda akan mendapat lencana <b>Sedia Meneroka</b>.') + '</p>'
+          : '<p class="muted" style="margin:0;">' + T('Finish it and you earn the <b>Quest Complete</b> badge.', 'Selesaikannya dan anda akan mendapat lencana <b>Pengembaraan Tamat</b>.') + '</p>') +
         '<div class="chips"><span class="chip">' + T('10 questions', '10 soalan') + '</span><span class="chip">' + T('about 5 minutes', 'kira-kira 5 minit') + '</span><span class="chip">' + T('one try only', 'satu cubaan sahaja') + '</span></div>' +
-        '<div class="row" style="margin-top:22px;"><button class="btn" id="t-go">' + (k === 'post' ? T('I’m finished — start', 'Saya sudah selesai — mula') : T('Start', 'Mula')) + '</button>' +
-        (k === 'pre' ? '<button class="btn ghost" id="t-skip">' + T('Skip', 'Langkau') + '</button>' : '<button class="btn ghost" id="t-later">' + T('Not yet — keep playing', 'Belum lagi — terus bermain') + '</button>') + '</div>' +
+        '<div class="row" style="margin-top:22px;"><button class="btn" id="t-go">' + (k === 'post' ? T('I’m finished — start', 'Saya sudah selesai, mula sekarang') : T('Start', 'Mula')) + '</button>' +
+        (k === 'pre' ? '<button class="btn ghost" id="t-skip">' + T('Skip', 'Langkau') + '</button>' : '<button class="btn ghost" id="t-later">' + T('Not yet — keep playing', 'Belum lagi, saya mahu terus bermain') + '</button>') + '</div>' +
         (k === 'pre' ? '<p class="muted" style="margin-top:14px;">' + T('Skip only if your teacher hasn’t asked you to do it. Once you clear a level, the pre-test closes.', 'Langkau hanya jika guru anda tidak meminta anda menjawabnya. Setelah anda menyelesaikan satu tahap, ujian pra ditutup.') + '</p>' : '') +
         '</div>';
       el.insertAdjacentHTML('afterbegin', '<button class="btn ghost sm test-map" id="t-map">' + T('← Map', '← Peta') + '</button>');
@@ -209,12 +215,19 @@
       const it = run.items[run.i], a = run.ans[run.i];
       let input;
       if (it.kind === 'num') {
-        input = '<div class="row" style="margin-top:14px;"><input type="text" class="tnum" id="t-num" inputmode="numeric" maxlength="3" value="' + (a != null ? a : '') + '" aria-label="' + T('Your answer', 'Jawapan anda') + '">' +
-          (it.unit ? '<span style="font-weight:700;">' + it.unit + '</span>' : '') + '</div>';
+        // a keypad on screen: quicker than the phone keyboard, which stays closed (inputmode none);
+        // a real keyboard can still type into the box
+        input = '<div class="row" style="margin-top:14px;"><input type="text" class="tnum" id="t-num" inputmode="none" maxlength="3" autocomplete="off" value="' + (a != null ? a : '') + '" aria-label="' + T('Your answer', 'Jawapan anda') + '">' +
+          (it.unit ? '<span style="font-weight:700;">' + it.unit + '</span>' : '') + '</div>' +
+          '<div class="tpad" role="group" aria-label="' + T('Number pad', 'Pad nombor') + '">' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => '<button data-key="' + x + '">' + x + '</button>').join('') +
+          '<button data-key="del" aria-label="' + T('Delete', 'Padam') + '">⌫</button><button data-key="0">0</button><span></span></div>';
       } else {
         input = '<div class="opts">' + it.opts.map(o => '<button class="opt' + (a === o[0] ? ' chosen' : '') + '" data-o="' + o[0] + '">' + tt(o[1]) + '</button>').join('') + '</div>';
       }
-      el.innerHTML = '<div class="tprog"><div class="row spread"><b>' + (k === 'pre' ? T('Pre-test', 'Ujian pra') : T('Post-test', 'Ujian pasca')) + '</b><span>' + (run.i + 1) + ' / ' + n + '</span></div>' +
+      const left = n - run.i, mins = Math.ceil(left / 2);
+      const where = T('Question ' + (run.i + 1) + ' of ' + n, 'Soalan ' + (run.i + 1) + ' daripada ' + n) + ' · ' +
+        (left === 1 ? T('last one!', 'soalan terakhir!') : T('about ' + mins + ' min left', 'kira-kira ' + mins + ' minit lagi'));
+      el.innerHTML = '<div class="tprog"><div class="row spread"><b>' + (k === 'pre' ? T('Pre-test', 'Ujian pra') : T('Post-test', 'Ujian pasca')) + '</b><span>' + where + '</span></div>' +
         '<div class="progress"><i style="width:' + ((run.i) / n * 100) + '%"></i></div></div>' +
         '<div class="card"><div class="row" style="gap:12px;align-items:flex-start;"><div class="qn">' + (run.i + 1) + '</div><p style="font-size:17px;color:var(--ink);font-weight:500;margin:2px 0 0;flex:1;">' + tt(it.q) + '</p></div>' +
         (it.g ? diagram(it.g) : '') + input + '</div>' +
@@ -228,7 +241,11 @@
           $('t-next').disabled = !num.value;
         });
         num.addEventListener('keydown', e => { if (e.key === 'Enter' && num.value) $('t-next').click(); });
-        num.focus();
+        el.querySelectorAll('[data-key]').forEach(b => b.addEventListener('click', () => {
+          const v = b.dataset.key === 'del' ? num.value.slice(0, -1) : (num.value + b.dataset.key).slice(0, 3);
+          num.value = v; run.ans[run.i] = v; $('t-next').disabled = !v;
+        }));
+        if (!matchMedia('(pointer: coarse)').matches) num.focus();
       }
       el.querySelectorAll('[data-o]').forEach(b => b.addEventListener('click', () => { run.ans[run.i] = b.dataset.o; render(); }));
       $('t-back').addEventListener('click', () => { run.i--; render(); window.scrollTo({top:0, behavior:'instant'}); });
@@ -242,11 +259,11 @@
 
     if (run.stage === 'survey') {
       el.innerHTML = '<div class="card"><div class="badge">' + T('Last step', 'Langkah terakhir') + '</div><h1>' + T('What did you <span class="script">think?</span>', 'Apa <span class="script">pendapat</span> anda?') + '</h1>' +
-        '<p>' + T('Tell us honestly — there are no right answers.', 'Beritahu kami dengan jujur — tiada jawapan betul atau salah.') + '</p>' +
+        '<p>' + T('Tell us honestly — there are no right answers.', 'Beritahu kami dengan jujur. Tiada jawapan yang betul atau salah.') + '</p>' +
         '<div class="lk-key"><span>1 = ' + tt(LIKERT[0]) + '</span><span>5 = ' + tt(LIKERT[4]) + '</span></div>' +
         SURVEY.map((s, j) => '<div class="lk"><p>' + (j + 1) + '. ' + tt(s) + '</p><div class="scale" role="radiogroup">' +
           [1, 2, 3, 4, 5].map(x => '<button data-s="' + j + '" data-v="' + x + '" aria-label="' + tt(LIKERT[x - 1]) + '"' + (run.survey[j] === x ? ' class="on"' : '') + '>' + x + '</button>').join('') + '</div></div>').join('') +
-        '<label class="fld" for="t-comment" style="margin-top:18px;">' + T('What did you like most, or what should we improve?', 'Apa yang paling anda suka, atau apa yang perlu diperbaiki?') + '</label>' +
+        '<label class="fld" for="t-comment" style="margin-top:18px;">' + T('What did you like most, or what should we improve?', 'Apakah yang paling anda suka, atau apakah yang perlu diperbaiki?') + '</label>' +
         '<textarea id="t-comment" maxlength="500" rows="3">' + (run.comment || '') + '</textarea>' +
         '<div class="row" style="margin-top:18px;"><button class="btn" id="t-send"' + (Object.keys(run.survey).length < SURVEY.length ? ' disabled' : '') + '>' + T('Send', 'Hantar') + '</button>' +
         '<button class="btn ghost" id="t-noskip">' + T('Skip', 'Langkau') + '</button></div></div>';
@@ -264,11 +281,13 @@
     const pre = tests().filter(r => r.test === 'pre' && !r.skipped)[0], post = lastOf('post');
     el.innerHTML = '<div class="card"><div class="badge">' + T('Submitted ✓', 'Dihantar ✓') + '</div>' +
       (run.kind === 'pre'
-        ? '<h1>' + T('Thank you! Now go and <span class="script">play</span>', 'Terima kasih! Sekarang jom <span class="script">bermain</span>') + '</h1><p>' +
+        ? '<h1>' + T('Thank you! Now go and <span class="script">play</span>', 'Terima kasih! Sekarang jom <span class="script">bermain</span>') + '</h1>' +
+          '<p class="got-badge">🏅 ' + T('New badge: <b>Ready to Explore</b>', 'Lencana baharu: <b>Sedia Meneroka</b>') + '</p><p>' +
           T('Your answers are saved. After you’ve played, a post-test will show how much you learned.', 'Jawapan anda telah disimpan. Selepas bermain, ujian pasca akan menunjukkan berapa banyak yang anda pelajari.') + '</p>'
         : '<h1>' + T('Look how far you <span class="script">came</span>', 'Lihat kemajuan <span class="script">anda</span>') + '</h1>' +
           '<div class="player" style="margin-top:14px;">' + (pre ? '<div class="kpi"><b>' + pre.score + ' / ' + pre.max + '</b><span>' + T('before', 'sebelum') + '</span></div>' : '') +
           '<div class="kpi"><b>' + post.score + ' / ' + post.max + '</b><span>' + T('after', 'selepas') + '</span></div></div>' +
+          '<p class="got-badge">🏅 ' + T('New badge: <b>Quest Complete</b>', 'Lencana baharu: <b>Pengembaraan Tamat</b>') + '</p>' +
           '<p>' + T('Thank you for taking part.', 'Terima kasih kerana mengambil bahagian.') + '</p>') +
       '<button class="btn" id="t-done">' + (run.then ? T('Start playing', 'Mula bermain') : T('Back to map', 'Kembali ke peta')) + '</button></div>';
     $('t-done').addEventListener('click', finish);
@@ -282,6 +301,7 @@
       answers: JSON.stringify(it.map((_, j) => run.ans[j] == null ? '' : String(run.ans[j]))),
       correct_items: marks.join(''), time_s: Math.round((Date.now() - run.t0) / 1000)
     });
+    giveBadges([run.kind === 'pre' ? 'test_ready' : 'test_done']);
     const played = Object.keys(st.best).length > 0;
     run.stage = run.kind === 'post' && played ? 'survey' : 'done';
     run.survey = {};
@@ -302,7 +322,7 @@
     const c = cleared();
     const preRow = pre ? '<span class="pill done">' + T('Submitted ✓', 'Dihantar ✓') + '</span>'
       : preOpen() ? '<button class="btn sm" data-test="pre">' + T('Start', 'Mula') + '</button>'
-        : '<span class="pill lock">' + T('Closed — you’ve started playing', 'Ditutup — anda sudah mula bermain') + '</span>';
+        : '<span class="pill lock">' + T('Closed — you’ve started playing', 'Ditutup kerana anda sudah mula bermain') + '</span>';
     let postRow;
     if (post) postRow = '<span class="pill done">' + T('Submitted ✓', 'Dihantar ✓') + '</span>';
     else if (postOpen()) postRow = '<button class="btn sm pulse" data-test="post">' + T('Start', 'Mula') + '</button>';
@@ -310,7 +330,7 @@
     else postRow = '<span class="pill lock">' + T('Submit your results first (My progress)', 'Hantar keputusan anda dahulu (Kemajuan saya)') + '</span>';
     return '<div class="world testcard"><div class="n" style="background:var(--green)">✎</div>' +
       '<h3>' + T('Before &amp; after test', 'Ujian sebelum &amp; selepas') + '</h3>' +
-      '<div class="topic">' + T('10 questions before you play, 10 after — to see what you learned.', '10 soalan sebelum bermain, 10 selepas — untuk melihat apa yang anda pelajari.') + '</div>' +
+      '<div class="topic">' + T('10 questions before you play, 10 after — to see what you learned.', 'Jawab 10 soalan sebelum bermain dan 10 soalan selepas bermain untuk melihat apa yang anda pelajari.') + '</div>' +
       '<div class="trow"><span>' + T('Pre-test', 'Ujian pra') + '</span>' + preRow + '</div>' +
       '<div class="trow"><span>' + T('Post-test', 'Ujian pasca') + '</span>' + postRow + '</div></div>';
   }
@@ -319,12 +339,12 @@
   function banner() {
     if (preOpen()) {
       return '<div class="test-banner"><div><div class="kicker">' + T('BEFORE YOU START', 'SEBELUM ANDA MULA') + '</div><h2>' + T('Take the pre-test', 'Jawab ujian pra') + '</h2><p>' +
-        T('10 quick questions, about 5 minutes. It shows what you know now — it isn’t marked for your grade.', '10 soalan ringkas, kira-kira 5 minit. Ia menunjukkan apa yang anda tahu sekarang — tidak dikira untuk gred anda.') +
+        T('10 quick questions, about 5 minutes. It shows what you know now — it isn’t marked for your grade.', 'Terdapat 10 soalan ringkas yang mengambil masa kira-kira 5 minit. Ujian ini menunjukkan apa yang anda tahu sekarang. Ia tidak dikira untuk gred anda.') +
         '</p></div><button class="btn" data-test="pre">' + T('Start the pre-test →', 'Mula ujian pra →') + '</button></div>';
     }
     if (postOpen()) {
       return '<div class="test-banner post"><div><div class="kicker">' + T('YOUR POST-TEST IS READY', 'UJIAN PASCA ANDA SEDIA') + '</div><h2>' + T('Finished playing? See how much you learned', 'Sudah selesai bermain? Lihat berapa banyak yang anda pelajari') + '</h2><p>' +
-        T('Take it when you have <b>finished playing</b> — you only get one try. Still want to play more worlds? Go ahead; it will stay here.', 'Jawab apabila anda sudah <b>selesai bermain</b> — anda hanya ada satu cubaan. Masih mahu main dunia lain? Teruskan; ia akan kekal di sini.') +
+        T('Take it when you have <b>finished playing</b> — you only get one try. Still want to play more worlds? Go ahead; it will stay here.', 'Jawab ujian ini apabila anda sudah <b>selesai bermain</b> kerana anda hanya ada satu cubaan. Masih mahu bermain dunia lain? Teruskan bermain. Ujian ini akan kekal di sini.') +
         '</p></div><button class="btn" data-test="post">' + T('Start the post-test →', 'Mula ujian pasca →') + '</button></div>';
     }
     return '';

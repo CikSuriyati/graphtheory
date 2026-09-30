@@ -91,7 +91,7 @@ The SPM trial exam timetable. Subjects that share students clash (an edge) and c
 
 ### Class board (Stage 5)
 
-On *My progress*: **teams first**, then players, for the student's own class and **this week only** (from Monday). It counts the best score per level from results submitted this week. Team XP is the average per member, so team size doesn't matter. Teams are groups of 4 by register number (1–4, 5–8, …) unless you fill the **Teams** tab with `student_code | team` rows. *Team Player* badge: every member of the team clears a level in the same week. Only student codes and XP are shown, the same as in the Sheet.
+On *My progress*: **teams first**, then players, for the student's own class and **this week only** (from Monday). It counts the best score per level from results submitted this week. Team XP is the average per member, so team size doesn't matter. A student's team is the **group (kumpulan)** they typed when joining. Students who left Group empty play alone and appear only under Players. To set or override a team, fill the **Teams** tab with `student_code | team` rows. *Team Player* badge: every member of the team clears a level in the same week. Students see their classmates' names or register numbers and XP, so if students type names, the whole class sees them.
 
 ### World 1 · Graph Maze (Stage 4)
 
@@ -203,9 +203,17 @@ Replace with your `/exec` URL, commit, push.
 
 ## 6. Give students the class code
 
-Students enter a **class code** (e.g. `4S1-2026`) and their **register number**. That becomes their student code, `4S1-17`. No names, no passwords.
+Students enter three things:
 
-Use one class code per class, and change the year each year so cohorts never mix.
+- **Kod kelas**: the class, e.g. `4S1`. Give every class its own code.
+- **Kumpulan** (optional): to play as a team, everyone in the team types the same group, e.g. `1` or `Melur`. To play alone, leave it empty. The join screen explains this to students.
+- **Nama atau nombor giliran**: their name (e.g. `Aina Sofea`) or register number (e.g. `17`).
+
+Class and name or number make the student code, `4S1-17` or `4S1-AINA SOFEA`. Students must type the same name or number every time: `Aina` and `Aina Sofea` count as two students. Two students with the same name in one class must add something to tell them apart. A student can change group later (map → *Change*) without losing progress.
+
+Only the part of the class code before a dash is used in the student code, so don't give two classes codes like `4S1-2026` and `4S1-2027` at the same time.
+
+**Update the Apps Script before students use the Group box.** An older script rejects names, so their results wait on the phone until the script is updated (nothing is lost).
 
 ---
 
@@ -220,10 +228,11 @@ Progress lives on the student's device, so the game works offline in class. When
 | attempt_id | `lx3k9a-abc12` | Made on the device; stops duplicates |
 | timestamp | `2026-10-14 10:32` | Device time when the attempt ended |
 | class_code | `4S1-2026` | |
-| student_code | `4S1-17` | Class + register number |
+| student_code | `4S1-17` | Class + name or register number |
 | world, level | `3`, `2` | |
 | correct | `true` | Reached the PPS with a legal route |
 | optimal | `false` | Was it the best route |
+| group | `MELUR` | The student's group (kumpulan); the last column, after `received` |
 | score_xp | `30` | XP for this attempt |
 | hints_used, learn_used | `1`, `0` | |
 | time_s | `48` | Seconds since the level opened |
@@ -324,12 +333,13 @@ Built into the game, open to everyone, controlled only by the order of play. The
 | **Post-test** | Once the student has cleared **5 levels** and pressed **Submit results** | 10 matched questions, then the 8-item survey and one open question, then *before x/10 → after y/10* |
 | **Control class** | Give them `graphtheory.visuallymath.com/graphquest/?test=pre` and later `…?test=post` | The test straight away, no playing needed and no survey |
 
-- **Two matched forms.** Odd register numbers take form A before and B after; even numbers take B then A. Item *n* tests the same idea on both. **Review them in `TEST-FORMS.md` before a class uses them.**
+- **Two matched forms.** Odd register numbers take form A before and B after; even numbers take B then A. A student who types a name gets an order from the letters of that name, so it stays the same every time. Item *n* tests the same idea on both. **Review them in `TEST-FORMS.md` before a class uses them.**
 - **A test, not a game.** No hints, no feedback on answers, no XP, one attempt. The pre-test score isn't shown until after the post-test.
+- **Built to feel short.** The top shows "Soalan 3 daripada 10 · kira-kira 4 minit lagi". Number answers use an on-screen keypad instead of the phone keyboard. Finishing earns a badge (*Sedia Meneroka* for the pre-test, *Pengembaraan Tamat* for the post-test). The badge is for finishing, not for the score, so it doesn't reward guessing.
 - **Sent straight away.** Test answers go to a new **Tests** tab in the Sheet when the student finishes, and again with *Submit results* if the first try failed.
 - **The dashboard keeps the data honest.** It leaves out pre-tests taken after a student had already cleared a level, and says how many skipped, took only one test, or took the pre-test late.
 
-The Tests tab has one row per test: `test_id, timestamp, class_code, student_code, test (pre / post / survey), form, score, max, answers, correct_items, time_s, levels_cleared, skipped, received`. `correct_items` is ten 1s and 0s, one per question, which makes item analysis in Excel or SPSS straightforward.
+The Tests tab has one row per test: `test_id, timestamp, class_code, student_code, test (pre / post / survey), form, score, max, answers, correct_items, time_s, levels_cleared, skipped, received, group`. `correct_items` is ten 1s and 0s, one per question, which makes item analysis in Excel or SPSS straightforward.
 
 **Needs the updated Apps Script.** Until you paste in the new `graphquest-apps-script.gs` and deploy a new version, test answers wait safely on each student's device. They are sent the next time the student presses *Submit results* after the update.
 

@@ -107,6 +107,11 @@
     .kpi b{font-size:22px;}
   }
   :where(button,a,input,select,summary):focus-visible{outline:3px solid var(--orange);outline-offset:4px;}
+  .fold>summary{list-style:none;cursor:pointer;position:relative;padding-right:120px;}
+  .fold>summary::-webkit-details-marker{display:none;}
+  .fold-hint{position:absolute;right:0;bottom:12px;font-size:13px;font-weight:700;color:var(--ink-faint);}
+  .fold-hint::after{content:'▾';display:inline-block;margin-left:5px;transition:transform .15s;}
+  .fold[open] .fold-hint::after{transform:rotate(180deg);}
   .teacher-nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0;}
   .teacher-nav a{color:var(--ink);background:var(--yellow-soft);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;text-decoration:none;}
   [id^="h-"]{scroll-margin-top:24px;}
@@ -174,8 +179,10 @@
       <div class="card" id="mistakes"></div>
     </div>
 
-    <div class="band"><div class="kicker" id="k-levels"></div><h2 id="h-levels"></h2></div>
-    <div class="card scroll" id="levels"></div>
+    <details class="fold" id="fold-levels">
+      <summary class="band"><div class="kicker" id="k-levels"></div><h2 id="h-levels"></h2><span class="fold-hint" id="hint-levels"></span></summary>
+      <div class="card scroll" id="levels"></div>
+    </details>
 
     <div class="band"><div class="kicker" id="k-support"></div><h2 id="h-support"></h2></div>
     <div class="grid2" id="support"></div>
@@ -468,6 +475,7 @@ function renderStatic() {
   $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
   $('in-csv').setAttribute('aria-label', T('Choose results CSV files', 'Pilih fail CSV keputusan'));
   $('teacher-nav').innerHTML = [['h-mastery', T('Mastery', 'Penguasaan')], ['h-levels', T('Levels', 'Tahap')], ['h-support', T('Support', 'Sokongan')], ['h-students', T('Students', 'Murid')], ['h-boss', T('Boss', 'Bos')], ['h-prepost', T('Before & after', 'Sebelum & selepas')]].map(x => '<a href="#' + x[0] + '">' + x[1] + '</a>').join('');
+  $('teacher-nav').querySelector('a[href="#h-levels"]').addEventListener('click', () => { $('fold-levels').open = true; });
   $('teacher-nav').setAttribute('aria-label', T('Dashboard sections', 'Bahagian papan pemuka'));
   $('lnk-game').textContent = T('← The game', '← Permainan');
   $('kicker').textContent = T('Graph Quest · Teacher dashboard', 'Graph Quest · Papan pemuka guru');
@@ -599,6 +607,7 @@ function renderMistakes(X) {
 function renderLevels(X, n) {
   $('k-levels').textContent = T('Part two', 'Bahagian dua');
   $('h-levels').textContent = T('Level by level', 'Tahap demi tahap');
+  $('hint-levels').textContent = T('Show / hide', 'Tunjuk / sembunyi');
   const rows = Object.keys(WORLDS).flatMap(w => WORLDS[w].levels.map((name, i) => {
     const x = X.L[w + '-' + (i + 1)];
     if (!x) return '<tr><td>' + w + '.' + (i + 1) + '</td><td>' + esc(tt(name)) + '</td><td class="num muted" colspan="4">' + T('not played', 'belum dimainkan') + '</td></tr>';

@@ -170,9 +170,9 @@ section[id^="screen-"]:not(.hidden) { animation:screen-enter .22s ease-out; }
  .toplinks { display:contents; }
  .brand { grid-column:1 / 3; grid-row:1; }
  #btn-lang { grid-column:3; grid-row:1; justify-self:end; }
- #nav-map { grid-column:1; grid-row:2; }
- #nav-progress { grid-column:2; grid-row:2; }
- #lnk-tool { grid-column:3; grid-row:2; }
+ #lnk-tool { grid-column:1; grid-row:2; }
+ #nav-map { grid-column:2; grid-row:2; }
+ #nav-progress { grid-column:3; grid-row:2; }
  #nav-map, #nav-progress, #lnk-tool { width:100%; justify-content:center; text-align:center; display:inline-flex; align-items:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:6px 4px; letter-spacing:.02em; }
 }
 @media(max-width:360px) {
@@ -256,12 +256,13 @@ section[id^="screen-"]:not(.hidden) { animation:screen-enter .22s ease-out; }
 
 /* ---- Phone layout ---- */
 @media(max-width:600px) {
- /* Top bar: logo + ? + sound + language on one row, the three links under it. */
+ /* Top bar: logo + ? + sound + language on one row, the three links under it
+    (back to GraphTheory first, then the game's own Map and My progress). */
  .topbar { grid-template-columns:repeat(6,minmax(0,1fr)); gap:6px; margin-bottom:14px; padding-bottom:12px; }
  .brand { grid-column:1 / 4; }
  #nav-help, #btn-sound, #btn-lang { grid-row:1; width:40px; min-height:40px; padding:0; justify-self:end; display:inline-flex; align-items:center; justify-content:center; }
  #nav-help { grid-column:4; } #btn-sound { grid-column:5; font-size:16px; } #btn-lang { grid-column:6; }
- #nav-map { grid-column:1 / 3; } #nav-progress { grid-column:3 / 5; } #lnk-tool { grid-column:5 / 7; }
+ #lnk-tool { grid-column:1 / 3; } #nav-map { grid-column:3 / 5; } #nav-progress { grid-column:5 / 7; }
  #nav-map, #nav-progress, #lnk-tool { min-height:36px; }
 
  /* Level screens: tighter story card, and a map that fits above the dock. */

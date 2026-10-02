@@ -173,30 +173,38 @@
     <div class="kpis" id="kpis"></div>
     <div id="reteach"></div>
 
-    <div class="band"><div class="kicker" id="k-mastery"></div><h2 id="h-mastery"></h2></div>
-    <div class="grid2">
-      <div class="card" id="mastery"></div>
-      <div class="card" id="mistakes"></div>
-    </div>
+    <details class="fold" id="fold-mastery">
+      <summary class="band"><div class="kicker" id="k-mastery"></div><h2 id="h-mastery"></h2><span class="fold-hint"></span></summary>
+      <div class="grid2">
+        <div class="card" id="mastery"></div>
+        <div class="card" id="mistakes"></div>
+      </div>
+    </details>
 
     <details class="fold" id="fold-levels">
-      <summary class="band"><div class="kicker" id="k-levels"></div><h2 id="h-levels"></h2><span class="fold-hint" id="hint-levels"></span></summary>
+      <summary class="band"><div class="kicker" id="k-levels"></div><h2 id="h-levels"></h2><span class="fold-hint"></span></summary>
       <div class="card scroll" id="levels"></div>
     </details>
 
-    <div class="band"><div class="kicker" id="k-support"></div><h2 id="h-support"></h2></div>
-    <div class="grid2" id="support"></div>
+    <details class="fold" id="fold-support">
+      <summary class="band"><div class="kicker" id="k-support"></div><h2 id="h-support"></h2><span class="fold-hint"></span></summary>
+      <div class="grid2" id="support"></div>
+    </details>
 
     <div class="band"><div class="kicker" id="k-students"></div><h2 id="h-students"></h2></div>
     <p class="muted" id="p-students"></p>
     <div class="card scroll" id="students"></div>
     <div id="student"></div>
 
-    <div class="band"><div class="kicker" id="k-boss"></div><h2 id="h-boss"></h2></div>
-    <div class="card" id="boss"></div>
+    <details class="fold" id="fold-boss">
+      <summary class="band"><div class="kicker" id="k-boss"></div><h2 id="h-boss"></h2><span class="fold-hint"></span></summary>
+      <div class="card" id="boss"></div>
+    </details>
 
-    <div class="band"><div class="kicker" id="k-prepost"></div><h2 id="h-prepost"></h2></div>
-    <div class="card" id="prepost"></div>
+    <details class="fold" id="fold-prepost">
+      <summary class="band"><div class="kicker" id="k-prepost"></div><h2 id="h-prepost"></h2><span class="fold-hint"></span></summary>
+      <div class="card" id="prepost"></div>
+    </details>
   </section>
 
   <p class="muted" id="privacy" style="margin-top:40px;"></p>
@@ -475,7 +483,11 @@ function renderStatic() {
   $('btn-lang').setAttribute('aria-label', T('Tukar ke Bahasa Melayu', 'Switch to English'));
   $('in-csv').setAttribute('aria-label', T('Choose results CSV files', 'Pilih fail CSV keputusan'));
   $('teacher-nav').innerHTML = [['h-mastery', T('Mastery', 'Penguasaan')], ['h-levels', T('Levels', 'Tahap')], ['h-support', T('Support', 'Sokongan')], ['h-students', T('Students', 'Murid')], ['h-boss', T('Boss', 'Bos')], ['h-prepost', T('Before & after', 'Sebelum & selepas')]].map(x => '<a href="#' + x[0] + '">' + x[1] + '</a>').join('');
-  $('teacher-nav').querySelector('a[href="#h-levels"]').addEventListener('click', () => { $('fold-levels').open = true; });
+  // a menu button opens its section if it is folded away
+  $('teacher-nav').querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    const f = $('fold-' + a.getAttribute('href').slice(3)); if (f) f.open = true;
+  }));
+  document.querySelectorAll('.fold-hint').forEach(h => { h.textContent = T('Show / hide', 'Tunjuk / sembunyi'); });
   $('teacher-nav').setAttribute('aria-label', T('Dashboard sections', 'Bahagian papan pemuka'));
   $('lnk-game').textContent = T('← The game', '← Permainan');
   $('kicker').textContent = T('Graph Quest · Teacher dashboard', 'Graph Quest · Papan pemuka guru');
@@ -607,7 +619,6 @@ function renderMistakes(X) {
 function renderLevels(X, n) {
   $('k-levels').textContent = T('Part two', 'Bahagian dua');
   $('h-levels').textContent = T('Level by level', 'Tahap demi tahap');
-  $('hint-levels').textContent = T('Show / hide', 'Tunjuk / sembunyi');
   const rows = Object.keys(WORLDS).flatMap(w => WORLDS[w].levels.map((name, i) => {
     const x = X.L[w + '-' + (i + 1)];
     if (!x) return '<tr><td>' + w + '.' + (i + 1) + '</td><td>' + esc(tt(name)) + '</td><td class="num muted" colspan="4">' + T('not played', 'belum dimainkan') + '</td></tr>';

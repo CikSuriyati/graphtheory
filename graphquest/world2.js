@@ -61,7 +61,8 @@
         nodes: [p('G', 90, 200), p('O', 250, 90), p('C', 250, 310), p('L', 430, 90), p('H', 430, 310)],
         edges: [e('G', 'O'), e('G', 'C'), e('O', 'C'), e('O', 'L'), e('C', 'H'), e('L', 'H')]
       },
-      steps: [{ t: 'count', v: 'O' }, { t: 'count', v: 'G' }, { t: 'count', v: 'C' }],
+      // Pilot (3 Oct 2026): 166 miscounts here, so the first count is guided.
+      steps: [{ t: 'trace', v: 'O' }, { t: 'count', v: 'G' }, { t: 'count', v: 'C' }],
       qc: {
         q: ['If a new corridor is built between the Canteen and the Library, the Canteen\'s degree becomes…', 'Jika koridor baharu dibina antara Kantin dan Perpustakaan, darjah Kantin menjadi…'],
         opts: [['a', '4'], ['b', '5'], ['c', '3']], answer: 'a',
@@ -86,7 +87,7 @@
       }
     },
     {
-      title: ['Loops and twin corridors', 'Gelung dan koridor berkembar'], target: 90, terms: 'types',
+      title: ['Loops and twin corridors', 'Gelung dan koridor berkembar'], target: 90, terms: 'types', intro: true,
       story: ['Near the Field the map gets strange: a running track leaves the Field and comes straight back, and two separate corridors join the Canteen and the Hall.',
         'Berhampiran Padang, peta ini menjadi pelik. Trek larian keluar dari Padang dan terus kembali ke Padang. Selain itu, dua koridor berasingan menghubungkan Kantin dan Dewan.'],
       g: {
@@ -258,7 +259,7 @@
         '<circle class="shadow" cx="' + v.x + '" cy="' + (v.y + 3) + '" r="19"/>' +
         '<circle class="dot" cx="' + v.x + '" cy="' + v.y + '" r="19"/>' +
         '<text class="name" x="' + v.x + '" y="' + (v.y + 39) + '" text-anchor="middle">' + nm(v.id) + '</text></g>';
-      if (o.degs) pills += '<g class="deg"><rect x="' + (v.x + 12) + '" y="' + (v.y - 36) + '" width="36" height="20" rx="7"/>' +
+      if (o.degs || (o.degFor && o.degFor.has(v.id))) pills += '<g class="deg"><rect x="' + (v.x + 12) + '" y="' + (v.y - 36) + '" width="36" height="20" rx="7"/>' +
         '<text x="' + (v.x + 30) + '" y="' + (v.y - 21.5) + '" text-anchor="middle">d=' + degree(g, v.id) + '</text></g>';
     });
     return roads + towns + pills;
@@ -276,7 +277,11 @@
     const made = L.random ? randomLevel() : { g: L.g, steps: L.steps };
     c = {
       i, L, g: made.g, steps: made.steps, k: 0, t0: Date.now(), hints: 0, learn: 0, wrong: 0,
-      phase: 'play', hint: null, learnOn: false, done: new Set(), found: new Set(), dim: new Set(), hl: new Set()
+      phase: 'play', hint: null, learnOn: false, done: new Set(), found: new Set(), dim: new Set(), hl: new Set(),
+      // Per-question help state: wrong answers on this question, places already
+      // ruled out (with their degree shown), the clue that last failed, traced
+      // corridors, and whether Learn was opened by the game rather than the player.
+      sw: 0, ruled: new Set(), failClue: -1, traced: new Set(), autoHelp: false, learnAuto: false
     };
     $('c-aid').innerHTML = ''; $('c-panel').innerHTML = ''; say('');
     show('case'); render();
@@ -315,9 +320,11 @@
     portrait = $('svg2').parentElement.clientWidth < 560;
     $('svg2').setAttribute('viewBox', portrait ? '0 0 400 640' : '0 0 640 400');
     const s = c.phase === 'play' ? step() : null;
+    const dim = new Set([...c.dim, ...(s && s.t === 'clues' ? c.ruled : [])]);
     $('svg2').innerHTML = svgFor(c.g, {
-      hl: c.hl, found: c.found, dim: c.dim, done: c.done, degs: c.learnOn,
-      ask: s && s.t === 'count' ? s.v : null
+      hl: c.hl, found: new Set([...c.found, ...c.traced]), dim, done: c.done, degs: c.learnOn,
+      degFor: s && s.t === 'find' ? c.ruled : null,
+      ask: s && (s.t === 'count' || s.t === 'trace') ? s.v : null
     });
   }
 
@@ -333,7 +340,14 @@
     $('c-ask').classList.remove('hidden');
     const s = step(), count = T('Question ', 'Soalan ') + (c.k + 1) + T(' of ', ' daripada ') + c.steps.length;
     let q = '', body = '';
-    if (s.t === 'count') {
+    if (s.t === 'trace') {
+      const n = c.traced.size;
+      q = T('<b>Count with me.</b> Tap each corridor that touches the <b>' + nm(s.v) + '</b> (the yellow place). Each one turns green.',
+        '<b>Kira bersama saya.</b> Ketik setiap koridor yang menyentuh <b>' + nm(s.v) + '</b> (tempat berwarna kuning). Setiap koridor akan bertukar hijau.');
+      body = '<p class="tally" style="margin:8px 0 0;font-size:18px;"><b>' + T('Counted: ', 'Dikira: ') + n + '</b>' +
+        (n > 1 ? ' <span class="muted">(' + Array.from({ length: n }, (_, k) => k + 1).join(', ') + ')</span>' : '') + '</p>' +
+        '<p class="muted" style="margin:4px 0 0;">' + T('The degree of a place is how many corridors touch it.', 'Darjah sesuatu tempat ialah bilangan koridor yang menyentuhnya.') + '</p>';
+    } else if (s.t === 'count') {
       q = T('How many corridors meet at the <b>' + nm(s.v) + '</b>?', 'Berapakah bilangan koridor yang bertemu di <b>' + nm(s.v) + '</b>?');
       body = '<div class="pad">' + [0, 1, 2, 3, 4, 5, 6].map(x => '<button data-num="' + x + '">' + x + '</button>').join('') + '</div>';
     } else if (s.t === 'find') {
@@ -350,9 +364,10 @@
         'Dua tempat dihubungkan oleh <b>dua koridor berasingan</b>. Ketik salah satu koridor itu.');
     } else {
       q = T('Tap the one place that fits <b>every</b> clue:', 'Ketik satu-satunya tempat yang sepadan dengan <b>setiap</b> petunjuk:');
-      body = '<ol class="clues">' + s.clues.map(cl => '<li>' + clueText(cl) + '</li>').join('') + '</ol>';
+      body = '<ol class="clues">' + s.clues.map((cl, j) => '<li' + (j === c.failClue ? ' class="fail"' : '') + '>' + clueText(cl) + '</li>').join('') + '</ol>' +
+        (c.ruled.size ? '<p class="muted" style="margin:4px 0 0;">' + T('Greyed-out places are ruled out.', 'Tempat yang dikelabukan sudah disingkirkan.') + '</p>' : '');
     }
-    $('c-ask').innerHTML = '<div class="kicker" style="margin-bottom:4px;">' + count + '</div><p style="margin:0;color:var(--ink);font-size:16.5px;">' + q + '</p>' + body;
+    $('c-ask').innerHTML = (c.L.intro ? introHtml() : '') + '<div class="kicker" style="margin-bottom:4px;">' + count + '</div><p style="margin:0;color:var(--ink);font-size:16.5px;">' + q + '</p>' + body;
     $('c-ask').querySelectorAll('[data-num]').forEach(b => b.addEventListener('click', () => answerCount(+b.dataset.num)));
   }
 
@@ -366,19 +381,28 @@
   /* ============================================================
      Answers
      ============================================================ */
+  /** Help opens by itself after repeated wrong answers on one question:
+   *  the hint after 2, Learn after 4. In the pilot (3 Oct 2026) students made
+   *  a median of 9 wrong answers in World 2 but rarely asked for help. */
+  const AUTO_HINT_AT = 2, AUTO_LEARN_AT = 4;
+
   function wrong(tag, msg, shakeId) {
-    c.wrong++;
+    c.wrong++; c.sw++;
     logAttempt({
       world: 2, level: c.i + 1, correct: false, optimal: false, score_xp: 0, mistake_tag: tag,
       hints_used: c.hints, learn_used: c.learn, time_s: secs2()
     });
     save();
+    if (c.sw >= AUTO_LEARN_AT && !c.learnOn) { learn(); c.learnAuto = !c.learnManual; c.autoHelp = true; }
+    else if (c.sw >= AUTO_HINT_AT && c.hint !== c.k) { hint(); c.autoHelp = true; }
+    draw(); renderAsk(); renderAid();
     if (shakeId) shake(shakeId);
     say(msg, true);
   }
 
   function right(msg) {
     c.k++; c.hint = null; c.hl = new Set(); c.dim = new Set();
+    c.sw = 0; c.ruled = new Set(); c.failClue = -1; c.traced = new Set(); c.autoHelp = false;
     SFX.play('right');
     say(msg);
     if (c.k === c.steps.length) { c.phase = 'check'; c.solveTime = secs2(); clearInterval(timer); $('c-clock').textContent = c.solveTime + ' s'; }
@@ -395,10 +419,22 @@
     wrong('miscounted_degree', T('Not quite. Trace each corridor that touches the ' + nm(s.v) + ', one at a time.', 'Belum tepat. Jejak setiap koridor yang menyentuh ' + nm(s.v) + ' satu demi satu.'), 'c-n' + s.v);
   }
 
+  /** The corridors (edge indices) a trace step needs: every edge at v. */
+  function traceNeed(v) {
+    const need = new Set();
+    c.g.edges.forEach((ed, i) => { if (ed.a === v || ed.b === v) need.add(i); });
+    return need;
+  }
+
   function tapNode(id) {
     if (c.phase !== 'play') return;
     const s = step();
+    if (s.t === 'trace') return say(T('Tap the corridors (the lines), not the places.', 'Ketik koridor (garisan), bukan tempat.'));
     if (s.t === 'count') return say(T('Use the number buttons above the map.', 'Gunakan butang nombor di atas peta.'));
+    if ((s.t === 'find' || s.t === 'clues') && c.ruled.has(id))
+      return say(s.t === 'find'
+        ? T('Already checked — the ' + nm(id) + ' has degree ' + degree(c.g, id) + '.', 'Sudah disemak. ' + nm(id) + ' berdarjah ' + degree(c.g, id) + '.')
+        : T('The ' + nm(id) + ' is already ruled out.', nm(id) + ' sudah disingkirkan.'));
     if (s.t === 'multi') return say(T('Tap the corridor itself — one of the pair.', 'Ketik koridor itu sendiri, iaitu salah satu daripada pasangan koridor itu.'));
     if (s.t === 'loop') {
       if (hasLoop(c.g, id)) { markLoop(id); return right(T('Found it — the loop at the ' + nm(id) + '.', 'Anda menjumpainya. Gelung itu berada di ' + nm(id) + '.')); }
@@ -412,15 +448,18 @@
           ? T('Correct — only 1 corridor leads to the ' + nm(id) + '.', 'Betul. Hanya 1 koridor menuju ke ' + nm(id) + '.')
           : T('Correct — ' + s.d + ' corridors meet at the ' + nm(id) + '.', 'Betul. Sebanyak ' + s.d + ' koridor bertemu di ' + nm(id) + '.'));
       }
+      c.ruled.add(id);
       return wrong('wrong_vertex_for_degree', T('The ' + nm(id) + ' has degree ' + d + ' — you need ' + s.d + '.', nm(id) + ' berdarjah ' + d + '. Anda perlu mencari tempat yang berdarjah ' + s.d + '.'), 'c-n' + id);
     }
     // clues
     const j = s.clues.findIndex(cl => !clueHolds(c.g, id, cl));
     if (j < 0) { c.done.add(id); return right(T('Case closed! The trophy is at the ' + nm(id) + '.', 'Kes selesai! Trofi berada di ' + nm(id) + '.')); }
     const cl = s.clues[j];
-    const why = cl.k === 'deg' ? T('its degree is ' + degree(c.g, id), 'darjahnya ialah ' + degree(c.g, id))
+    const why = cl.k !== 'deg' && id === cl.u ? T('it is the ' + nm(id) + ' itself', 'ia ialah ' + nm(id) + ' itu sendiri')
+      : cl.k === 'deg' ? T('its degree is ' + degree(c.g, id), 'darjahnya ialah ' + degree(c.g, id))
       : cl.k === 'adj' ? T('no corridor joins it to the ' + nm(cl.u), 'tiada koridor menghubungkannya dengan ' + nm(cl.u))
         : T('it is next to the ' + nm(cl.u), 'ia bersebelahan dengan ' + nm(cl.u));
+    c.ruled.add(id); c.failClue = j;
     wrong('clue_ignored', T('The ' + nm(id) + ' doesn\'t fit clue ' + (j + 1) + ': ' + why + '.', nm(id) + ' tidak sepadan dengan petunjuk ' + (j + 1) + ': ' + why + '.'), 'c-n' + id);
   }
 
@@ -429,6 +468,24 @@
   function tapEdge(i) {
     if (c.phase !== 'play') return;
     const s = step(), ed = c.g.edges[i];
+    if (s.t === 'trace') {
+      if (c.traced.has(i)) return say(T('Already counted. Find another corridor at the ' + nm(s.v) + '.', 'Sudah dikira. Cari koridor lain di ' + nm(s.v) + '.'));
+      if (ed.a !== s.v && ed.b !== s.v)
+        return wrong('trace_wrong_corridor', T('That corridor doesn\'t touch the ' + nm(s.v) + '. Start at the yellow place and follow each line out of it.',
+          'Koridor itu tidak menyentuh ' + nm(s.v) + '. Mula di tempat berwarna kuning dan ikut setiap garisan yang keluar daripadanya.'), 'c-e' + i);
+      c.traced.add(i);
+      SFX.play('right');
+      const need = traceNeed(s.v);
+      if (c.traced.size === need.size) {
+        need.forEach(j => c.found.add(j));
+        const d = degree(c.g, s.v);
+        return right(T(d + ' corridors touch the ' + nm(s.v) + ', so its degree is ' + d + '. Now count on your own.',
+          d + ' koridor menyentuh ' + nm(s.v) + ', jadi darjahnya ialah ' + d + '. Sekarang kira sendiri.'));
+      }
+      say(T('That\'s ' + c.traced.size + '. Keep going.', 'Itu ' + c.traced.size + '. Teruskan.'));
+      draw(); renderAsk();
+      return;
+    }
     if (s.t === 'loop') {
       if (ed.a === ed.b) { markLoop(ed.a); return right(T('Found it — the loop at the ' + nm(ed.a) + '.', 'Anda menjumpainya. Gelung itu berada di ' + nm(ed.a) + '.')); }
       return wrong('missed_loop', T('That corridor joins two different places. A loop starts and ends at the same place.', 'Koridor itu menghubungkan dua tempat berbeza. Gelung bermula dan berakhir di tempat yang sama.'), 'c-e' + i);
@@ -452,7 +509,7 @@
     c.hints = 1; c.hint = c.k;
     const s = step();
     c.hl = new Set(); c.dim = new Set();
-    if (s.t === 'count') c.g.edges.forEach((ed, i) => { if (ed.a === s.v || ed.b === s.v) c.hl.add(i); });
+    if (s.t === 'count' || s.t === 'trace') c.g.edges.forEach((ed, i) => { if (ed.a === s.v || ed.b === s.v) c.hl.add(i); });
     if (s.t === 'find') c.g.nodes.forEach(v => { if (Math.abs(degree(c.g, v.id) - s.d) >= 2) c.dim.add(v.id); });
     if (s.t === 'clues') c.g.nodes.forEach(v => { if (!clueHolds(c.g, v.id, s.clues[0])) c.dim.add(v.id); });
     draw(); renderAid();
@@ -463,6 +520,23 @@
     c.learn = 1; c.learnOn = true;
     draw(); renderAid();
   }
+  function learnClicked() { if (c && c.phase === 'play' && !c.learnOn) c.learnManual = true; learn(); }
+
+  /** Level 3 explainer, shown above the question so it is read before the
+   *  first tap: a loop adds 2, each of two twin corridors adds 1. */
+  function introHtml() {
+    const dot = (x, y, lab) => '<circle cx="' + x + '" cy="' + y + '" r="13" class="mini-dot"/><text x="' + x + '" y="' + (y + 30) + '" text-anchor="middle" class="mini-lab">' + lab + '</text>';
+    const svg = '<svg viewBox="0 0 360 120" class="mini" aria-hidden="true">' +
+      '<path d="M 70 60 C 20 0, 120 0, 70 60" class="mini-road"/>' + dot(70, 60, T('Field', 'Padang')) +
+      '<text x="112" y="34" text-anchor="middle" class="mini-plus">+2</text>' +
+      '<path d="M 220 60 Q 270 20 320 60" class="mini-road"/><path d="M 220 60 Q 270 100 320 60" class="mini-road"/>' +
+      dot(220, 60, T('Canteen', 'Kantin')) + dot(320, 60, T('Hall', 'Dewan')) +
+      '<text x="270" y="30" text-anchor="middle" class="mini-plus">+1</text><text x="270" y="104" text-anchor="middle" class="mini-plus">+1</text></svg>';
+    return '<div class="intro2"><b>' + T('Remember', 'Ingat') + '</b>' + svg +
+      '<p style="margin:4px 0 0;">' + T('A <b>loop</b> leaves a place and comes back, so it touches that place <b>twice</b>: it adds <b>2</b> to the degree. ' +
+        '<b>Twin corridors</b> (multiple edges) are separate corridors, so <b>each one</b> adds 1.',
+        '<b>Gelung</b> keluar dari satu tempat dan kembali semula, jadi ia menyentuh tempat itu <b>dua kali</b>: ia menambah <b>2</b> kepada darjah. ' +
+        '<b>Koridor berkembar</b> (sisi berbilang) ialah koridor berasingan, jadi <b>setiap satu</b> menambah 1.') + '</p></div>';  }
 
   function touchList(v) {
     const out = [];
@@ -478,20 +552,24 @@
     if (c.phase !== 'play') { $('c-aid').innerHTML = ''; return; }
     const s = step();
     let html = '';
+    const auto = c.autoHelp ? ' <span class="pill new">' + T('opened for you after ' + c.sw + ' tries', 'dibuka untuk anda selepas ' + c.sw + ' cubaan') + '</span>' : '';
     if (c.hint === c.k) {
+      // Built lazily: only trace/count steps have a place (s.v). Building every
+      // text at once threw on find/clues/loop/multi, so those hints never showed.
       const txt = {
-        count: T('The corridors touching the ' + nm(s.v) + ' are highlighted. Count each one' + (hasLoop(c.g, s.v) ? ' — a loop counts twice.' : '.'),
+        trace: () => T('The corridors touching the ' + nm(s.v) + ' are highlighted in orange. Tap each one.', 'Koridor yang menyentuh ' + nm(s.v) + ' diserlahkan dengan warna oren. Ketik setiap satu.'),
+        count: () => T('The corridors touching the ' + nm(s.v) + ' are highlighted. Count each one' + (hasLoop(c.g, s.v) ? ' — a loop counts twice.' : '.'),
           'Koridor yang menyentuh ' + nm(s.v) + ' telah diserlahkan. Kira setiap satu.' + (hasLoop(c.g, s.v) ? ' Gelung dikira dua kali.' : '')),
-        find: T('Places far from ' + s.d + ' corridors are greyed out. Count the corridors at the rest.', 'Tempat yang bilangan koridornya jauh berbeza daripada ' + s.d + ' telah dikelabukan. Kira koridor di tempat yang tinggal.'),
-        loop: T('A loop is drawn as a small closed curve attached to one place.', 'Gelung dilukis sebagai lengkung tertutup kecil yang melekat pada satu tempat.'),
-        multi: T('Look for two corridors that curve between the same pair of places.', 'Cari dua koridor yang melengkung antara pasangan tempat yang sama.'),
-        clues: T('Places that fail clue 1 are greyed out. Now test the rest against clues 2 and 3.', 'Tempat yang tidak memenuhi petunjuk 1 telah dikelabukan. Sekarang uji tempat yang tinggal dengan petunjuk 2 dan 3.')
-      }[s.t];
-      html += '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span></h3><p>' + txt + '</p></div>';
+        find: () => T('Places far from ' + s.d + ' corridors are greyed out. Count the corridors at the rest.', 'Tempat yang bilangan koridornya jauh berbeza daripada ' + s.d + ' telah dikelabukan. Kira koridor di tempat yang tinggal.'),
+        loop: () => T('A loop is drawn as a small closed curve attached to one place.', 'Gelung dilukis sebagai lengkung tertutup kecil yang melekat pada satu tempat.'),
+        multi: () => T('Look for two corridors that curve between the same pair of places.', 'Cari dua koridor yang melengkung antara pasangan tempat yang sama.'),
+        clues: () => T('Places that fail clue 1 are greyed out. Now test the rest against clues 2 and 3.', 'Tempat yang tidak memenuhi petunjuk 1 telah dikelabukan. Sekarang uji tempat yang tinggal dengan petunjuk 2 dan 3.')
+      }[s.t]();
+      html += '<div class="note warn"><h3>' + T('Hint', 'Petunjuk') + ' <span class="pill part">' + T('no-hint bonus lost', 'bonus tanpa petunjuk hilang') + '</span>' + (c.learnOn ? '' : auto) + '</h3><p>' + txt + '</p></div>';
     }
     if (c.learnOn) {
       let txt;
-      if (s.t === 'count') txt = T('The ' + nm(s.v) + ' touches: ' + touchList(s.v) + '. So its degree is ' + degree(c.g, s.v) + '.', nm(s.v) + ' disentuh oleh koridor ke: ' + touchList(s.v) + '. Jadi, darjahnya ialah ' + degree(c.g, s.v) + '.');
+      if (s.t === 'count' || s.t === 'trace') txt = T('The ' + nm(s.v) + ' touches: ' + touchList(s.v) + '. So its degree is ' + degree(c.g, s.v) + '.', nm(s.v) + ' disentuh oleh koridor ke: ' + touchList(s.v) + '. Jadi, darjahnya ialah ' + degree(c.g, s.v) + '.');
       else if (s.t === 'find') txt = T('Every place now shows its degree (d). Find the one with d=' + s.d + '.', 'Setiap tempat kini menunjukkan darjahnya (d). Cari tempat yang mempunyai d=' + s.d + '.');
       else if (s.t === 'loop') txt = T('A loop joins a place to itself. It adds 2 to that place\'s degree — look for d that seems too big.', 'Gelung menghubungkan sesuatu tempat dengan dirinya sendiri. Ia menambah 2 pada darjah tempat itu, jadi cari nilai d yang kelihatan terlalu besar.');
       else if (s.t === 'multi') txt = T('Multiple edges are two or more edges joining the same two vertices. A graph with no loops and no multiple edges is a simple graph.', 'Sisi berbilang ialah dua atau lebih sisi yang menghubungkan dua bucu yang sama. Graf tanpa gelung dan tanpa sisi berbilang ialah graf mudah.');
@@ -502,7 +580,7 @@
           return T('After clue ', 'Selepas petunjuk ') + (j + 1) + ': ' + cand.map(nm).join(', ');
         }).join('<br>');
       }
-      html += '<div class="note"><h3>' + T('Learn', 'Belajar') + ' <span class="pill alert">−10 XP</span></h3><p>' + txt + '</p></div>';
+      html += '<div class="note"><h3>' + T('Learn', 'Belajar') + (c.learnAuto ? auto : ' <span class="pill alert">−10 XP</span>') + '</h3><p>' + txt + '</p></div>';
     }
     $('c-aid').innerHTML = html;
   }
@@ -567,7 +645,7 @@
       ['nohint', T('No hint or Learn', 'Tanpa petunjuk atau Belajar'), (c.hints || c.learn) ? 0 : 10],
       ['speed', T('Speed · under ', 'Kelajuan · bawah ') + c.L.target + ' s (' + c.solveTime + ' s)', c.solveTime <= c.L.target ? 10 : 0]
     ];
-    if (c.learn) parts.push(['learn', T('Used Learn', 'Guna Belajar'), -10]);
+    if (c.learn && !c.learnAuto) parts.push(['learn', T('Used Learn', 'Guna Belajar'), -10]);
     c.xp = finishLevel(2, c.i, parts, c.solveTime, c.hints, c.learn);
     const badges = ['first_connection'];
     if (!c.hints && !c.learn) { st.cleanCases = (st.cleanCases || 0) + 1; if (st.cleanCases >= 5) badges.push('sharp_detective'); }
@@ -675,7 +753,7 @@
       if (t && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapNode(t.dataset.node); }
     });
     $('c-hint').addEventListener('click', hint);
-    $('c-learn').addEventListener('click', learn);
+    $('c-learn').addEventListener('click', learnClicked);
     $('c-map').addEventListener('click', () => { clearInterval(timer); renderMap(); show('map'); });
     let rt = null;
     window.addEventListener('resize', () => {

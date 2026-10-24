@@ -1631,6 +1631,49 @@
       fill: var(--ink);
     }
 
+    /* World 2: the clue that ruled out the last place tapped */
+    ol.clues li.fail {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    /* World 2, Level 3: small loop / twin-corridor explainer */
+    .intro2 {
+      border-bottom: 1px dashed var(--line, #ccc);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      font-size: 14.5px;
+    }
+
+    svg.mini {
+      width: 100%;
+      max-width: 360px;
+      display: block;
+      margin: 6px 0 0;
+    }
+
+    .mini-road {
+      stroke: var(--ink);
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .mini-dot {
+      fill: var(--yellow);
+      stroke: var(--ink);
+      stroke-width: 2;
+    }
+
+    .mini-lab {
+      font: 600 12px "DM Sans", sans-serif;
+      fill: var(--ink);
+    }
+
+    .mini-plus {
+      font: 800 15px "DM Sans", sans-serif;
+      fill: var(--orange);
+    }
+
     .disc-grid {
       display: grid;
       grid-template-columns: 1.4fr 1fr;

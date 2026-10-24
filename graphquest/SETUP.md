@@ -55,6 +55,21 @@ The game already works without this, and results wait safely on each device. Do 
 
 Check it: open the teacher dashboard, enter your key, and press **Load results**. Then on a student device, press **Submit results** once. Anything queued (tests, Boss rows) goes through, and the class board appears on *My progress*.
 
+### Lives (hearts) for a class
+
+Lives are off unless you switch them on for a class. After the update above, **setupSheet** also adds a **Classes** tab:
+
+| class_code | lives |
+|---|---|
+| 4S1 | on |
+| 4S2 | off |
+
+Type the class code exactly as students type it. `on` / `off` (also yes/no, ya/tidak) work. A class that isn't listed plays without lives. Students pick up the setting when they join or reopen the game, so set it before the lesson.
+
+With lives on, each level starts with 5 hearts and each wrong answer costs one. At 0 hearts the student gets a **Rest stop**: Learn opens at no XP cost, 3 hearts come back, and they carry on with the same question, but that level pays 70% of its XP. The Boss Level shares 3 hearts across its missions. Every attempt row records `hearts_left`, `fell`, `lives_on` and `game_version` in four new columns after `group`; older rows leave them empty.
+
+To try lives yourself without changing a class, open the game with `?lives=on` at the end of the link (and `?lives=off` to undo it). A class listed in the Classes tab always wins over this.
+
 ---
 
 ## What's built — Stages 1 to 5

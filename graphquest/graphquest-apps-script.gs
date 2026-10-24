@@ -13,6 +13,11 @@
  *     never creates duplicates.
  *   - Rows are validated field by field; a bad row rejects the whole
  *     batch with a message, rather than half-writing it.
+ *   - Lives (hearts, v2 of the game): each row also carries hearts_left,
+ *     fell, lives_on and game_version, written after the group column.
+ *     Rows from older phones simply leave them empty.
+ *   - The Classes tab switches lives on or off per class; the game asks
+ *     with ?action=config&class=… when a student joins or opens it.
  *   - student_code is class code + the student's name or register number
  *     (e.g. 4S1-17 or 4S1-AINA SOFEA). group is the student's kumpulan
  *     (e.g. 1 or MELUR); it decides the team on the class board.
@@ -48,6 +53,9 @@ var RECEIVED_COL = FIELDS.length + 1;          // server time, added by this scr
 /* The group column comes after 'received', so sheets made before it existed
    keep every old column where it was. Old rows simply have no group. */
 var GROUP_COL = RECEIVED_COL + 1;
+/* Lives columns (game v2) come after 'group' for the same reason. */
+var LIVES_FIELDS = ['hearts_left', 'fell', 'lives_on', 'game_version'];
+var LAST_COL = GROUP_COL + LIVES_FIELDS.length;
 
 /* Pre-test, post-test and survey rows go to their own tab. */
 var TESTS_SHEET = 'Tests';
@@ -64,6 +72,11 @@ var TEST_GROUP_COL = TEST_RECEIVED_COL + 1;
    Teams tab: student_code (e.g. 4S1-17) | team (any name). */
 var TEAMS_SHEET = 'Teams';
 
+/* Lives per class. Classes tab: class_code | lives (on / off). A class that
+   is not listed plays without lives, unless a test link (?lives=on) is used
+   on that device. A class listed here always wins over a test link. */
+var CLASSES_SHEET = 'Classes';
+
 var MAX_ROWS_PER_POST = 500;
 
 
@@ -74,6 +87,7 @@ var MAX_ROWS_PER_POST = 500;
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.action === 'board') return json(board(String(p['class'] || '').toUpperCase()));
+  if (p.action === 'config') return json(config(String(p['class'] || '').toUpperCase()));
   if (p.action !== 'rows') return json({ ok: true, message: 'GRAPH QUEST collector is running.' });
 
   // ---- teacher dashboard: every attempt row, only with the teacher key ----
@@ -82,7 +96,7 @@ function doGet(e) {
   }
   if (String(p.key || '') !== TEACHER_KEY) return json({ ok: false, code: 'BAD_KEY', error: 'That teacher key is not right.' });
 
-  return json({ ok: true, rows: readTab(getSheet(), GROUP_COL), tests: readTab(getTestsSheet(), TEST_GROUP_COL), teams: teamMap() });
+  return json({ ok: true, rows: readTab(getSheet(), LAST_COL), tests: readTab(getTestsSheet(), TEST_GROUP_COL), teams: teamMap() });
 }
 
 /* ==================================================================
@@ -120,6 +134,44 @@ function board(cls) {
     var t = teams[k]; t.xp = Math.round(t.total / t.members.length); return t;   // average, so team size doesn't matter
   }).sort(function (a, b) { return b.xp - a.xp; });
   return { ok: true, week_start: since.toISOString(), students: students, teams: list };
+}
+
+/* ==================================================================
+   CLASS CONFIG — whether this class plays with lives. No key needed:
+   it returns only the setting.
+   ================================================================== */
+
+function config(cls) {
+  if (!/^[A-Z0-9]+(-[A-Z0-9]+)*$/.test(cls)) return { ok: false, error: 'Unknown class code.' };
+  return { ok: true, lives: classLives(cls) };
+}
+
+/** 'on', 'off', or '' when the class is not in the Classes tab. */
+function classLives(cls) {
+  var out = '';
+  readTab(getClassesSheet(), 2).forEach(function (r) {
+    if (String(r.class_code || '').trim().toUpperCase() === cls) out = livesValue(r.lives);
+  });
+  return out;
+}
+
+/** Accepts on/off, yes/no, true/false, 1/0 (any case); anything else counts as not set. */
+function livesValue(v) {
+  var s = String(v === undefined || v === null ? '' : v).trim().toLowerCase();
+  if (['on', 'yes', 'true', '1', 'ya'].indexOf(s) >= 0) return 'on';
+  if (['off', 'no', 'false', '0', 'tidak'].indexOf(s) >= 0) return 'off';
+  return '';
+}
+
+function getClassesSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(CLASSES_SHEET) || ss.insertSheet(CLASSES_SHEET);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['class_code', 'lives']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 2).setFontWeight('bold');
+  }
+  return sh;
 }
 
 function weekStart() {
@@ -193,12 +245,14 @@ function doPost(e) {
       known[id] = true;
       var line = FIELDS.map(function (f) { return r[f] === undefined ? '' : r[f]; });
       line.push(now, r.group || '');
+      LIVES_FIELDS.forEach(function (f) { line.push(r[f] === undefined ? '' : r[f]); });
       out.push(line);
     });
 
     if (out.length) {
       ensureGroupHeader(sheet, GROUP_COL);
-      sheet.getRange(sheet.getLastRow() + 1, 1, out.length, GROUP_COL).setValues(out);
+      ensureLivesHeaders(sheet);
+      sheet.getRange(sheet.getLastRow() + 1, 1, out.length, LAST_COL).setValues(out);
     }
     return json({ ok: true, received: rows.length, added: out.length, skipped: rows.length - out.length,
                   testsReceived: tests.length, testsAdded: testsAdded });
@@ -228,6 +282,11 @@ function checkRow(r) {
   if (!isInt(r.hints_used, 0, 99) || !isInt(r.learn_used, 0, 99)) return 'bad hint counts.';
   if (!isInt(r.time_s, 0, 86400)) return 'bad time_s.';
   if (String(r.mistake_tag || '').length > 60 || String(r.boss_tool_choice || '').length > 60) return 'tag too long.';
+  // lives fields are optional: phones on the older game don't send them
+  if (r.hearts_left !== undefined && r.hearts_left !== '' && !isInt(r.hearts_left, 0, 5)) return 'bad hearts_left.';
+  if (r.fell !== undefined && typeof r.fell !== 'boolean') return 'fell must be true or false.';
+  if (r.lives_on !== undefined && typeof r.lives_on !== 'boolean') return 'lives_on must be true or false.';
+  if (r.game_version !== undefined && r.game_version !== '' && !/^[0-9]{1,3}$/.test(String(r.game_version))) return 'bad game_version.';
   return '';
 }
 
@@ -288,6 +347,12 @@ function ensureGroupHeader(sheet, col) {
   if (cell.getValue() !== 'group') cell.setValue('group').setFontWeight('bold');
 }
 
+/** Sheets made before lives get those headers the first time they're needed. */
+function ensureLivesHeaders(sheet) {
+  var cells = sheet.getRange(1, GROUP_COL + 1, 1, LIVES_FIELDS.length), now = cells.getValues()[0];
+  if (now.join('|') !== LIVES_FIELDS.join('|')) cells.setValues([LIVES_FIELDS]).setFontWeight('bold');
+}
+
 function knownIds(sheet) {
   var out = {}, last = sheet.getLastRow();
   if (last < 2) return out;
@@ -311,16 +376,17 @@ function getSheet() {
   return ss.getSheetByName(SHEET_NAME) || setupSheet();
 }
 
-/** Run this once from the editor to create the Attempts, Tests and Teams tabs. */
+/** Run this once from the editor to create the Attempts, Tests, Teams and Classes tabs. */
 function setupSheet() {
   getTestsSheet();
   getTeamsSheet();
+  getClassesSheet();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
   if (sh.getLastRow() === 0) {
-    sh.appendRow(FIELDS.concat(['received', 'group']));
+    sh.appendRow(FIELDS.concat(['received', 'group'], LIVES_FIELDS));
     sh.setFrozenRows(1);
-    sh.getRange(1, 1, 1, GROUP_COL).setFontWeight('bold');
+    sh.getRange(1, 1, 1, LAST_COL).setFontWeight('bold');
   }
   return sh;
 }
@@ -360,12 +426,28 @@ function testCollector() {
   if (checkRow(old)) throw new Error('Row without a group rejected: ' + checkRow(old));
   bad({ attempt_id: '' }, 'missing id');
 
+  // lives (game v2)
+  var v2 = JSON.parse(JSON.stringify(good)); v2.hearts_left = 3; v2.fell = true; v2.lives_on = true; v2.game_version = '2';
+  if (checkRow(v2)) throw new Error('Lives row rejected: ' + checkRow(v2));
+  var off = JSON.parse(JSON.stringify(good)); off.hearts_left = ''; off.fell = false; off.lives_on = false; off.game_version = '2';
+  if (checkRow(off)) throw new Error('Lives-off row rejected: ' + checkRow(off));
+  bad({ hearts_left: 6 }, 'six hearts');
+  bad({ hearts_left: -1 }, 'negative hearts');
+  bad({ fell: 'yes' }, 'string fell');
+  bad({ lives_on: 1 }, 'number lives_on');
+  bad({ game_version: 'v2' }, 'version with a letter');
+  [['on', 'on'], [' ON ', 'on'], ['yes', 'on'], [true, 'on'], [1, 'on'], ['Ya', 'on'],
+   ['off', 'off'], ['No', 'off'], [false, 'off'], [0, 'off'], ['', ''], ['maybe', ''], [null, '']].forEach(function (c) {
+    if (livesValue(c[0]) !== c[1]) throw new Error('livesValue(' + c[0] + ') gave ' + livesValue(c[0]) + ', expected ' + c[1]);
+  });
+  if (config('bad code!').ok) throw new Error('Bad class code accepted by config');
+
   var t = { test_id: 'tlx3k9a-abc12', timestamp: '2026-10-14 10:32', class_code: '4S1-2026', student_code: '4S1-17',
     test: 'pre', form: 'A', score: 6, max: 10, answers: '[\"3\"]', correct_items: '1101100110', time_s: 240, levels_cleared: 0, skipped: false };
   if (checkTest(t)) throw new Error('Good test row rejected: ' + checkTest(t));
   var bt = JSON.parse(JSON.stringify(t)); bt.test = 'mid';
   if (!checkTest(bt)) throw new Error('Bad test row accepted: test=mid');
 
-  Logger.log('All tests passed. %s fields per attempt, %s per test.', FIELDS.length, TEST_FIELDS.length);
+  Logger.log('All tests passed. %s fields per attempt (+ received, group, %s lives), %s per test.', FIELDS.length, LIVES_FIELDS.length, TEST_FIELDS.length);
   return 'OK';
 }

@@ -2241,6 +2241,7 @@
        The pre-test comes first so the guide can't give anything away.
        ?test=pre / ?test=post links still open the test straight away. */
     function enterQuest() {
+      if (window.LIVES) LIVES.syncClass(ENDPOINT);     // does this class play with lives?
       if (GQT.fromUrl()) return;
       const toMap = () => { renderMap(); show('map'); };
       const afterPre = () => (st.guideSeen ? toMap() : openGuide(true));
@@ -3198,6 +3199,7 @@
     if (st.classCode && !askGroup) { current = 'map'; }
     applyLang();
     show(current);
+    if (window.LIVES) LIVES.syncClass(ENDPOINT);
     if (st.classCode && !askGroup) GQT.fromUrl();
     else if (askGroup) { $('entry-error').textContent = T('New: playing as a team? Type your group. Playing alone? Leave it empty. Then press the button. Your progress is kept.', 'Baharu: bermain secara berpasukan? Taip kumpulan anda. Bermain seorang? Biarkan kosong. Kemudian tekan butang. Kemajuan anda tetap disimpan.'); $('in-group').focus(); }
   </script>

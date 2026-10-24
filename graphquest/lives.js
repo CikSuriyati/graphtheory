@@ -8,8 +8,10 @@
  * Hints, Learn and a valid-but-not-shortest route cost no heart.
  * The Boss Level shares 3 hearts across its missions.
  *
- * Off unless switched on for this device with ?lives=on (and off again with
- * ?lives=off), so classes without lives play exactly as before.
+ * Who plays with lives: the class setting in the Sheet's Classes tab wins
+ * (the shell fetches it with LIVES.syncClass). A class not listed there is
+ * off, unless this device opened a test link with ?lives=on (?lives=off
+ * undoes it). So classes without lives play exactly as before.
  *
  * Every attempt row gets hearts_left, fell, lives_on and game_version, so
  * pilot data (v1, no lives) and later data stay apart.
@@ -25,17 +27,35 @@
   const PER_STOP = 5, BOSS = 3, AFTER_REST = 3, XP_SHARE = 0.7;
   const PLAY_SCREENS = ['level', 'case', 'play'];
   const LEARN_BTN = { 1: 'w1-learn', 2: 'c-learn', 3: 'btn-learn', 4: 'w4-learn', 5: 'w5-learn', 6: 'w6-learn' };
-  const ON_KEY = 'gq_lives_on', STATE_KEY = 'gq_lives_state';
+  const ON_KEY = 'gq_lives_on', STATE_KEY = 'gq_lives_state', CLASS_KEY = 'gq_lives_class';
 
   const read = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } };
   const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
 
-  /* The switch: a link with ?lives=on / ?lives=off sets it for this device. */
-  let on = read(ON_KEY, false);
+  /* The switch. Device: a test link with ?lives=on / ?lives=off.
+     Class: { code, lives: 'on' | 'off' | '' } from the Sheet, kept for offline use. */
+  let device = read(ON_KEY, false), cls = read(CLASS_KEY, { code: '', lives: '' });
   try {
     const q = new URLSearchParams(location.search).get('lives');
-    if (q === 'on' || q === 'off') { on = q === 'on'; write(ON_KEY, on); }
+    if (q === 'on' || q === 'off') { device = q === 'on'; write(ON_KEY, device); }
   } catch (e) { }
+  const myClass = () => (typeof st === 'object' && st && st.classCode) || '';
+  function isOn() {
+    if (cls.code && cls.code === myClass() && (cls.lives === 'on' || cls.lives === 'off')) return cls.lives === 'on';
+    return device;
+  }
+  let on = isOn();
+
+  /** Ask the collector whether this class plays with lives. Offline: keep the last answer. */
+  function syncClass(endpoint) {
+    const code = myClass();
+    if (!code || !endpoint || endpoint.indexOf('PASTE_') === 0) { on = isOn(); render(); return; }
+    fetch(endpoint + '?action=config&class=' + encodeURIComponent(code), { redirect: 'follow' })
+      .then(r => r.json())
+      .then(j => { if (j && j.ok) { cls = { code, lives: j.lives || '' }; write(CLASS_KEY, cls); } })
+      .catch(() => { })
+      .then(() => { on = isOn(); render(); });
+  }
 
   /* key: the stop being played ('2-3', or 'boss' for all Boss missions).
      done: that stop was cleared, so the next attempt starts fresh.
@@ -184,5 +204,5 @@
     wrap.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   }
 
-  root.LIVES = { begin, onAttempt, adjustParts, render, isOn: () => on };
+  root.LIVES = { begin, onAttempt, adjustParts, render, syncClass, isOn: () => on };
 })(window);

@@ -1631,6 +1631,49 @@
       fill: var(--ink);
     }
 
+    /* World 2: the clue that ruled out the last place tapped */
+    ol.clues li.fail {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    /* World 2, Level 3: small loop / twin-corridor explainer */
+    .intro2 {
+      border-bottom: 1px dashed var(--line, #ccc);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      font-size: 14.5px;
+    }
+
+    svg.mini {
+      width: 100%;
+      max-width: 360px;
+      display: block;
+      margin: 6px 0 0;
+    }
+
+    .mini-road {
+      stroke: var(--ink);
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .mini-dot {
+      fill: var(--yellow);
+      stroke: var(--ink);
+      stroke-width: 2;
+    }
+
+    .mini-lab {
+      font: 600 12px "DM Sans", sans-serif;
+      fill: var(--ink);
+    }
+
+    .mini-plus {
+      font: 800 15px "DM Sans", sans-serif;
+      fill: var(--orange);
+    }
+
     .disc-grid {
       display: grid;
       grid-template-columns: 1.4fr 1fr;
@@ -1900,6 +1943,7 @@
   <script src="adventure.js"></script>
   <script src="sound.js"></script>
   <script src="play.js"></script>
+  <script src="lives.js"></script>
   <script src="world1.js"></script>
   <script src="world2.js"></script>
   <script src="world4.js"></script>
@@ -2046,6 +2090,11 @@
     const BONUS_AFTER = 10;                          // bonus worlds open after this many core levels
     const coreCleared = () => [1, 2, 3, 4].reduce((a, w) => a + [1, 2, 3, 4, 5].filter(l => st.done[w + '-' + l]).length, 0);
     if (window.BOSS) WORLD[7] = BOSS;               // the Boss Level is stored as world 7
+    /* Hearts refill when a level is opened (lives.js; does nothing unless lives are on). */
+    if (window.LIVES) Object.keys(WORLD).forEach(w => {
+      const start = WORLD[w].start;
+      WORLD[w] = Object.assign({}, WORLD[w], { start: i => { LIVES.begin(+w, i + 1); start(i); } });
+    });
     const levelsOf = w => WORLD[w].levels;
 
     const lvKey = (w, i) => w + '-' + (i + 1);
@@ -2070,6 +2119,7 @@
       current = name;
       SCREENS.forEach(s => $('screen-' + s).classList.toggle('hidden', s !== name));
       updateNavigation();
+      if (window.LIVES) LIVES.render();
       window.scrollTo({ top: 0, behavior: 'instant' });
       requestAnimationFrame(() => {
         const heading = $('screen-' + name).querySelector('h1, h2');
@@ -2191,6 +2241,7 @@
        The pre-test comes first so the guide can't give anything away.
        ?test=pre / ?test=post links still open the test straight away. */
     function enterQuest() {
+      if (window.LIVES) LIVES.syncClass(ENDPOINT);     // does this class play with lives?
       if (GQT.fromUrl()) return;
       const toMap = () => { renderMap(); show('map'); };
       const afterPre = () => (st.guideSeen ? toMap() : openGuide(true));
@@ -2771,16 +2822,19 @@
        correct, optimal, score_xp, mistake_tag, hints_used, learn_used, time_s. */
     function logAttempt(a) {
       const d = new Date(), p = x => String(x).padStart(2, '0');
-      st.attempts.push(Object.assign({
+      const row = Object.assign({
         attempt_id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
         timestamp: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()),
         class_code: st.classCode, student_code: studentCode(), group: st.group || '', boss_tool_choice: ''
-      }, a));
+      }, a);
+      if (window.LIVES) LIVES.onAttempt(row);              // hearts: adds hearts_left, fell, lives_on, game_version
+      st.attempts.push(row);
     }
     const logW3 = a => logAttempt(Object.assign({ world: 3, level: run.i + 1, hints_used: run.hints, learn_used: run.learn, time_s: secs() }, a));
 
     /* Shared end of a level: keep the best score, mark it done, log it. */
     function finishLevel(w, i, parts, time, hints, learn, extra) {
+      if (window.LIVES) parts = LIVES.adjustParts(w, i, parts);   // a rest stop on this level: 70% of the XP
       const key = lvKey(w, i), score = parts.reduce((a, p) => a + p[2], 0), prev = st.best[key] || 0;
       st.best[key] = Math.max(prev, score);
       st.done[key] = true;
@@ -3145,6 +3199,7 @@
     if (st.classCode && !askGroup) { current = 'map'; }
     applyLang();
     show(current);
+    if (window.LIVES) LIVES.syncClass(ENDPOINT);
     if (st.classCode && !askGroup) GQT.fromUrl();
     else if (askGroup) { $('entry-error').textContent = T('New: playing as a team? Type your group. Playing alone? Leave it empty. Then press the button. Your progress is kept.', 'Baharu: bermain secara berpasukan? Taip kumpulan anda. Bermain seorang? Biarkan kosong. Kemudian tekan butang. Kemajuan anda tetap disimpan.'); $('in-group').focus(); }
   </script>
